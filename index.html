@@ -1480,11 +1480,11 @@ const NET={tp:null,active:false,myId:null,mode:'dogfight',code:null,slot:0,playe
   name(id){if(id===this.myId)return this.myName();return(this.players.get(id)||{}).name||'PILOT'},
   status(t,warn){const el=$('#netStatus');el.textContent=t||'';el.style.color=warn?'var(--amber)':''},
   genCode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='';for(const x of crypto.getRandomValues(new Uint8Array(6)))c+=A[x%A.length];return c},
-  roomCap(){if(!this.roomP){const c=window.claude;this.roomP=c&&typeof c.use==='function'?Promise.race([Promise.resolve().then(()=>c.use('room')).catch(()=>null),new Promise(r=>setTimeout(()=>r(null),10000))]):Promise.resolve(null)}return this.roomP},
+  roomCap(){if(!this.roomP){const c=window.claude;this.roomP=window.self!==window.top&&c&&typeof c.use==='function'?Promise.race([Promise.resolve().then(()=>c.use('room')).catch(()=>null),new Promise(r=>setTimeout(()=>r(null),10000))]):Promise.resolve(null)}return this.roomP},
   async pickTp(){
     const room=await this.roomCap();
     if(room){ROOM.room=room;return ROOM}
-    if(window.claude||window.self!==window.top){this.status('claude.ai上でオンラインを使うには、claude.aiにログインし、このページを共有されている（コントリビューター以上）必要があります。',true);return null}
+    if(window.self!==window.top){this.status('claude.ai上でオンラインを使うには、claude.aiにログインし、このページを共有されている（コントリビューター以上）必要があります。',true);return null}
     return P2P;
   },
   async create(){if(this.busy)return;this.busy=true;try{this.status('接続中…');const tp=await this.pickTp();if(!tp)return;this.tp=tp;
