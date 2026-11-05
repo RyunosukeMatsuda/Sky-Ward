@@ -415,7 +415,7 @@ body.mobile .opts{gap:6px}
 
 <section class="panel" id="netPanel"><div class="pbox">
   <div class="eyebrow">ONLINE // 2–4 PLAYERS</div><h2>オンライン</h2>
-  <p>部屋を作って、表示される部屋コード（または招待リンク）を友達に送ります。受け取った人はコードを入力して入ります。通信はプレイヤー同士で直接つながります。</p>
+  <p>部屋を作って、表示される部屋コード（または招待リンク）を友達に送ります。受け取った人はコードを入力して入ります。通信は中継サーバーを経由するので、家・学校・会社・モバイル回線のどれからでもつながります。</p>
   <div class="field"><label for="callsign">コールサイン（表示名）</label><input id="callsign" maxlength="12" autocomplete="off" spellcheck="false"></div>
   <div id="netStart">
     <div class="opts" style="margin-top:14px"><span class="lbl">モード</span><button class="chip" data-nmode="dogfight">対戦（ドッグファイト）</button><button class="chip" data-nmode="free">一緒に飛ぶ</button></div>
@@ -1485,7 +1485,7 @@ const NET={tp:null,active:false,myId:null,mode:'dogfight',code:null,slot:0,playe
     const room=await this.roomCap();
     if(room){ROOM.room=room;return ROOM}
     if(window.self!==window.top){this.status('claude.ai上でオンラインを使うには、claude.aiにログインし、このページを共有されている（コントリビューター以上）必要があります。',true);return null}
-    return P2P;
+    return RELAY;
   },
   async create(){if(this.busy)return;this.busy=true;try{this.status('接続中…');const tp=await this.pickTp();if(!tp)return;this.tp=tp;
       for(let i=0;i<3;i++){this.code=this.genCode();try{const r=await tp.open(this.code,true);this.opened(r.slot);return}catch(e){if(!(e&&e.message==='taken')){this.fail(e);return}}}
@@ -1540,7 +1540,7 @@ const NET={tp:null,active:false,myId:null,mode:'dogfight',code:null,slot:0,playe
   tick(dt){
     if(!this.active||!this.tp)return;
     this.hitT-=dt;if(this.hitT<=0){this.hitT=.25;for(const id in this.hits){const d=Math.round(this.hits[id]);if(d>0)this.send({t:'hit',to:id,d})}this.hits={}}
-    this.sendT-=dt;if(this.sendT>0)return;this.sendT=1/15;
+    this.sendT-=dt;if(this.sendT>0)return;this.sendT=1/(this.tp.rate||15);
     this.roundCheck();
     const q=P.q;
     try{this.tp.state({p:this.v(P.pos),q:[+q.x.toFixed(4),+q.y.toFixed(4),+q.z.toFixed(4),+q.w.toFixed(4)],v:this.v(P.vel),th:+P.throttle.toFixed(2),g:+P.gearAnim.toFixed(2),ac:settings.aircraft,hp:Math.round(P.hp),al:P.alive?1:0,f:P.alive&&!mission.noWeapons&&(keys.Space||touch.gun)&&P.ammo.gun>0?1:0,lk:P.lockT>0&&P.target&&P.target.remote?P.target.id:null,k:this.k,d:this.d,rd:this.rd})}catch(e){reportError(e)}
@@ -1557,7 +1557,7 @@ const NET={tp:null,active:false,myId:null,mode:'dogfight',code:null,slot:0,playe
   cleanup(){this.active=false;this.players.clear();this.stats.clear();this.hits={};this.k=this.d=this.rd=0;for(let i=T.length-1;i>=0;i--)if(T[i].remote){scene.remove(T[i].obj);T.splice(i,1)}},
   showStart(){$('#netStart').hidden=false;$('#netLobby').hidden=true;$('#netRoomsWrap').hidden=!(this.tp===ROOM||ROOM.room)},
   showLobby(){$('#netStart').hidden=true;$('#netLobby').hidden=false;$('#netCode').textContent=this.code;
-    $('#netModeTxt').textContent=(this.mode==='free'?'モード：一緒に飛ぶ（武器なし）。出撃拠点はホームの設定に従います。':`モード：対戦（ドッグファイト）。空中から出撃、先に${this.WIN}機撃墜で勝利。撃墜されると5秒後に再出撃。`)+(this.tp===ROOM?'　claude.ai上の部屋です。誰が抜けても部屋は続きます。':this.tp&&this.tp.host?'　あなたがホストです。ホストが抜けると部屋は閉じます。':'');
+    $('#netModeTxt').textContent=(this.mode==='free'?'モード：一緒に飛ぶ（武器なし）。出撃拠点はホームの設定に従います。':`モード：対戦（ドッグファイト）。空中から出撃、先に${this.WIN}機撃墜で勝利。撃墜されると5秒後に再出撃。`)+'　誰が抜けても、残った人がいれば部屋は続きます。';
     $('#netCopy').textContent=this.tp===ROOM?'部屋コードをコピー':'招待リンクをコピー';this.renderLobby()},
   renderLobby(){const ul=$('#netPlayers');const list=[{id:this.myId,name:this.myName(),slot:this.slot,me:true},...this.players.values()].sort((a,b)=>a.slot-b.slot);
     ul.replaceChildren(...list.map(p=>{const li=document.createElement('li');const a=document.createElement('span');a.textContent=p.name;const b=document.createElement('small');b.textContent=p.me?'あなた':'';li.append(a,b);return li}))},
@@ -1601,45 +1601,52 @@ const ROOM={room:null,r:null,seen:new Map(),unsubs:[],lobbyOn:false,
   async leave(){for(const u of this.unsubs)try{u()}catch(e){}this.unsubs=[];const r=this.r;this.r=null;if(r)try{await r.leave()}catch(e){}if(this.room)this.room.presence({lb:null}).catch(()=>{})},
 };
 
-/* ---------- transport: PeerJS (standalone / Netlify) ---------- */
-const P2P={peer:null,conns:new Map(),hostConn:null,host:false,
-  lib(){if(window.Peer)return Promise.resolve(true);if(typeof RTCPeerConnection==='undefined')return Promise.resolve(false);return new Promise(res=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';sc.onload=()=>res(!!window.Peer);sc.onerror=()=>res(false);document.head.appendChild(sc)})},
-  opts(){const o=store.get('peer',null);return Object.assign({debug:0},o&&typeof o==='object'?o:{})},
-  open(code,create){return new Promise(async(res,rej)=>{
-    if(!await this.lib())return rej(new Error('lib'));
-    this.leave();let done=false;const ok=v=>{if(!done){done=true;clearTimeout(to);res(v)}},ng=e=>{if(!done){done=true;clearTimeout(to);this.leave();rej(e)}};
-    const to=setTimeout(()=>ng(new Error('timeout')),15000);
-    if(create){this.host=true;const peer=this.peer=new Peer('skyward-'+code.toLowerCase(),this.opts());
-      peer.on('open',id=>{NET.myId=id;ok({slot:0})});
-      peer.on('connection',c=>{c.on('data',d=>{try{this.hostData(c,d)}catch(e){reportError(e)}});c.on('close',()=>this.drop(c.peer));c.on('error',()=>this.drop(c.peer))});
-      peer.on('error',e=>{if(e.type==='unavailable-id')ng(new Error('taken'));else if(!done)ng(new Error(e.type||'error'));else NET.status('通信エラー：'+(e.type||''),true)});
-      peer.on('disconnected',()=>{try{if(this.peer===peer)peer.reconnect()}catch(e){}});
-    }else{this.host=false;const peer=this.peer=new Peer(this.opts());
-      peer.on('open',()=>{const c=this.hostConn=peer.connect('skyward-'+code.toLowerCase(),{reliable:true,serialization:'json'});
-        c.on('open',()=>c.send({t:'hello',name:NET.myName()}));
-        c.on('data',d=>{try{if(!d||typeof d!=='object')return;if(d.t==='welcome'){NET.myId=d.id;NET.mode=d.mode==='free'?'free':'dogfight';for(const p of d.players||[])NET.upsertPlayer(p.id,p.name,p.slot);ok({slot:d.slot|0})}else if(d.t==='full')ng(new Error('full'));else this.clientData(d)}catch(e){reportError(e)}});
-        c.on('close',()=>{if(done)NET.lost('ホストとの接続が切れました')});c.on('error',()=>{if(done)NET.lost('ホストとの接続が切れました')})});
-      peer.on('error',e=>{if(!done)ng(new Error(e.type==='peer-unavailable'?'peer-unavailable':(e.type||'error')))});
-    }})},
-  hostData(c,d){
-    if(!d||typeof d!=='object')return;
-    if(d.t==='hello'){
-      if(NET.players.size+1>=4){c.send({t:'full'});setTimeout(()=>c.close(),400);return}
-      const used=new Set([NET.slot,...[...NET.players.values()].map(p=>p.slot)]);let slot=0;while(used.has(slot))slot++;
-      const nm=NET.clean(d.name);this.conns.set(c.peer,c);
-      c.send({t:'welcome',id:c.peer,slot,mode:NET.mode,players:[{id:NET.myId,name:NET.myName(),slot:NET.slot},...NET.players.values()]});
-      NET.upsertPlayer(c.peer,nm,slot);this.bcast({t:'pj',id:c.peer,name:nm,slot},c.peer);return}
-    if(!this.conns.has(c.peer)||!['s','m','mx','hit','down','fl'].includes(d.t))return;
-    d.id=c.peer;if(d.t==='hit')d.by=c.peer;
-    this.bcast(d,c.peer);this.dispatch(d);
+/* ---------- transport: WebSocket relay (standalone / Netlify) ----------
+   Game messages go through a public MQTT broker over secure WebSocket, so players
+   meet behind any home, office or mobile network without a game server of our own. */
+const RELAY={c:null,topic:null,info:null,last:new Map(),hbT:0,slot:0,rate:10,hiT:0,
+  brokers(){const o=store.get('brokers',null);return Array.isArray(o)&&o.length?o:['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt']},
+  lib(){if(window.mqtt)return Promise.resolve(true);return new Promise(res=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js';sc.onload=()=>res(!!window.mqtt);sc.onerror=()=>res(false);document.head.appendChild(sc)})},
+  connect(url){return new Promise((res,rej)=>{let c;try{c=mqtt.connect(url,{connectTimeout:8000,reconnectPeriod:2000,clean:true,keepalive:20,will:{topic:this.topic,payload:JSON.stringify({k:'bye',id:NET.myId}),qos:0,retain:false}})}catch(e){return rej(e)}
+    const to=setTimeout(()=>{try{c.end(true)}catch(e){}rej(new Error('timeout'))},9000);
+    c.once('connect',()=>{clearTimeout(to);res(c)});c.once('error',e=>{clearTimeout(to);try{c.end(true)}catch(x){}rej(e)})})},
+  async open(code,create){
+    if(!await this.lib())throw new Error('lib');
+    this.leave();NET.myId='p'+crypto.getRandomValues(new Uint32Array(2)).join('').slice(0,14);
+    this.topic='skyward8/v1/'+code;const infoT=this.topic+'/info';this.info=null;this.last.clear();
+    let c=null;for(const u of this.brokers()){try{c=await this.connect(u);break}catch(e){}}
+    if(!c)throw new Error('timeout');
+    this.c=c;
+    c.on('message',(t,buf)=>{let d;try{d=JSON.parse(buf.toString())}catch(e){return}if(t===infoT){this.info=d;return}try{this.onMsg(d)}catch(e){reportError(e)}});
+    c.on('offline',()=>{if(NET.active)notice('接続が不安定です（再接続中）','red')});
+    await new Promise(r=>c.subscribe([this.topic,infoT],{qos:0},()=>r()));
+    if(create)c.publish(infoT,JSON.stringify({m:NET.mode,t:Date.now()}),{qos:1,retain:true});
+    this.pub({k:'hi',nm:NET.myName(),sl:-1,md:NET.mode,ask:1});
+    await new Promise(r=>setTimeout(r,create?600:2600));
+    if(!create){if(!this.last.size){this.leave();throw new Error('empty')}const md=(this.info&&this.info.m)||[...this.last.values()].map(v=>v.md).find(Boolean);NET.mode=md==='free'?'free':'dogfight'}
+    if(this.last.size>=4){this.leave();throw new Error('full')}
+    const used=new Set([...this.last.values()].map(v=>v.sl));let slot=0;while(used.has(slot))slot++;this.slot=slot;
+    this.hello();clearInterval(this.hbT);this.hbT=setInterval(()=>{this.hello();this.expire()},2000);
+    setTimeout(()=>{for(const[id,v]of this.last)if(v.nm)NET.upsertPlayer(id,v.nm,v.sl)},0);
+    return {slot};
   },
-  clientData(d){if(d.t==='pj'){NET.upsertPlayer(d.id,d.name,d.slot);return}if(d.t==='pl'){NET.peerLeave(d.id);return}this.dispatch(d)},
-  dispatch(d){if(d.id===NET.myId)return;if(d.t==='s')NET.onState(d.id,d.s);else NET.recv(d)},
-  bcast(d,ex){for(const[id,c]of this.conns)if(id!==ex&&c.open)try{c.send(d)}catch(e){}},
-  send(d){const msg=Object.assign({},d,{id:NET.myId});if(this.host)this.bcast(msg);else if(this.hostConn&&this.hostConn.open)try{this.hostConn.send(msg)}catch(e){}},
-  state(st){this.send({t:'s',s:st})},
-  drop(id){if(!this.conns.has(id))return;this.conns.delete(id);NET.peerLeave(id);this.bcast({t:'pl',id})},
-  leave(){if(this.host&&this.peer)this.bcast({t:'pl',id:NET.myId});try{this.hostConn&&this.hostConn.close()}catch(e){}for(const c of this.conns.values())try{c.close()}catch(e){}try{this.peer&&this.peer.destroy()}catch(e){}this.peer=null;this.hostConn=null;this.conns.clear()},
+  hello(){this.pub({k:'hi',nm:NET.myName(),sl:this.slot,md:NET.mode})},
+  pub(d){if(this.c&&this.c.connected){d.id=NET.myId;try{this.c.publish(this.topic,JSON.stringify(d),{qos:0})}catch(e){}}},
+  onMsg(d){
+    if(!d||typeof d!=='object'||typeof d.id!=='string'||d.id.length>40||d.id===NET.myId)return;
+    if(d.k==='bye'){this.last.delete(d.id);NET.peerLeave(d.id);return}
+    const v=this.last.get(d.id)||{};v.t=performance.now();
+    if(d.k==='hi'){v.nm=NET.clean(d.nm);if(d.sl>=0)v.sl=d.sl|0;v.md=d.md==='free'?'free':'dogfight';this.last.set(d.id,v);if(NET.active&&d.sl>=0)NET.upsertPlayer(d.id,v.nm,v.sl);
+      if(d.ask&&NET.active&&performance.now()-this.hiT>500){this.hiT=performance.now();this.hello()}return}
+    this.last.set(d.id,v);if(!NET.active)return;
+    if(!NET.players.has(d.id)&&v.nm)NET.upsertPlayer(d.id,v.nm,v.sl);
+    if(d.k==='s')NET.onState(d.id,d.s);
+    else if(d.k==='e'&&d.e&&typeof d.e==='object'){const ev=Object.assign({},d.e,{id:d.id});if(ev.t==='hit')ev.by=d.id;NET.recv(ev)}
+  },
+  expire(){const now=performance.now();for(const[id,v]of this.last)if(now-v.t>7000){this.last.delete(id);NET.peerLeave(id)}},
+  send(d){const {id,...e}=d;this.pub({k:'e',e})},
+  state(st){this.pub({k:'s',s:st})},
+  leave(){clearInterval(this.hbT);if(this.c){try{this.pub({k:'bye'});this.c.end(false)}catch(e){}}this.c=null;this.last.clear()},
 };
 
 /* ---------- error reporting: keep the loop alive, show the first error ---------- */
