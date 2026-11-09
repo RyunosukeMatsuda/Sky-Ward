@@ -1,9 +1,4 @@
-<!doctype html>
-<html lang="ja">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>SKYWARD</title>
 <meta name="theme-color" content="#07131c">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -211,7 +206,7 @@ body.mobile .lever{left:calc(10px + env(safe-area-inset-left,0px));right:auto;bo
 body.mobile .lv-track{width:52px;height:min(46vh,200px)}
 body.mobile .lv-lbl{display:none}
 body.mobile .lv-val{grid-column:auto}
-body.mobile .notice{top:30%;font-size:13px;white-space:normal;max-width:70vw;text-align:center}
+body.mobile .notice{top:35%;font-size:13px;white-space:normal;max-width:70vw;text-align:center}
 .h-left,.h-right{display:grid;gap:16px;min-width:0}
 body.mobile .home{padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:linear-gradient(90deg,rgba(4,13,20,.92),rgba(4,13,20,.5) 48%,rgba(4,13,20,.15) 62%,rgba(4,13,20,.55))}
 body.mobile .home-in{width:100%;margin:auto 0;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px 28px;align-items:end}
@@ -243,8 +238,6 @@ body.mobile .opts{gap:6px}
 .mbtn.online{border-color:rgba(130,234,255,.55)}
 @media (prefers-reduced-motion:reduce){.mbtn,.home,.notice{transition:none}}
 </style>
-</head>
-<body>
 
 <canvas id="gl"></canvas>
 <canvas id="hud2d"></canvas>
@@ -254,15 +247,15 @@ body.mobile .opts{gap:6px}
   <div class="home-in">
    <div class="h-left">
     <div>
-      <div class="eyebrow">FLIGHT COMBAT // PROTOTYPE 03 — 3D</div>
+      <div class="eyebrow">FLIGHT COMBAT // PROTOTYPE 09 — 3D</div>
       <h1>SKY<span>WARD</span></h1>
     </div>
     <p class="lead">空母打撃群から出撃し、訓練や迎撃任務に挑むフライトアクション。機体を傾けて旋回し、速度を管理しながら敵機や艦船をロックオンして攻撃せよ。</p>
     <div class="mlist">
       <button class="mbtn online" id="onlineBtn"><span><strong>オンライン（2〜4人）</strong><small>友達と対戦、または一緒に飛ぶ。部屋コードで参加</small></span><span class="ar">⇄</span></button>
-      <button class="mbtn" data-mission="training"><span><strong>飛行・射撃訓練</strong><small>標的機5機と標的艦。反撃なし、弾薬無制限</small></span><span class="ar">↗</span></button>
+      <button class="mbtn" data-mission="training"><span><strong>飛行・射撃訓練</strong><small>標的機5機と標的艦。反撃なし</small></span><span class="ar">↗</span></button>
       <button class="mbtn" data-mission="intercept"><span><strong>沿岸迎撃</strong><small>領空に接近する敵戦闘機4機を排除。敵は反撃してくる</small></span><span class="ar">↗</span></button>
-      <button class="mbtn" data-mission="fleet"><span><strong>艦隊攻撃</strong><small>護衛機と対空砲火をかわし、巡洋艦と護衛艦を撃沈</small></span><span class="ar">↗</span></button>
+      <button class="mbtn" data-mission="fleet"><span><strong>艦隊攻撃</strong><small>護衛機と対空砲火をかわし、巡洋艦と護衛艦を撃沈。艦尾に着艦もできる</small></span><span class="ar">↗</span></button>
     </div>
    </div>
    <div class="h-right">
@@ -309,7 +302,7 @@ body.mobile .opts{gap:6px}
     <div class="scorebox pnl" id="scoreBox" hidden></div>
   </div>
   <div class="tr">
-    <div class="trow"><button class="iconbtn" id="camBtn" title="視点切替 (V)">◎</button><button class="iconbtn" id="pauseBtn" title="一時停止 (Esc)">Ⅱ</button></div>
+    <div class="trow"><button class="iconbtn" id="rearBtn" title="後方カメラ (R)">⟲</button><button class="iconbtn" id="camBtn" title="視点切替 (V)">◎</button><button class="iconbtn" id="pauseBtn" title="一時停止 (Esc)">Ⅱ</button></div>
     <div class="tgt pnl">
       <div class="hd"><span class="lbl">TARGET</span><span class="lbl" id="lockState">NO LOCK</span></div>
       <div class="nm" id="tName">—</div>
@@ -331,11 +324,11 @@ body.mobile .opts{gap:6px}
   </div>
   <div class="wpn pnl">
     <div class="lbl" style="margin-bottom:4px">WEAPONS</div>
-    <div class="w"><span>GUN</span><span id="aGun">940</span></div>
-    <div class="w" id="wS"><span>小型ミサイル</span><span id="aS">8</span></div>
-    <div class="w" id="wL"><span>大型ミサイル</span><span id="aL">4</span></div>
+    <div class="w"><span>GUN</span><span id="aGun">∞</span></div>
+    <div class="w" id="wS"><span>ミサイル</span><span id="aS">∞</span></div>
+    <div class="w" id="wL" hidden><span>—</span><span id="aL">∞</span></div>
     <div class="w"><span>FLARE</span><span id="aF">24</span></div>
-    <div class="help">W/S ピッチ　A/D ロール　Q/E ヨー<br>Shift/↑・Z/↓・ホイール 推力レバー<br>Space 機関砲　F 発射　C 武装　T 目標<br>X フレア　G ギア　B ブレーキ</div>
+    <div class="help">W/S ピッチ　A/D ロール　Q/E ヨー<br>Shift/↑・Z/↓・ホイール 推力レバー<br>Space 機関砲　F ミサイル　T 目標<br>X フレア　G ギア　B ブレーキ　R 後方カメラ</div>
   </div>
   <div class="lever" id="lever" title="推力レバー（ドラッグで操作）">
     <div class="lv-track" id="lvTrack"><div class="lv-ab"></div><div class="lv-fill" id="lvFill"></div><div class="lv-handle" id="lvHandle"></div></div>
@@ -348,9 +341,9 @@ body.mobile .opts{gap:6px}
 <div class="mui" id="mui">
   <div class="flyzone" id="flyZone"><div class="fz-base" id="fzBase"><div class="fz-knob" id="fzKnob"></div></div><div class="fz-hint" id="fzHint">左半分のどこでもドラッグして操縦</div></div>
   <button class="mb gun" id="mGun"><b>GUN</b><small id="mGunN">940</small></button>
-  <button class="mb msl" id="mMsl"><b>MSL</b><small id="mMslN">小型 8</small></button>
+  <button class="mb msl" id="mMsl"><b>MSL</b><small id="mMslN">∞</small></button>
   <button class="mb sm" id="mTgt">目標</button>
-  <button class="mb sm" id="mWpn">武装<small id="mWpnN">→大型</small></button>
+  <button class="mb sm" id="mWpn" hidden>武装<small id="mWpnN">—</small></button>
   <button class="mb sm" id="mFlr">フレア<small id="mFlrN">24</small></button>
   <button class="mb sm" id="mBrake" hidden>ブレーキ</button>
   <button class="mb sm" id="mGear">ギア<small id="mGearN">UP</small></button>
@@ -382,13 +375,14 @@ body.mobile .opts{gap:6px}
 <section class="panel" id="keysPanel"><div class="pbox">
   <div class="eyebrow">CONTROLS</div><h2>操作方法</h2>
   <p>機体はロール（傾き）とピッチ（機首上下）で旋回します。左右に傾けてから機首を上げると、その方向へ曲がります。速度が落ちすぎると失速して機首が下がります。</p>
-  <p style="margin-top:8px">離陸：推力を上げて加速し、離陸速度（VR）を超えたら W で機首を上げる。空母では推力を80%以上にするとカタパルトで射出。着陸：G でギアを下ろし、表示されるリングに沿って3.5°で降下。降下率は基地6.5m/s・空母8.5m/s以下、機体は水平に。空母は後半部に接地するとワイヤーが掛かります。</p>
+  <p style="margin-top:8px">離陸：推力を上げて加速し、離陸速度（VR）を超えたら W で機首を上げる。空母では推力を80%以上にするとカタパルトで射出。着陸：ゆっくり降りれば大丈夫。着陸地点に近づくとギアは自動で下り、接地直前は主翼の水平と降下率を自動で補正します。降下率は基地14m/s・空母15m/s・艦艇14m/s以下まで耐えられます。着陸できる場所は4つの基地、空母、各艦艇の艦尾（オレンジの枠）。空母と艦艇ではどこに接地してもフックで止まり、停止後に推力80%以上で射出できます。<br>体当たり：敵機や敵艦にぶつかると撃破・大打撃を与えます（自機も損傷）。</p>
   <div class="keys" style="display:none" id="touchHelp">
     <kbd>左半分</kbd><span>指を置いた場所がスティックの中心。上下でピッチ、左右でロール（かんたんモードでは傾けた方向へ自動で旋回し、指を離すと水平に戻る）</span>
     <kbd>左端のレバー</kbd><span>推力。上ほど強く、MIL（82%）より上はアフターバーナー</span>
     <kbd>GUN</kbd><span>押している間、機関砲</span>
     <kbd>MSL</kbd><span>ミサイル発射。ロック中は枠が光る</span>
-    <kbd>目標 / 武装</kbd><span>目標切替 / 小型・大型ミサイル切替</span>
+    <kbd>目標</kbd><span>目標切替。弾薬はすべて無制限</span>
+    <kbd>⟲ ボタン</kbd><span>後方カメラの表示 / 非表示</span>
     <kbd>フレア</kbd><span>敵ミサイルの欺瞞。地上ではブレーキに変わる</span>
     <kbd>ギア</kbd><span>着陸装置。着陸が近いと点滅して知らせる</span>
     <kbd>中央下の表示</kbd><span>地上では「射出」「離陸推力」などをタップで実行</span>
@@ -402,8 +396,8 @@ body.mobile .opts{gap:6px}
     <kbd>G</kbd><span>着陸装置（ギア）の上げ下げ</span>
     <kbd>B</kbd><span>ホイールブレーキ（推力0%でも自動でかかる）</span>
     <kbd>Space</kbd><span>機関砲</span>
-    <kbd>F / Enter</kbd><span>ミサイル発射（ロック中は誘導、未ロックは直進）</span>
-    <kbd>C</kbd><span>小型 / 大型ミサイル切替</span>
+    <kbd>F / Enter</kbd><span>ミサイル発射（弾数無制限。ロック中は誘導、未ロックは直進）</span>
+    <kbd>R</kbd><span>後方カメラの表示 / 非表示</span>
     <kbd>T / Tab</kbd><span>目標切替</span>
     <kbd>X</kbd><span>フレア（敵ミサイルを欺瞞）</span>
     <kbd>V</kbd><span>追跡視点 / コックピット視点</span>
@@ -418,7 +412,7 @@ body.mobile .opts{gap:6px}
   <p>部屋を作って、表示される部屋コード（または招待リンク）を友達に送ります。受け取った人はコードを入力して入ります。通信は中継サーバーを経由するので、家・学校・会社・モバイル回線のどれからでもつながります。</p>
   <div class="field"><label for="callsign">コールサイン（表示名）</label><input id="callsign" maxlength="12" autocomplete="off" spellcheck="false"></div>
   <div id="netStart">
-    <div class="opts" style="margin-top:14px"><span class="lbl">モード</span><button class="chip" data-nmode="dogfight">対戦（ドッグファイト）</button><button class="chip" data-nmode="free">一緒に飛ぶ</button></div>
+    <div class="opts" style="margin-top:14px"><span class="lbl">モード</span><button class="chip" data-nmode="dogfight">対戦（ドッグファイト）</button><button class="chip" data-nmode="team">チーム戦</button><button class="chip" data-nmode="free">一緒に飛ぶ</button></div>
     <p class="note" id="nmodeNote">—</p>
     <div class="pbtns" style="margin-top:10px"><button class="primary" id="netCreate">部屋を作る</button></div>
     <div id="netRoomsWrap" hidden><div class="field"><label>参加できる部屋</label></div><div class="mlist" id="netRooms"></div></div>
@@ -427,6 +421,7 @@ body.mobile .opts{gap:6px}
   <div id="netLobby" hidden>
     <div class="roomcode"><span class="lbl">部屋コード</span><b id="netCode">------</b><button class="secondary" id="netCopy">招待リンクをコピー</button></div>
     <p class="note" id="netModeTxt">—</p>
+    <div class="opts" id="netTeamRow" hidden style="margin:8px 0"><span class="lbl">チーム</span><button class="chip" data-team="0">ALPHA（青）</button><button class="chip" data-team="1">BRAVO（赤）</button></div>
     <ul class="plist" id="netPlayers"></ul>
     <div class="pbtns"><button class="primary" id="netGo">出撃</button><button class="secondary" id="netLeave">部屋を出る</button></div>
   </div>
@@ -578,12 +573,12 @@ let smoke,fire,clouds;
 
 /* ---------- terrain ---------- */
 const ISLANDS=[
-  {x:-9500,z:7500,r:4300,h:430,seed:1.7,base:{x:-9300,z:7400,w:420,l:1750}},
-  {x:5200,z:-8600,r:2600,h:420,seed:3.1},
+  {x:-9500,z:7500,r:4300,h:430,seed:1.7,base:{x:-9300,z:7400,w:420,l:1750,name:'本土基地'}},
+  {x:5200,z:-8600,r:2600,h:420,seed:3.1,base:{x:5300,z:-8500,w:380,l:1600,name:'東島基地'}},
   {x:-7400,z:-14500,r:3300,h:680,seed:5.3},
   {x:12500,z:-2600,r:1800,h:300,seed:7.9},
-  {x:1800,z:-23500,r:4400,h:820,seed:9.4},
-  {x:-15500,z:-3600,r:2200,h:360,seed:11.2},
+  {x:1800,z:-23300,r:4400,h:820,seed:9.4,base:{x:1800,z:-23300,w:420,l:1750,name:'北島基地'}},
+  {x:-15500,z:-3600,r:2200,h:360,seed:11.2,base:{x:-15500,z:-3600,w:360,l:1580,name:'西島基地'}},
   {x:16500,z:-18500,r:2900,h:520,seed:13.6},
   {x:-2600,z:-31000,r:3000,h:560,seed:15.1},
 ];
@@ -595,6 +590,7 @@ function islandH(I,x,z){
   if(I.base){const b=I.base,e=Math.max(Math.abs(x-b.x)-b.w,Math.abs(z-b.z)-b.l),m=1-smooth(0,520,e);h=lerp(h,16,m)}
   return h;
 }
+const BASES=ISLANDS.filter(I=>I.base).map(I=>I.base);
 function terrainH(x,z){let h=-90;for(const I of ISLANDS){if(Math.abs(x-I.x)<I.r*1.4&&Math.abs(z-I.z)<I.r*1.4)h=Math.max(h,islandH(I,x,z))}return h}
 function groundY(x,z){return Math.max(0,terrainH(x,z))}
 const COL={sand:new THREE.Color('#c8b78f'),wet:new THREE.Color('#8a8a6c'),grass:new THREE.Color('#4f6b35'),grass2:new THREE.Color('#3a5528'),rock:new THREE.Color('#6f685c'),rock2:new THREE.Color('#8a8478'),pave:new THREE.Color('#6c6d68')};
@@ -626,7 +622,7 @@ function buildIslands(){
     }
   }
   trees.count=ti;trees.instanceMatrix.needsUpdate=true;trees.receiveShadow=true;scene.add(trees);
-  buildAirbase(ISLANDS[0].base);
+  for(const I of ISLANDS)if(I.base)buildAirbase(I.base);
 }
 
 /* ---------- ocean ---------- */
@@ -673,9 +669,30 @@ function skin(rings,capS=true,capE=true){
 }
 function ellipse(n=2,N=20){const a=[];for(let i=0;i<N;i++){const t=i/N*Math.PI*2,c=Math.cos(t),s=Math.sin(t);a.push([Math.sign(c)*Math.pow(Math.abs(c),2/n),Math.sign(s)*Math.pow(Math.abs(s),2/n)])}return a}
 function loft(st,prof,o={}){return skin(st.map(s=>prof.map(([px,py])=>new V3(px*s.w+(s.x||0),(py>=0?py*s.h:py*(s.hb??s.h))+(s.y||0),s.z))),o.capS??true,o.capE??true)}
-const AF=[[0,0],[.05,.48],[.22,1],[.55,.78],[1,.04],[1,-.04],[.55,-.5],[.22,-.66],[.05,-.36]];
-function wing(secs,mirror=false){return skin(secs.map(s=>AF.map(([c,f])=>new V3((mirror?-1:1)*s.x,(s.y||0)+f*s.t*.5,s.le+c*(s.te-s.le)))))}
-function tail(secs,x,y,cant){const g=wing(secs);g.rotateZ(Math.PI/2-cant);g.translate(x,y,0);return g}
+const AF=[[0,0],[.02,.26],[.1,.72],[.3,1],[.6,.8],[1,.03],[1,-.03],[.6,-.5],[.3,-.62],[.1,-.45],[.02,-.16]];
+function wing(secs,mirror=false,ts=.66){return skin(secs.map(s=>AF.map(([c,f])=>new V3((mirror?-1:1)*s.x,(s.y||0)+f*s.t*.5*ts,s.le+c*(s.te-s.le)))))}
+function tail(secs,x,y,cant){const g=wing(secs);g.applyMatrix4(tailXf(x,y,cant));return g}
+function tailXf(x,y,cant){return new THREE.Matrix4().makeTranslation(x,y,0).multiply(new THREE.Matrix4().makeRotationZ(Math.PI/2-cant))}
+function lerpSec(a,b,x){const t=(x-a.x)/((b.x-a.x)||1);return{x,le:lerp(a.le,b.le,t),te:lerp(a.te,b.te,t),y:lerp(a.y||0,b.y||0,t),t:lerp(a.t,b.t,t)}}
+function secAt(secs,x){for(let i=0;i<secs.length-1;i++)if(x<=secs[i+1].x+1e-6)return lerpSec(secs[i],secs[i+1],x);return{...secs[secs.length-1]}}
+// wing panel with trailing-edge control surfaces cut out over span ranges [{x0,x1,f,k}]
+function csWing(secs,mirror,ranges,ts=.66){
+  const E6=1e-6,cut=(s,f)=>({...s,te:s.te-(s.te-s.le)*f});
+  const xs=[...new Set([...secs.map(s=>s.x),...ranges.flatMap(r=>[r.x0,r.x1])])].sort((p,q)=>p-q);
+  const list=[];
+  xs.forEach((x,i)=>{const s=secAt(secs,x),rs=ranges.filter(r=>x>=r.x0-E6&&x<=r.x1+E6);
+    if(!rs.length){list.push(s);return}
+    const st=r=>Math.abs(x-r.x0)<E6,en=r=>Math.abs(x-r.x1)<E6,inside=rs.find(r=>!st(r)&&!en(r));
+    if(inside){list.push(cut(s,inside.f));return}
+    const e=rs.find(en),b=rs.find(st);
+    if(e)list.push(cut(s,e.f));else if(i>0)list.push(s);
+    if(b)list.push(cut(s,b.f));else if(i<xs.length-1)list.push(s);
+  });
+  const sg=mirror?-1:1;
+  const surfs=ranges.map(r=>{const sl=xs.filter(x=>x>=r.x0-E6&&x<=r.x1+E6).map(x=>{const s=secAt(secs,x),c=cut(s,r.f);return{x,y:s.y||0,le:c.te,te:s.te,t:s.t*.34}});
+    const a=sl[0],b=sl[sl.length-1];return{g:wing(sl,mirror,ts),a:new V3(sg*a.x,a.y,a.le),b:new V3(sg*b.x,b.y,b.le),k:r.k}});
+  return{body:wing(list,mirror,ts),surfs};
+}
 function box(w,h,d,x,y,z,ry=0,rx=0){const g=new THREE.BoxGeometry(w,h,d);if(rx)g.rotateX(rx);if(ry)g.rotateY(ry);g.translate(x,y,z);return g}
 function cyl(r1,r2,h,x,y,z,axis='y',seg=14,open=false){const g=new THREE.CylinderGeometry(r1,r2,h,seg,1,open);if(axis==='z')g.rotateX(Math.PI/2);if(axis==='x')g.rotateZ(Math.PI/2);g.translate(x,y,z);return g}
 function canopy(zf,zb,y,w,h){const g=new THREE.SphereGeometry(1,28,12,0,Math.PI*2,0,Math.PI/2);g.scale(w,h,(zb-zf)/2);g.translate(0,y,(zf+zb)/2);return g}
@@ -687,61 +704,117 @@ const AIRCRAFT=[
   {id:'F117',name:'F-117 NIGHTHAWK',role:'外観バリエーション',desc:'多面体のステルス形状を楽しむ一機。速度と旋回は控えめで、武装は他機と共通。',vmax:400,thrust:16,roll:2.2,pitch:.8,yaw:.3,stall:78,glim:7,stats:[.48,.45,.9]},
   {id:'B2',name:'B-2 SPIRIT',role:'外観バリエーション',desc:'全幅52mの全翼機。重く、大きな弧を描いてゆったり旋回する。武装は他機と共通。',vmax:350,thrust:12.5,roll:1.25,pitch:.55,yaw:.24,stall:82,glim:4.5,stats:[.36,.24,1]},
   {id:'F35',name:'F-35 LIGHTNING II',role:'多用途な万能機',desc:'単発の多用途機。旋回・速度・安定の総合力が高く、癖が少ない。',vmax:560,thrust:25,roll:3.2,pitch:1.08,yaw:.4,stall:68,glim:9,stats:[.76,.8,.86]},
+  {id:'F14',name:'F-14 TOMCAT',role:'可変翼の艦上戦闘機',desc:'速度に合わせて主翼の後退角が自動で変わる双発機。低速では翼を広げて粘り、高速では翼を畳んで加速する。',vmax:590,thrust:26,roll:2.7,pitch:.98,yaw:.34,stall:60,glim:7.5,stats:[.83,.72,.8],swing:true},
+  {id:'MIG23',name:'MiG-23 FLOGGER',role:'可変翼の迎撃機',desc:'直線の加速が速い単発の可変翼機。翼を畳むと速いが旋回は重く、一撃離脱に向く。',vmax:615,thrust:26.5,roll:2.5,pitch:.86,yaw:.3,stall:68,glim:7.5,stats:[.88,.58,.7],swing:true},
+  {id:'NGF',name:'XF-X NEXTGEN',role:'次世代の制空戦闘機',desc:'垂直尾翼を持たない次世代機。翼端後方の安定板で姿勢を制御し、速度と旋回の両方が高水準。',vmax:650,thrust:31,roll:3.5,pitch:1.15,yaw:.42,stall:64,glim:9.5,stats:[.95,.88,.82]},
+  {id:'HX1',name:'HX-1 MERIDIAN',role:'極超音速機（オリジナル）',desc:'このゲームのために設計したオリジナルの極超音速機。最高速度は全機体で一番だが、高速では舵が重く旋回半径が大きい。',vmax:900,thrust:36,roll:2.4,pitch:.72,yaw:.22,stall:92,glim:6,stats:[1,.35,.75]},
+  {id:'TB2',name:'TB2 BAYRAKTAR',role:'低速の無人攻撃機',desc:'プロペラ推進の無人機。とても遅いが失速しにくく、低空で地上や艦船を落ち着いて狙える。速度はゲーム用に実機より上げている。',vmax:115,thrust:6.5,roll:1.9,pitch:1.0,yaw:.45,stall:28,glim:5,stats:[.12,.62,.95],prop:true,fixedGear:true},
 ];
-const glowMat=new THREE.MeshBasicMaterial({color:new THREE.Color(3.2,1.25,.42),transparent:true,opacity:.0,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide,fog:false});
+/* skin shader: panel lines, weathering, camouflage and (fictional) insignia, all procedural in model space */
+const SKIN_GLSL=`varying vec3 vOP;varying vec3 vON;uniform float uPL,uCamo;uniform vec3 uC1,uC2,uC3,uDT,uDS,uI1,uI2;
+float h21(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
+float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h21(i),h21(i+vec2(1,0)),f.x),mix(h21(i+vec2(0,1)),h21(i+vec2(1,1)),f.x),f.y);}
+float fbm2(vec2 p){return vn(p)*.55+vn(p*2.1+3.1)*.3+vn(p*4.3+7.7)*.15;}
+float gl(float v,float L,float w){float g=v/L;float d=min(fract(g),1.-fract(g))*L;float fw=fwidth(v)+1e-4;return (1.-smoothstep(w,w+fw,d))*clamp(.06/fw,0.,1.);}
+void insig(vec2 q,inout vec3 c){float d=length(q);float fw=fwidth(d)+1e-4;
+  float bar=step(abs(q.y),.2)*(1.-smoothstep(1.75-fw,1.75,abs(q.x)));float disc=1.-smoothstep(1.-fw,1.,d);
+  c=mix(c,uI1,max(disc,bar));c=mix(c,uI2,1.-smoothstep(.66-fw,.66,d));c=mix(c,uI1,1.-smoothstep(.3-fw,.3,abs(q.x)+abs(q.y)));}
+`;
+function skinMat(key,o,s={}){
+  if(MATS[key])return MATS[key];const m=M(key,o);
+  const U={uPL:{value:s.pl??.2},uCamo:{value:s.camo||0},uC1:{value:new THREE.Color(s.c1||o.color)},uC2:{value:new THREE.Color(s.c2||'#000')},uC3:{value:new THREE.Color(s.c3||'#000')},
+    uDT:{value:new THREE.Vector3(...(s.top||[0,0,0]))},uDS:{value:new THREE.Vector3(...(s.side||[0,0,0]))},uI1:{value:new THREE.Color(s.i1||'#383e44')},uI2:{value:new THREE.Color(s.i2||'#8e969c')}};
+  m.customProgramCacheKey=()=>'skin';
+  m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,U);
+    sh.vertexShader='varying vec3 vOP;varying vec3 vON;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvOP=position;vON=normal;');
+    sh.fragmentShader=SKIN_GLSL+sh.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
+      vec3 sn=normalize(vON)*(gl_FrontFacing?1.:-1.);vec3 sp=vOP;
+      if(uCamo>.5&&uCamo<1.5){vec2 q=abs(sn.y)>.45?sp.xz:vec2(sp.z,sp.y*1.6+abs(sp.x)*.4);float c1=fbm2(q*.3+3.);float c2=fbm2(q*.26+11.);diffuseColor.rgb=c1>.53?uC2:uC1;if(c2>.6)diffuseColor.rgb=uC3;}
+      else if(uCamo>1.5){diffuseColor.rgb=mix(diffuseColor.rgb,uC2,smoothstep(-.12,-.3,sn.y));}
+      if(uDT.z>0.&&sn.y>.3)insig(vec2(abs(sp.x)-uDT.x,sp.z-uDT.y)/uDT.z,diffuseColor.rgb);
+      if(uDS.z>0.&&abs(sn.x)>.45)insig(vec2(sp.z-uDS.y,sp.y-uDS.x)/uDS.z,diffuseColor.rgb);
+      float lz=gl(sp.z+floor(sp.x/2.3)*.37,1.35,.011);
+      float lx=abs(sn.y)>abs(sn.x)?gl(sp.x+floor(sp.z/1.35)*.5,1.9,.011):gl(sp.y+floor(sp.z/1.35)*.3,.85,.011);
+      diffuseColor.rgb*=1.-max(lz,lx*.8)*uPL;
+      diffuseColor.rgb*=.95+fbm2(sp.xz*.7+sp.y)*.09;`).replace('#include <roughnessmap_fragment>','#include <roughnessmap_fragment>\nroughnessFactor=clamp(roughnessFactor*(.82+fbm2(vOP.xz*1.4+vOP.y)*.36),0.,1.);');
+  };
+  return m;
+}
+function flameMat(){return new THREE.ShaderMaterial({uniforms:{uI:{value:0},uAB:{value:0},uT:{value:0}},transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide,fog:false,
+  vertexShader:'varying float vZ;varying vec3 vN;varying vec3 vV;void main(){vZ=position.z;vec4 mv=modelViewMatrix*vec4(position,1.);vN=normalize(normalMatrix*normal);vV=normalize(-mv.xyz);gl_Position=projectionMatrix*mv;}',
+  fragmentShader:`uniform float uI,uAB,uT;varying float vZ;varying vec3 vN;varying vec3 vV;void main(){float z=clamp(vZ,0.,1.);float e=.4+.6*pow(abs(dot(normalize(vN),normalize(vV))),1.3);
+    float body=pow(1.-z,1.7);float dia=uAB*smoothstep(.55,1.,cos(z*6.2832*3.2-1.3))*pow(1.-z,.7);
+    vec3 col=mix(vec3(1.6,.6,.2),vec3(.6,.75,1.7),uAB*(1.-z)*.75)*body+vec3(1.3,1.15,1.4)*dia*1.7;
+    float a=uI*e*(body+dia*.9)*(.88+.12*sin(uT*55.+z*24.));gl_FragColor=vec4(col*a,1.);}`})}
 const coreMat=new THREE.MeshBasicMaterial({color:new THREE.Color(1.3,.48,.18),side:THREE.DoubleSide});
+let pylonTpl=null;
+function pilotParts(c,list){
+  const h=new THREE.SphereGeometry(.15,14,10);h.translate(c.x,c.y-.2,c.z+.12);list.helmet.push(h);
+  const v=new THREE.SphereGeometry(.156,14,8,-Math.PI*.8,Math.PI*.6,Math.PI*.3,Math.PI*.32);v.translate(c.x,c.y-.2,c.z+.12);list.visor.push(v);
+  list.suit.push(box(.44,.4,.32,c.x,c.y-.58,c.z+.2));list.seat.push(box(.38,.55,.1,c.x,c.y-.42,c.z+.42));
+}
 function buildAircraft(id,opt={}){
-  const P={paint:[],dark:[],glass:[],mark:[]},noz=[];let cockpit=new V3(0,1,-5),tips=[];
-  const E=ellipse;let paint,glass=M('glass',{color:'#20282f',roughness:.04,metalness:.95,envMapIntensity:1.6});
+  const P={paint:[],dark:[],glass:[],mark:[]},noz=[],MV=[],PY=[],SW={},crew=[];let cockpit=new V3(0,1,-5),tips=[],swing=null,prop=null;
+  const E=ellipse;let paint,glass=M('glass',{color:'#2a3640',roughness:.03,metalness:.3,envMapIntensity:2,transparent:true,opacity:.42,depthWrite:false});
   const dark=M('dark',{color:'#2d3236',roughness:.45,metalness:.75});
+  const ST=!!opt.static;
+  const dest=(mat,parent)=>parent&&!ST?SW[parent].L[mat]:P[mat];
+  const mv=(g,a,b,k,side,mat='paint',parent=null)=>{if(ST)dest(mat,parent).push(g);else MV.push({g,a,b,k,side,mat,parent})};
+  // wing with control surfaces
+  const W=(secs,mir,ranges,mat='paint',parent=null,ts)=>{const r=csWing(secs,mir,ranges,ts);dest(mat,parent).push(r.body);for(const s of r.surfs)mv(s.g,s.a,s.b,s.k,mir?-1:1,mat,parent)};
+  // vertical/canted tail with rudder
+  const TL=(secs,x,y,cant,ranges,mat='paint')=>{const r=csWing(secs,false,ranges),m=tailXf(x,y,cant);r.body.applyMatrix4(m);P[mat].push(r.body);for(const s of r.surfs){s.g.applyMatrix4(m);mv(s.g,s.a.applyMatrix4(m),s.b.applyMatrix4(m),s.k,Math.sign(x)||1,mat)}};
+  const swingSide=(name,p)=>{SW[name]={p,L:{paint:[],dark:[],mark:[]}}};
   if(id==='F15'){
-    paint=M('pF15',{color:'#929ba3',roughness:.5,metalness:.35});
+    paint=skinMat('pF15',{color:'#929ba3',roughness:.5,metalness:.35},{top:[4.0,2.9,.55],side:[-.2,-1.6,.42]});
     P.paint.push(loft([{z:-9.7,w:.04,h:.04},{z:-9,w:.32,h:.32},{z:-7.8,w:.58,h:.58,hb:.5},{z:-6.2,w:.76,h:.74,hb:.6},{z:-4.6,w:.88,h:.8,hb:.66},{z:-3,w:1.0,h:.68,hb:.68},{z:-1,w:1.3,h:.58,hb:.72},{z:2,w:1.55,h:.52,hb:.7},{z:5,w:1.5,h:.48,hb:.64},{z:7.6,w:1.22,h:.44,hb:.54},{z:9.2,w:1.08,h:.42,hb:.48}],E(2.3,24)));
+    P.dark.push(loft([{z:-9.75,w:.045,h:.045},{z:-9,w:.335,h:.335},{z:-8.3,w:.47,h:.47,hb:.43}],E(2.3,24),{capE:false}));
     for(const s of [1,-1]){
       P.paint.push(loft([{z:-3.6,w:.5,h:.6,x:s*1.5,y:-.2},{z:-1,w:.56,h:.66,x:s*1.55,y:-.22},{z:3,w:.5,h:.6,x:s*1.45,y:-.2},{z:5.6,w:.28,h:.42,x:s*1.15,y:-.15}],E(5,16),{capS:false}));
       P.dark.push(box(.92,1.12,.06,s*1.5,-.2,-3.5));
-      P.paint.push(wing([{x:1.2,le:-1.2,te:4.6,y:.1,t:.5},{x:6.55,le:3.9,te:5.7,y:.04,t:.12}],s<0));
-      P.paint.push(wing([{x:.9,le:7.0,te:9.8,y:0,t:.22},{x:4.4,le:9.0,te:10.3,y:0,t:.08}],s<0));
-      P.paint.push(tail([{x:0,le:5.4,te:9.3,t:.3},{x:3.4,le:8.4,te:9.7,t:.08}],s*1.15,.3,s*.04));
+      W([{x:1.2,le:-1.2,te:4.6,y:.1,t:.5},{x:6.55,le:3.9,te:5.7,y:.04,t:.12}],s<0,[{x0:1.5,x1:4.1,f:.28,k:'flap'},{x0:4.1,x1:6.2,f:.3,k:'ail'}]);
+      mv(wing([{x:.9,le:7.0,te:9.8,y:0,t:.22},{x:4.4,le:9.0,te:10.3,y:0,t:.08}],s<0),new V3(s*.9,0,8.1),new V3(s*4.4,0,8.1),'stab',s);
+      TL([{x:0,le:5.4,te:9.3,t:.3},{x:3.4,le:8.4,te:9.7,t:.08}],s*1.15,.3,s*.04,[{x0:.5,x1:2.6,f:.3,k:'rud'}]);
       P.mark.push(box(.06,.5,.9,s*(1.15+.04*2.6+.02),2.6,8.7));
-      noz.push({x:s*.6,y:0,z:9.2,r:.55,len:1.1});
+      noz.push({x:s*.6,y:0,z:9.2,r:.55,len:1.1,petal:true});
+      PY.push(new V3(s*3.4,-.5,2.2),new V3(s*1.55,-.95,.6));
     }
-    P.glass.push(canopy(-6.9,-3.2,.48,.46,.66));cockpit.set(0,1.02,-5.5);tips=[new V3(6.55,.05,4.8),new V3(-6.55,.05,4.8)];
+    P.glass.push(canopy(-6.9,-3.2,.48,.46,.66));cockpit.set(0,1.02,-5.5);crew.push(new V3(0,1.02,-5.3));tips=[new V3(6.55,.05,4.8),new V3(-6.55,.05,4.8)];
   }else if(id==='F22'){
-    paint=M('pF22',{color:'#80888f',roughness:.42,metalness:.42});glass=M('glassGold',{color:'#a88a46',roughness:.06,metalness:1,envMapIntensity:1.5});
+    paint=skinMat('pF22',{color:'#80888f',roughness:.42,metalness:.42},{top:[4.6,2.4,.55],side:[-.15,-2.3,.38],pl:.22});glass=M('glassGold',{color:'#a88a46',roughness:.06,metalness:.9,envMapIntensity:1.6,transparent:true,opacity:.62,depthWrite:false});
     P.paint.push(loft([{z:-9.4,w:.04,h:.04},{z:-8.4,w:.45,h:.35,hb:.3},{z:-7,w:.78,h:.62,hb:.45},{z:-5.4,w:.95,h:.8,hb:.55},{z:-3.5,w:1.3,h:.7,hb:.6},{z:-1.5,w:1.95,h:.55,hb:.65},{z:2,w:2.05,h:.5,hb:.62},{z:5.5,w:1.85,h:.45,hb:.56},{z:8,w:1.4,h:.4,hb:.5},{z:9.45,w:1.25,h:.35,hb:.45}],E(1.45,24)));
     for(const s of [1,-1]){
       P.paint.push(loft([{z:-3.7,w:.42,h:.6,x:s*1.75,y:-.15},{z:-1.5,w:.5,h:.62,x:s*1.75,y:-.15},{z:2,w:.4,h:.5,x:s*1.55,y:-.12}],E(1.2,12),{capS:false}));
       P.dark.push(box(.75,1.1,.06,s*1.75,-.15,-3.66,s*.35));
-      P.paint.push(wing([{x:1.6,le:-1.8,te:4.9,y:.08,t:.45},{x:6.8,le:3.0,te:4.35,y:.04,t:.1}],s<0));
-      P.paint.push(wing([{x:1.2,le:6.6,te:9.6,y:0,t:.2},{x:4.4,le:8.7,te:9.9,y:0,t:.07}],s<0));
-      P.paint.push(tail([{x:0,le:4.6,te:8.1,t:.25},{x:3.1,le:6.7,te:7.7,t:.07}],s*1.55,.35,s*.47));
+      W([{x:1.6,le:-1.8,te:4.9,y:.08,t:.45},{x:6.8,le:3.0,te:4.35,y:.04,t:.1}],s<0,[{x0:1.9,x1:4.4,f:.3,k:'flpr'},{x0:4.4,x1:6.5,f:.3,k:'ail'}]);
+      mv(wing([{x:1.2,le:6.6,te:9.6,y:0,t:.2},{x:4.4,le:8.7,te:9.9,y:0,t:.07}],s<0),new V3(s*1.2,0,8.1),new V3(s*4.4,0,8.1),'stab',s);
+      TL([{x:0,le:4.6,te:8.1,t:.25},{x:3.1,le:6.7,te:7.7,t:.07}],s*1.55,.35,s*.47,[{x0:.4,x1:2.7,f:.3,k:'rud'}]);
       noz.push({x:s*.66,y:-.02,z:9.45,r:.5,len:1.1,rect:[1.0,.55]});
     }
-    P.glass.push(canopy(-7.1,-2.6,.46,.5,.72));cockpit.set(0,1.02,-5.7);tips=[new V3(6.8,.05,3.7),new V3(-6.8,.05,3.7)];
+    P.glass.push(canopy(-7.1,-2.6,.46,.5,.72));cockpit.set(0,1.02,-5.7);crew.push(new V3(0,1.02,-5.5));tips=[new V3(6.8,.05,3.7),new V3(-6.8,.05,3.7)];
   }else if(id==='F35'){
-    paint=M('pF35',{color:'#626a71',roughness:.58,metalness:.3});
+    paint=skinMat('pF35',{color:'#626a71',roughness:.58,metalness:.3},{top:[3.8,2.0,.48],side:[.05,-1.9,.4],pl:.2});
     P.paint.push(loft([{z:-7.85,w:.04,h:.04},{z:-7,w:.4,h:.35,hb:.3},{z:-5.8,w:.7,h:.6,hb:.45},{z:-4.3,w:.9,h:.85,hb:.55},{z:-2.6,w:1.25,h:.85,hb:.7},{z:-.8,w:1.65,h:.75,hb:.8},{z:2,w:1.75,h:.72,hb:.8},{z:4.5,w:1.5,h:.62,hb:.72},{z:6.5,w:1.0,h:.55,hb:.6},{z:7.6,w:.75,h:.5,hb:.5}],E(1.8,24)));
     for(const s of [1,-1]){
       P.paint.push(loft([{z:-3.1,w:.4,h:.55,x:s*1.42,y:.05},{z:-.8,w:.48,h:.6,x:s*1.5,y:.02},{z:1.5,w:.35,h:.45,x:s*1.3}],E(1.5,12),{capS:false}));
       P.dark.push(box(.7,1.0,.06,s*1.42,.05,-3.05,s*.3));
-      P.paint.push(wing([{x:1.5,le:-.4,te:4.0,y:.12,t:.5},{x:5.35,le:2.4,te:3.6,y:.06,t:.12}],s<0));
-      P.paint.push(wing([{x:.9,le:5.4,te:7.7,y:.05,t:.2},{x:3.3,le:6.9,te:7.9,y:.05,t:.07}],s<0));
-      P.paint.push(tail([{x:0,le:3.8,te:6.6,t:.25},{x:2.5,le:5.6,te:6.6,t:.07}],s*1.0,.55,s*.44));
+      W([{x:1.5,le:-.4,te:4.0,y:.12,t:.5},{x:5.35,le:2.4,te:3.6,y:.06,t:.12}],s<0,[{x0:1.7,x1:4.9,f:.3,k:'flpr'}]);
+      mv(wing([{x:.9,le:5.4,te:7.7,y:.05,t:.2},{x:3.3,le:6.9,te:7.9,y:.05,t:.07}],s<0),new V3(s*.9,.05,6.5),new V3(s*3.3,.05,6.5),'stab',s);
+      TL([{x:0,le:3.8,te:6.6,t:.25},{x:2.5,le:5.6,te:6.6,t:.07}],s*1.0,.55,s*.44,[{x0:.4,x1:2.2,f:.3,k:'rud'}]);
     }
-    noz.push({x:0,y:0,z:7.6,r:.62,len:1.4});
-    P.glass.push(canopy(-5.7,-2.3,.58,.48,.64));cockpit.set(0,1.1,-4.5);tips=[new V3(5.35,.06,3.0),new V3(-5.35,.06,3.0)];
+    noz.push({x:0,y:0,z:7.6,r:.62,len:1.4,petal:true});
+    P.glass.push(canopy(-5.7,-2.3,.58,.48,.64));cockpit.set(0,1.1,-4.5);crew.push(new V3(0,1.1,-4.3));tips=[new V3(5.35,.06,3.0),new V3(-5.35,.06,3.0)];
   }else if(id==='F117'){
-    paint=M('pF117',{color:'#272a2e',roughness:.72,metalness:.2,flatShading:true});glass=M('glassF117',{color:'#3c4650',roughness:.15,metalness:.9,flatShading:true});
+    paint=skinMat('pF117',{color:'#272a2e',roughness:.72,metalness:.2,flatShading:true},{top:[4.4,4.4,.6],pl:.12,i1:'#1d1f22',i2:'#3a3e43'});glass=M('glassF117',{color:'#3c4650',roughness:.12,metalness:.8,flatShading:true,transparent:true,opacity:.78,depthWrite:false});
     const FP=[[0,1],[.55,.42],[1,0],[.55,-.3],[0,-.38],[-.55,-.3],[-1,0],[-.55,.42]];
     P.paint.push(loft([{z:-10,w:.05,h:.05},{z:-6.5,w:1.45,h:.8,hb:.5},{z:-3.5,w:2.7,h:1.3,hb:.6},{z:-.5,w:3.94,h:1.35,hb:.6},{z:2.5,w:5.17,h:1.15,hb:.5},{z:5.9,w:6.6,h:.7,hb:.3},{z:6.7,w:5.7,h:.5,hb:.22},{z:8.3,w:3.2,h:.55,hb:.26},{z:10,w:1.0,h:.38,hb:.2}],FP));
     P.glass.push(loft([{z:-7.6,w:.05,h:.03,y:.62},{z:-6.2,w:.66,h:.38,y:.7},{z:-4.4,w:.78,h:.45,y:.92},{z:-3.4,w:.3,h:.2,y:1.12}],[[0,1],[1,0],[0,-1],[-1,0]]));
-    for(const s of [1,-1]){P.paint.push(tail([{x:0,le:6.6,te:9.6,t:.12},{x:3.2,le:8.6,te:10.2,t:.05}],s*.9,.5,s*.7));P.dark.push(box(1.6,.1,.5,s*1.1,.55,9.1))}
+    for(const s of [1,-1]){const m=tailXf(s*.9,.5,s*.7);mv(tail([{x:0,le:6.6,te:9.6,t:.12},{x:3.2,le:8.6,te:10.2,t:.05}],s*.9,.5,s*.7),new V3(0,0,7.8).applyMatrix4(m),new V3(3.2,0,9.25).applyMatrix4(m),'rv',s);P.dark.push(box(1.6,.1,.5,s*1.1,.55,9.1))}
     noz.push({x:.95,y:.5,z:9.3,r:.3,len:.2,rect:[1.4,.12]},{x:-.95,y:.5,z:9.3,r:.3,len:.2,rect:[1.4,.12]});
-    cockpit.set(0,1.32,-5.3);tips=[new V3(6.6,0,6.4),new V3(-6.6,0,6.4)];
+    cockpit.set(0,1.32,-5.3);crew.push(new V3(0,1.28,-5.1));tips=[new V3(6.6,0,6.4),new V3(-6.6,0,6.4)];
   }else if(id==='B2'){
-    paint=M('pB2',{color:'#4b5157',roughness:.6,metalness:.25});
-    for(const s of [false,true])P.paint.push(wing([{x:0,le:-10.5,te:10.0,t:2.6},{x:3.5,le:-8.23,te:5.4,t:2.2},{x:8.5,le:-4.98,te:9.0,t:1.3},{x:13.5,le:-1.74,te:4.6,t:.75},{x:26.2,le:6.5,te:7.8,t:.16}],s));
+    paint=skinMat('pB2',{color:'#4b5157',roughness:.6,metalness:.25},{top:[17,2.4,1.1],pl:.14,i1:'#363b40',i2:'#5c6268'});
+    for(const s of [false,true])W([{x:0,le:-10.5,te:10.0,t:2.6},{x:3.5,le:-8.23,te:5.4,t:2.2},{x:8.5,le:-4.98,te:9.0,t:1.3},{x:13.5,le:-1.74,te:4.6,t:.75},{x:26.2,le:6.5,te:7.8,t:.16}],s,[{x0:9,x1:13.2,f:.22,k:'elev'},{x0:14.5,x1:25.4,f:.3,k:'elev'}],'paint',null,1);
     P.paint.push(loft([{z:-10.3,w:.2,h:.2},{z:-9,w:1.5,h:1.0,hb:.6},{z:-7,w:2.1,h:1.45,hb:.6},{z:-4,w:2.1,h:1.35,hb:.6},{z:0,w:1.6,h:.95,hb:.5},{z:4,w:.6,h:.35,hb:.2}],E(2.5,22)));
     P.glass.push(loft([{z:-8.7,w:.2,h:.06,y:.95},{z:-7.9,w:1.0,h:.32,y:1.05},{z:-7.1,w:.9,h:.28,y:1.25},{z:-6.7,w:.2,h:.08,y:1.3}],E(2,14)));
     for(const s of [1,-1]){
@@ -749,9 +822,90 @@ function buildAircraft(id,opt={}){
       P.dark.push(box(1.7,.32,.4,s*4.6,1.18,-4.9,0,-.5));P.dark.push(box(1.5,.12,1.8,s*4.6,.62,4.6));
     }
     noz.push({x:4.6,y:.66,z:5.4,r:.3,len:.1,rect:[1.3,.1]},{x:-4.6,y:.66,z:5.4,r:.3,len:.1,rect:[1.3,.1]});
-    cockpit.set(0,1.95,-7.2);tips=[new V3(26.1,0,7.1),new V3(-26.1,0,7.1)];
+    cockpit.set(0,1.95,-7.2);crew.push(new V3(-.4,1.75,-7.3),new V3(.4,1.75,-7.3));tips=[new V3(26.1,0,7.1),new V3(-26.1,0,7.1)];
+  }else if(id==='F14'){
+    paint=skinMat('pF14',{color:'#a9bccb',roughness:.55,metalness:.22},{camo:1,c1:'#aebfcd',c2:'#7896b4',c3:'#4d6d93',top:[7.0,2.7,.6],side:[-.4,-1.2,.45],i1:'#2c3e57',i2:'#c4cfd8',pl:.26});
+    P.paint.push(loft([{z:-9.8,w:.04,h:.04},{z:-9,w:.35,h:.35},{z:-7.5,w:.6,h:.62,hb:.5},{z:-6,w:.72,h:.78,hb:.6},{z:-4.5,w:.8,h:.85,hb:.65},{z:-3,w:.86,h:.7,hb:.7},{z:-1,w:1.0,h:.55,hb:.6},{z:3,w:1.0,h:.45,hb:.5},{z:6,w:.8,h:.35,hb:.4},{z:8.5,w:.5,h:.25,hb:.3},{z:9.4,w:.2,h:.12}],E(2.3,24)));
+    P.dark.push(loft([{z:-9.85,w:.045,h:.045},{z:-9,w:.365,h:.365},{z:-8.2,w:.5,h:.52,hb:.45}],E(2.3,24),{capE:false}));
+    P.paint.push(loft([{z:-2.4,w:.7,h:.1,y:-.08},{z:-.5,w:2.35,h:.26,y:-.12},{z:4,w:2.6,h:.26,y:-.12},{z:8.2,w:2.35,h:.2,y:-.12},{z:9.4,w:1.5,h:.1,y:-.12}],E(4,22)));
+    swingSide('R',new V3(2.95,.15,1.2));swingSide('L',new V3(-2.95,.15,1.2));
+    for(const s of [1,-1]){const sd=s>0?'R':'L';
+      P.paint.push(loft([{z:-3.4,w:.6,h:.62,x:s*1.95,y:-.42},{z:-1,w:.66,h:.7,x:s*1.95,y:-.44},{z:5,w:.62,h:.62,x:s*1.95,y:-.44},{z:8.6,w:.52,h:.52,x:s*1.95,y:-.42},{z:9.1,w:.5,h:.5,x:s*1.95,y:-.42}],E(3.2,18),{capS:false}));
+      P.dark.push(box(1.12,1.18,.06,s*1.95,-.42,-3.3,0,-.18));
+      P.paint.push(wing([{x:.9,le:-4.2,te:2.9,y:.15,t:.32},{x:3.25,le:-.3,te:2.9,y:.15,t:.26}],s<0));
+      W([{x:2.6,le:-.1,te:2.9,y:.15,t:.32},{x:9.9,le:2.55,te:4.05,y:.12,t:.1}],s<0,[{x0:3.4,x1:8.8,f:.3,k:'flap'}],'paint',sd);
+      mv(wing([{x:1.9,le:6.0,te:9.3,y:-.22,t:.2},{x:5.4,le:8.6,te:9.9,y:-.22,t:.06}],s<0),new V3(s*1.9,-.22,7.6),new V3(s*5.4,-.22,7.6),'stab',s);
+      TL([{x:0,le:4.4,te:8.4,t:.26},{x:3.3,le:7.3,te:8.9,t:.07}],s*1.75,.12,s*.1,[{x0:.6,x1:2.8,f:.3,k:'rud'}]);
+      P.paint.push(tail([{x:0,le:5.5,te:7.8,t:.12},{x:.9,le:6.6,te:8,t:.05}],s*1.6,-.88,Math.PI-s*.35));
+      noz.push({x:s*1.95,y:-.42,z:9.1,r:.48,len:1.0,petal:true});
+      PY.push(new V3(s*2.35,-.62,-1.2),new V3(s*.85,-.62,2.0));
+    }
+    swing={min:20*Math.PI/180,max:68*Math.PI/180,v0:120,v1:320};
+    P.glass.push(canopy(-7.4,-2.3,.55,.5,.72));cockpit.set(0,1.2,-5.9);crew.push(new V3(0,1.18,-5.7),new V3(0,1.14,-3.9));
+    tips=[new V3(9.9,.12,3.4),new V3(-9.9,.12,3.4)];
+  }else if(id==='MIG23'){
+    paint=skinMat('pMIG23',{color:'#a59577',roughness:.6,metalness:.2},{camo:1,c1:'#b3a17e',c2:'#6c7a52',c3:'#4c573a',top:[5.2,2.0,.5],side:[2.0,5.5,.5],i1:'#5b2a26',i2:'#d2cbbd',pl:.3});
+    P.paint.push(loft([{z:-9,w:.04,h:.04},{z:-8.2,w:.3,h:.3},{z:-6.8,w:.55,h:.6,hb:.55},{z:-5.2,w:.7,h:.8,hb:.65},{z:-3.5,w:.85,h:.8,hb:.75},{z:-1,w:1.2,h:.75,hb:.8},{z:3,w:1.2,h:.75,hb:.8},{z:6,w:.98,h:.7,hb:.7},{z:7.4,w:.72,h:.62,hb:.62}],E(2.4,24)));
+    P.dark.push(loft([{z:-9.05,w:.045,h:.045},{z:-8.2,w:.315,h:.315},{z:-7.4,w:.47,h:.5,hb:.47}],E(2.4,24),{capE:false}));
+    P.paint.push(loft([{z:-3.6,w:.22,h:.05,y:.72},{z:-1,w:.32,h:.22,y:.68},{z:3,w:.3,h:.2,y:.68},{z:4.5,w:.15,h:.08,y:.66}],E(2,12)));
+    swingSide('R',new V3(2.2,.15,1.6));swingSide('L',new V3(-2.2,.15,1.6));
+    for(const s of [1,-1]){const sd=s>0?'R':'L';
+      P.paint.push(loft([{z:-3.9,w:.36,h:.6,x:s*1.0,y:-.1},{z:-1.5,w:.42,h:.66,x:s*1.08,y:-.12},{z:2,w:.36,h:.6,x:s*1.0,y:-.1}],E(5,16),{capS:false}));
+      P.dark.push(box(.7,1.15,.06,s*1.0,-.1,-3.85));P.paint.push(box(.04,1.2,1.0,s*.64,-.1,-3.4));
+      P.paint.push(wing([{x:1.0,le:-2.0,te:2.7,y:.15,t:.28},{x:2.45,le:.45,te:2.7,y:.15,t:.22}],s<0));
+      W([{x:2.0,le:.4,te:3.4,y:.15,t:.3},{x:7.1,le:1.85,te:3.05,y:.1,t:.08}],s<0,[{x0:2.6,x1:5.6,f:.3,k:'flap'}],'paint',sd);
+      mv(wing([{x:1.0,le:4.6,te:7.4,y:.05,t:.18},{x:3.7,le:6.7,te:7.8,y:.05,t:.06}],s<0),new V3(s*1.0,.05,6.1),new V3(s*3.7,.05,6.1),'stab',s);
+      noz.length||noz.push({x:0,y:0,z:7.4,r:.58,len:1.1,petal:true});
+      PY.push(new V3(s*1.85,-.4,.3),new V3(s*1.0,-.95,-.4));
+    }
+    TL([{x:0,le:1.6,te:7.0,t:.3},{x:1.0,le:3.6,te:7.0,t:.25},{x:3.6,le:6.3,te:7.6,t:.08}],0,.62,0,[{x0:.9,x1:3.2,f:.28,k:'rud'}]);
+    P.paint.push(tail([{x:0,le:4.8,te:7.0,t:.16},{x:1.1,le:6.0,te:7.1,t:.05}],0,-.7,Math.PI));
+    swing={min:16*Math.PI/180,max:72*Math.PI/180,v0:120,v1:330};
+    P.glass.push(canopy(-6.3,-3.7,.62,.42,.55));cockpit.set(0,1.2,-5.1);crew.push(new V3(0,1.18,-4.9));
+    tips=[new V3(7.1,.1,2.5),new V3(-7.1,.1,2.5)];
+  }else if(id==='NGF'){
+    paint=skinMat('pNGF',{color:'#6d7277',roughness:.46,metalness:.42},{top:[4.2,3.4,.55],side:[.0,2.2,.42],pl:.24});glass=M('glassGold',{color:'#a88a46',roughness:.06,metalness:.9,envMapIntensity:1.6,transparent:true,opacity:.62,depthWrite:false});
+    P.paint.push(loft([{z:-10.5,w:.03,h:.03},{z:-9.5,w:.28,h:.22,hb:.2},{z:-8,w:.5,h:.42,hb:.32},{z:-6.5,w:.66,h:.62,hb:.4},{z:-5,w:.8,h:.72,hb:.45},{z:-3,w:1.0,h:.62,hb:.5},{z:0,w:1.15,h:.55,hb:.5},{z:4,w:1.15,h:.5,hb:.48},{z:7,w:1.0,h:.45,hb:.45},{z:8.6,w:.82,h:.42,hb:.42}],E(2.2,24)));
+    P.paint.push(loft([{z:-3.4,w:.62,h:.32,y:-.42},{z:1,w:.6,h:.3,y:-.42},{z:3.5,w:.2,h:.12,y:-.32}],E(4,16),{capS:false}));P.dark.push(box(1.18,.56,.06,0,-.44,-3.36,0,.25));
+    for(const s of [1,-1]){
+      W([{x:.8,le:-6.0,te:6.7,y:0,t:.42},{x:2.6,le:-1.2,te:6.7,y:.02,t:.34},{x:7.4,le:5.0,te:6.9,y:.04,t:.07}],s<0,[{x0:2.0,x1:7.1,f:.22,k:'elev'}]);
+      mv(wing([{x:5.6,le:5.7,te:8.2,y:.08,t:.12},{x:8.4,le:8.0,te:9.5,y:-.08,t:.05}],s<0),new V3(s*5.6,.08,7.0),new V3(s*8.4,-.08,8.6),'stab',s);
+    }
+    noz.push({x:0,y:0,z:8.6,r:.62,len:1.25,petal:true});
+    P.glass.push(canopy(-7.8,-4.3,.42,.42,.56));cockpit.set(0,.95,-6.2);crew.push(new V3(0,.93,-6.0));
+    tips=[new V3(7.4,.04,6.0),new V3(-7.4,.04,6.0)];
+  }else if(id==='HX1'){
+    paint=skinMat('pHX1',{color:'#dcd8cd',roughness:.5,metalness:.12},{camo:2,c2:'#16181a',top:[3.4,8.6,.7],pl:.22});glass=M('glassHX',{color:'#20262b',roughness:.04,metalness:.6,envMapIntensity:2,transparent:true,opacity:.82,depthWrite:false});
+    const HXP=[[0,1],[.3,.62],[.7,.22],[1,0],[.85,-.12],[.4,-.2],[0,-.22],[-.4,-.2],[-.85,-.12],[-1,0],[-.7,.22],[-.3,.62]];
+    P.paint.push(loft([{z:-15,w:.04,h:.03},{z:-12,w:.9,h:.4},{z:-8,w:1.9,h:.78},{z:-3,w:3.0,h:.98},{z:3,w:4.2,h:.98},{z:9,w:5.1,h:.78},{z:13,w:5.6,h:.45}],HXP));
+    P.dark.push(loft([{z:-15.05,w:.045,h:.035},{z:-13.6,w:.47,h:.21}],HXP,{capE:false}));
+    P.paint.push(loft([{z:-4,w:.9,h:.12,y:-.25},{z:-2.5,w:1.4,h:.5,hb:.55,y:-.35},{z:10,w:1.5,h:.5,hb:.55,y:-.35},{z:13.4,w:1.4,h:.42,y:-.3}],E(5,18)));
+    P.dark.push(box(2.6,.62,.06,0,-.62,-2.45));
+    for(const s of [1,-1]){
+      mv(wing([{x:2.3,le:12.95,te:14.3,y:0,t:.18},{x:5.5,le:12.95,te:14.0,y:0,t:.1}],s<0),new V3(s*2.3,0,12.95),new V3(s*5.5,0,12.95),'elev',s);
+      P.paint.push(tail([{x:0,le:10.8,te:13.2,t:.14},{x:1.1,le:12.1,te:13.4,t:.05}],s*4.6,-.05,Math.PI-s*.25));
+    }
+    TL([{x:0,le:7.5,te:12.6,t:.3},{x:2.8,le:11.4,te:13.0,t:.08}],0,.7,0,[{x0:.4,x1:2.5,f:.28,k:'rud'}]);
+    noz.push({x:0,y:-.34,z:13.4,r:.5,len:.4,rect:[2.6,.6]});
+    P.glass.push(loft([{z:-10.2,w:.05,h:.03,y:.32},{z:-9,w:.5,h:.22,y:.38},{z:-7.6,w:.55,h:.26,y:.5},{z:-7.0,w:.3,h:.12,y:.6}],[[0,1],[1,0],[0,-1],[-1,0]]));
+    cockpit.set(0,.98,-9.0);tips=[new V3(5.6,0,13),new V3(-5.6,0,13)];
+  }else if(id==='TB2'){
+    paint=skinMat('pTB2',{color:'#b4bbc0',roughness:.5,metalness:.15},{top:[4.6,-.35,.24],side:[.0,.6,.26],pl:.16});
+    P.paint.push(loft([{z:-3.35,w:.08,h:.08},{z:-3.2,w:.26,h:.27},{z:-2.8,w:.37,h:.4,hb:.36},{z:-1.6,w:.42,h:.46,hb:.4},{z:.6,w:.4,h:.42,hb:.38},{z:1.9,w:.28,h:.3,hb:.26},{z:2.65,w:.12,h:.12}],E(2,20)));
+    const sb=new THREE.SphereGeometry(.19,16,12);sb.translate(0,-.42,-2.2);P.dark.push(sb);P.dark.push(cyl(.06,.06,.2,0,-.28,-2.2,'y',8));
+    for(const s of [1,-1]){
+      W([{x:.25,le:-.85,te:.2,y:.42,t:.16},{x:6.1,le:-.6,te:-.05,y:.62,t:.07}],s<0,[{x0:1.1,x1:3.4,f:.3,k:'flap'},{x0:3.4,x1:5.8,f:.3,k:'ail'}]);
+      P.paint.push(loft([{z:-.95,w:.04,h:.04,x:s*1.25,y:.47},{z:-.6,w:.09,h:.09,x:s*1.25,y:.47},{z:3.1,w:.08,h:.08,x:s*1.25,y:.47},{z:3.45,w:.03,h:.03,x:s*1.25,y:.47}],E(2,10)));
+      TL([{x:0,le:2.45,te:3.4,t:.14},{x:1.0,le:2.85,te:3.45,t:.06}],s*1.25,.47,s>0?3.79:2.494,[{x0:.06,x1:.96,f:.4,k:'rv'}]);
+      PY.push(new V3(s*2.4,.18,-.4),new V3(s*3.4,.22,-.4));
+    }
+    P.dark.push(cyl(.12,.03,.35,0,0,2.82,'z',12));
+    prop=new THREE.Group();prop.position.set(0,0,3.0);
+    {const bl=[];for(const a of [0,Math.PI]){const g=box(.11,.72,.03,0,.4,0);g.rotateY(.35);g.rotateZ(a);bl.push(g)}prop.add(new THREE.Mesh(mergeGeometries(bl.map(prep)),M('propBlade',{color:'#1c1e20',roughness:.55,metalness:.2})));
+     const disc=new THREE.Mesh(new THREE.CircleGeometry(.78,32),new THREE.MeshBasicMaterial({color:'#9aa0a4',transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));prop.add(disc);prop.userData.disc=disc}
+    cockpit.set(0,.15,-3.5);tips=[new V3(6.1,.62,-.3),new V3(-6.1,.62,-.3)];
   }else if(id==='RV31'){
-    paint=M('pRV',{color:'#5a6873',roughness:.55,metalness:.3});
+    paint=skinMat('pRV',{color:'#5a6873',roughness:.55,metalness:.3},{top:[4.4,2.6,.55],i1:'#5a2e2b',i2:'#b07a6c'});
     P.paint.push(loft([{z:-10.5,w:.04,h:.04},{z:-9.5,w:.3,h:.3},{z:-8,w:.55,h:.55,hb:.45},{z:-6.3,w:.72,h:.8,hb:.55},{z:-4.6,w:.85,h:.82,hb:.62},{z:-3,w:1.1,h:.62,hb:.7},{z:-1,w:1.5,h:.52,hb:.72},{z:2,w:1.75,h:.5,hb:.72},{z:5,w:1.65,h:.46,hb:.66},{z:7.6,w:1.2,h:.42,hb:.55},{z:9,w:1.0,h:.4,hb:.48}],E(2.2,24)));
     for(const s of [1,-1]){
       P.paint.push(loft([{z:-3.2,w:.55,h:.5,x:s*.95,y:-.85},{z:0,w:.6,h:.55,x:s*.95,y:-.85},{z:3.5,w:.5,h:.45,x:s*.85,y:-.7}],E(4,14),{capS:false}));
@@ -760,7 +914,7 @@ function buildAircraft(id,opt={}){
       P.paint.push(wing([{x:.9,le:-5.6,te:-4.0,y:.15,t:.12},{x:2.9,le:-4.5,te:-3.9,y:.15,t:.04}],s<0));
       P.paint.push(wing([{x:1.2,le:6.5,te:9.2,y:-.05,t:.2},{x:4.2,le:8.6,te:9.6,y:-.05,t:.07}],s<0));
       P.mark.push(tail([{x:0,le:4.6,te:8.6,t:.28},{x:3.4,le:7.4,te:8.9,t:.08}],s*1.6,.35,s*.26));
-      noz.push({x:s*.85,y:0,z:9,r:.56,len:1.1});
+      noz.push({x:s*.85,y:0,z:9,r:.56,len:1.1,petal:true});
     }
     P.glass.push(canopy(-7.4,-4.2,.55,.45,.62));cockpit.set(0,1.1,-6);tips=[new V3(7.2,0,4.4),new V3(-7.2,0,4.4)];
   }else if(id==='DRONE'){
@@ -772,34 +926,71 @@ function buildAircraft(id,opt={}){
   }
   const grp=new THREE.Group();
   const markMat=id==='DRONE'?M('droneWhite',{color:'#e9ecee',roughness:.45,metalness:.1}):id==='RV31'?M('markRV',{color:'#6b4a44',roughness:.55,metalness:.3}):M('mark_'+id,{color:'#7a838b',roughness:.5,metalness:.35});
-  for(const [k,mat] of [['paint',opt.paint||paint],['dark',dark],['mark',markMat]]){const m=meshFrom(P[k],mat);if(m)grp.add(m)}
-  const cn=meshFrom(P.glass,glass,false);if(cn){grp.add(cn)}
+  const MAT={paint:opt.paint||paint,dark,mark:markMat};
+  // swing-wing groups (merged into the airframe when static)
+  for(const k in SW){const sw=SW[k];if(ST){for(const m in sw.L)P[m].push(...sw.L[m]);continue}
+    const g=new THREE.Group();g.position.copy(sw.p);for(const m in sw.L){const me=meshFrom(sw.L[m],MAT[m]);if(me){me.position.copy(sw.p).negate();g.add(me)}}grp.add(g);sw.g=g}
+  for(const [k,mat] of Object.entries(MAT)){const m=meshFrom(P[k],mat);if(m)grp.add(m)}
+  const cn=meshFrom(P.glass,glass,false);if(cn){cn.renderOrder=2;grp.add(cn)}
+  // pilots sit inside the canopy mesh so they hide with it in cockpit view
+  if(cn&&crew.length&&!ST){const L={helmet:[],visor:[],suit:[],seat:[]};crew.forEach(c=>pilotParts(c,L));
+    for(const [k,mat] of [['helmet',M('helmet',{color:'#bdbdb6',roughness:.4,metalness:.1})],['visor',M('visor',{color:'#121820',roughness:.05,metalness:.9})],['suit',M('suit',{color:'#4c5442',roughness:.9,metalness:0})],['seat',dark]]){const m=meshFrom(L[k],mat,false);if(m)cn.add(m)}}
+  // movable control surfaces
+  const surf=[];
+  for(const s of MV){const par=s.parent?SW[s.parent]:null,pv=new THREE.Group();pv.position.copy(s.a);if(par)pv.position.sub(par.p);
+    const m=new THREE.Mesh(mergeGeometries([prep(s.g)]),MAT[s.mat]);m.position.copy(s.a).negate();m.castShadow=true;m.receiveShadow=true;pv.add(m);(par?par.g:grp).add(pv);
+    const ax=s.b.clone().sub(s.a).normalize();if(s.k==='rud'||s.k==='rv'){if(ax.y<0)ax.negate()}else if(ax.x<0)ax.negate();
+    surf.push({pv,ax,k:s.k,side:s.side,cur:0})}
+  if(prop){grp.add(prop)}
+  // external stores on pylons
+  const pylons=[];
+  if(PY.length&&!ST){if(!pylonTpl)pylonTpl=buildMissile(false);const sc=id==='TB2'?.5:.92,pm=M('pylon',{color:'#9aa1a6',roughness:.5,metalness:.4});
+    for(const p of PY){const ms=pylonTpl.clone();ms.scale.setScalar(sc);ms.position.copy(p);grp.add(ms);const py=new THREE.Mesh(box(.1,.3*sc,1.3*sc,p.x,p.y+.26*sc,p.z+.1),pm);grp.add(py);pylons.push({p:p.clone(),mesh:ms,t:0})}}
   const glows=[];
   for(const n of noz){
-    const ng=n.rect?box(n.rect[0],n.rect[1],n.len,n.x,n.y,n.z+n.len/2):cyl(n.r*.9,n.r,n.len,n.x,n.y,n.z+n.len/2,'z',18,true);
+    let ng;if(n.rect)ng=box(n.rect[0],n.rect[1],n.len,n.x,n.y,n.z+n.len/2);
+    else{ng=new THREE.CylinderGeometry(n.r*.88,n.r,n.len,n.petal?36:18,1,true);if(n.petal){const p=ng.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),a=Math.atan2(z,x),k=1+.035*Math.cos(a*16)*(p.getY(i)>0?1:.3);p.setX(i,x*k);p.setZ(i,z*k)}}ng.rotateX(Math.PI/2);ng.translate(n.x,n.y,n.z+n.len/2)}
     grp.add(new THREE.Mesh(ng,dark));
+    if(!n.rect){const rim=new THREE.TorusGeometry(n.r*.99,.035,6,32);rim.translate(n.x,n.y,n.z+.02);grp.add(new THREE.Mesh(rim,M('nozRim',{color:'#4b4744',roughness:.4,metalness:.85})))}
     const core=new THREE.Mesh(n.rect?new THREE.PlaneGeometry(n.rect[0]*.86,n.rect[1]*.7):new THREE.CircleGeometry(n.r*.82,18),coreMat);core.position.set(n.x,n.y,n.z+n.len*.55+.01);grp.add(core);
-    const cg=new THREE.ConeGeometry(n.r*.85,1,16,1,true);cg.rotateX(Math.PI/2);cg.translate(0,0,.5);
-    const gm=new THREE.Mesh(cg,glowMat.clone());gm.position.set(n.x,n.y,n.z+n.len);if(n.rect)gm.scale.set(n.rect[0]/n.r/1.7,n.rect[1]/n.r/1.7,1);gm.userData.sx=gm.scale.x;gm.userData.sy=gm.scale.y;gm.renderOrder=5;grp.add(gm);glows.push(gm);
+    if(ST)continue;
+    const cg=new THREE.ConeGeometry(n.r*.85,1,18,6,true);cg.rotateX(Math.PI/2);cg.translate(0,0,.5);
+    const gm=new THREE.Mesh(cg,flameMat());gm.position.set(n.x,n.y,n.z+n.len);if(n.rect)gm.scale.set(n.rect[0]/n.r/1.7,n.rect[1]/n.r/1.7,1);gm.renderOrder=5;gm.visible=false;grp.add(gm);glows.push(gm);
   }
   const bs=new THREE.Box3().setFromObject(grp),sz=bs.getSize(new V3());
-  grp.userData={id,glows,cockpit,tips,canopy:cn,radius:Math.max(sz.x,sz.z)*.5,length:sz.z,span:sz.x};
+  grp.userData={id,glows,cockpit,tips,canopy:cn,surf,pylons,prop,radius:Math.max(sz.x,sz.z)*.5,length:sz.z,span:sz.x,fixedGear:id==='TB2'};
+  if(swing&&!ST)grp.userData.swing={...swing,R:SW.R.g,L:SW.L.g,pR:SW.R.p,pL:SW.L.p,tipBase:tips.map(t=>t.clone()),sweep:swing.min};
   addGear(grp,id);
   return grp;
 }
-const GEAR={F15:{nz:-6,nb:-.55,mz:1.6,mx:1.35,mb:-.85,s:1.4,r:.38},F22:{nz:-6,nb:-.5,mz:1.8,mx:1.55,mb:-.62,s:1.4,r:.38},F35:{nz:-5,nb:-.5,mz:1.2,mx:1.35,mb:-.6,s:1.3,r:.36},F117:{nz:-6.2,nb:-.2,mz:2.4,mx:1.9,mb:-.22,s:1.5,r:.4},B2:{nz:-6.5,nb:-.8,mz:1.5,mx:4.6,mb:-.4,s:1.8,r:.5}};
+const GEAR={F15:{nz:-6,nb:-.55,mz:1.6,mx:1.35,mb:-.85,s:1.4,r:.38},F22:{nz:-6,nb:-.5,mz:1.8,mx:1.55,mb:-.62,s:1.4,r:.38},F35:{nz:-5,nb:-.5,mz:1.2,mx:1.35,mb:-.6,s:1.3,r:.36},F117:{nz:-6.2,nb:-.2,mz:2.4,mx:1.9,mb:-.22,s:1.5,r:.4},B2:{nz:-6.5,nb:-.8,mz:1.5,mx:4.6,mb:-.4,s:1.8,r:.5},
+  F14:{nz:-6.6,nb:-.55,mz:1.4,mx:2.1,mb:-.85,s:1.25,r:.42},MIG23:{nz:-5.6,nb:-.6,mz:.9,mx:1.45,mb:-.75,s:1.2,r:.36},NGF:{nz:-6.6,nb:-.42,mz:1.8,mx:1.4,mb:-.5,s:1.4,r:.38},HX1:{nz:-9,nb:-.2,mz:4.5,mx:2.3,mb:-.85,s:1.6,r:.5},TB2:{nz:-2.4,nb:-.35,mz:.35,mx:.85,mb:-.32,s:.68,r:.18}};
 function addGear(grp,id){
   const g=GEAR[id];if(!g){grp.userData.gearH=1.5;return}
   const cy=Math.min(g.nb,g.mb)-g.s-g.r,S=[],Wh=[];
-  const leg=(x,z,top,twin)=>{const len=top-(cy+g.r);S.push(cyl(.08,.11,len,x,top-len/2,z,'y',8));S.push(box(.06,len*.7,len*.5,x+(x>=0?.12:-.12),top-len*.35,z+.25));const w=dx=>{const c=new THREE.CylinderGeometry(g.r,g.r,.26,16);c.rotateZ(Math.PI/2);c.translate(x+dx,cy+g.r,z);Wh.push(c)};if(twin){w(-.19);w(.19)}else w(0)};
-  leg(0,g.nz,g.nb,id==='B2');leg(g.mx,g.mz,g.mb,id==='B2');leg(-g.mx,g.mz,g.mb,id==='B2');
+  const leg=(x,z,top,twin)=>{const len=top-(cy+g.r);S.push(cyl(.08,.11,len,x,top-len/2,z,'y',8));S.push(box(.06,len*.7,len*.5,x+(x>=0?.12:-.12),top-len*.35,z+.25));const w=dx=>{const c=new THREE.CylinderGeometry(g.r,g.r,g.r*.68,16);c.rotateZ(Math.PI/2);c.translate(x+dx,cy+g.r,z);Wh.push(c)};if(twin){w(-.19);w(.19)}else w(0)};
+  const tw=id==='B2'||id==='F14';leg(0,g.nz,g.nb,tw);leg(g.mx,g.mz,g.mb,id==='B2');leg(-g.mx,g.mz,g.mb,id==='B2');
   const gear=new THREE.Group();gear.add(meshFrom(S,M('strut',{color:'#a3a8ab',roughness:.35,metalness:.85})),meshFrom(Wh,M('tire',{color:'#18191b',roughness:.92,metalness:0})));
   grp.add(gear);grp.userData.gear=gear;grp.userData.gearH=-cy;
 }
-function setGear(grp,a){const g=grp.userData.gear;if(!g)return;g.visible=a>.02;g.scale.set(1,Math.max(.02,a),1);g.position.y=(1-a)*.3}
+function setGear(grp,a){const g=grp.userData.gear;if(!g)return;if(grp.userData.fixedGear)a=1;g.visible=a>.02;g.scale.set(1,Math.max(.02,a),1);g.position.y=(1-a)*.3}
 function setThrottleGlow(grp,thr){
-  const ab=clamp((thr-.82)/.18,0,1);
-  for(const g of grp.userData.glows){g.material.opacity=clamp(thr*.05+ab*.85,0,1)*(.85+Math.random()*.15);g.visible=g.material.opacity>.02;g.scale.z=.25+thr*.5+ab*3.6+Math.random()*.25*ab}
+  const ab=clamp((thr-.82)/.18,0,1),t=performance.now()/1000;
+  for(const g of grp.userData.glows){const u=g.material.uniforms,I=clamp(thr*.14+ab*.95,0,1.1)*(.9+Math.random()*.1);u.uI.value=I;u.uAB.value=ab;u.uT.value=t;g.visible=I>.03;g.scale.z=.3+thr*.6+ab*3.4+Math.random()*.25*ab}
+}
+// control surfaces, swing wings and propellers. st: {roll,pitch,yaw,spd,gear,thr}
+function animateAircraft(o,st,dt){
+  const u=o.userData;if(!u)return;dt=Math.min(dt,.1);
+  const sw=u.swing;
+  if(sw){let tgt=st.sweep??(sw.min+(sw.max-sw.min)*smooth(sw.v0,sw.v1,st.spd??200));if((st.gear||0)>.1)tgt=sw.min;
+    sw.sweep+=clamp(tgt-sw.sweep,-dt*.4,dt*.4);const d=sw.sweep-sw.min;sw.R.rotation.y=-d;sw.L.rotation.y=d;
+    for(let i=0;i<2;i++){const p=i?sw.pL:sw.pR;u.tips[i].copy(sw.tipBase[i]).sub(p).applyAxisAngle(UP,i?d:-d).add(p)}}
+  const R=st.roll||0,Pi=st.pitch||0,Y=st.yaw||0,G=st.gear||0;
+  for(const s of u.surf){let a=0;
+    switch(s.k){case'ail':a=-R*s.side*.38;break;case'flap':a=G*.6;break;case'flpr':a=-R*s.side*.3+G*.42;break;case'stab':a=-Pi*.26-R*s.side*.12;break;case'elev':a=-Pi*.3-R*s.side*.3;break;case'rud':a=Y*.42;break;case'rv':a=Y*.3-Pi*.25*s.side;break}
+    s.cur+=(a-s.cur)*damp(14,dt);s.pv.quaternion.setFromAxisAngle(s.ax,s.cur)}
+  if(u.prop){const w=10+(st.thr||0)*95;u.prop.rotation.z+=w*dt;u.prop.userData.disc.material.opacity=clamp((w-20)/80,0,.22)}
+  for(const p of u.pylons){if(p.t>0){p.t-=dt;if(p.t<=0)p.mesh.visible=true}}
 }
 function buildMissile(heavy){
   const r=heavy?.16:.1,L=heavy?3.8:2.9;const P=[],D=[];
@@ -841,20 +1032,21 @@ function buildShip(type){
     const T=F+2.4;P.gray.push(box(10,14,34,30,T+7,40),box(9,8,20,30,T+18,36),cyl(.9,1.3,18,30,T+31,34),box(12,.6,.6,30,T+36,34));
     P.dark.push(box(9.2,1.4,.3,30,T+19,25.8),box(.3,1.4,19,25.4,T+19,36),box(4,4,.3,34.5,T+15,22.8,.6),box(4,4,.3,25.5,T+15,22.8,-.6));
     P.gray.push(box(9,6,7,30,T+3,64));
-    const jets=[];for(let i=0;i<6;i++){const j=buildAircraft(i%2?'F35':'F15');j.position.set(-24+(i%3)*6,T+j.userData.gearH,95+Math.floor(i/3)*20+(i%3)*3);j.rotation.y=Math.PI*.78;j.scale.setScalar(.98);grp.add(j);jets.push(j)}
+    const jets=[];for(let i=0;i<6;i++){const j=buildAircraft(['F15','F35','F14','F15','F35','F14'][i],{static:true});j.position.set(-24+(i%3)*6,T+j.userData.gearH,95+Math.floor(i/3)*20+(i%3)*3);j.rotation.y=Math.PI*.78;j.scale.setScalar(.98);grp.add(j);jets.push(j)}
   }else{
     const s=type==='cruiser'?1:.88,T=F;
     P.gray.push(box(13*s,9,34*s,0,T+4.5,-8*s),box(10*s,6,14*s,0,T+12,-14*s),box(11*s,7,22*s,0,T+3.5,30*s),box(5.4*s,9.5,8*s,0,T+13,6*s,0,-.08));
     P.dark.push(box(10.3*s,1.2,.3,0,T+13.6,-21.1*s),box(4.4*s,.5,6.4*s,0,T+17.9,6.4*s),box(5,5,.3,4.2*s,T+8.5,-25.3*s,.5),box(5,5,.3,-4.2*s,T+8.5,-25.3*s,-.5),box(7*s,.3,10*s,0,T+.2,-34*s),box(6*s,.3,8*s,0,T+.2,46*s));
     P.gray.push(cyl(.7,1.1,22,0,T+26,-12*s),box(10,.4,.4,0,T+30,-12*s),box(6,.4,.4,0,T+34,-12*s));
     P.gray.push(new THREE.SphereGeometry(2.4,14,10).translate(0,T+10,34*s));
-    turret(P,0,T,-54*s,0,s);if(type==='cruiser')turret(P,0,T,62*s,Math.PI,s);
+    turret(P,0,T,-54*s,0,s);
+    {const z0=41*s+2,z1=L/2-2,zc=(z0+z1)/2;P.mark.push(box(B*1.7,.25,.9,0,T+.15,z0),box(.9,.25,z1-z0,B*.85,T+.15,zc),box(.9,.25,z1-z0,-B*.85,T+.15,zc),box(1.2,.26,8,-2.2,T+.16,zc),box(1.2,.26,8,2.2,T+.16,zc),box(3.2,.26,1.2,0,T+.16,zc))}
     P.gray.push(cyl(1.1,1.4,2.4,5.5*s,T+8.5,22*s),cyl(1.1,1.4,2.4,-5.5*s,T+8.5,-2*s));
-    if(type==='target'){P.mark.push(box(9,.25,9,0,T+.15,-38),box(9,.25,9,0,T+.15,48),box(12,.25,1.2,0,T+9.1,-8))}
+    if(type==='target'){P.mark.push(box(9,.25,9,0,T+.15,-38),box(12,.25,1.2,0,T+9.1,-8))}
   }
   for(const [k,mat] of [['gray',M('shipGray',{color:'#7c868d',roughness:.7,metalness:.2})],['dark',M('shipDark',{color:'#2b3035',roughness:.6,metalness:.3})],['mark',M('shipMark',{color:'#d8752e',roughness:.6,metalness:.1})]]){const m=meshFrom(P[k],mat);if(m)grp.add(m)}
   addWake(grp,L,B*(type==='carrier'?1.4:1));
-  grp.userData={L,B,F};
+  grp.userData={L,B,F,s:type==='cruiser'?1:.88};
   return grp;
 }
 
@@ -871,7 +1063,7 @@ function buildAirbase(b){
   P.gray.push(cyl(3.5,4.5,34,b.x+190,Y+17,b.z+620),box(12,6,12,b.x+190,Y+37,b.z+620));P.dark.push(box(12.4,3.5,12.4,b.x+190,Y+37.5,b.z+620));
   P.gray.push(box(10,22,10,b.x+170,Y+11,b.z-560));P.white.push(new THREE.SphereGeometry(11,18,12).translate(b.x+170,Y+29,b.z-560));
   for(const[m,mat] of [[P.gray,M('baseGray',{color:'#8b9091',roughness:.8,metalness:.2})],[P.dark,M('baseDark',{color:'#2c3033',roughness:.6,metalness:.3})],[P.white,M('baseWhite',{color:'#e6e8e6',roughness:.6})]]){const mm=meshFrom(m,mat);mm.castShadow=false;scene.add(mm)}
-  for(let i=0;i<4;i++){const j=buildAircraft(i<2?'F15':'F22');j.position.set(b.x+250,Y+.1+j.userData.gearH,b.z+30+i*45);j.rotation.y=-Math.PI/2;scene.add(j)}
+  for(let i=0;i<4;i++){const j=buildAircraft(['F15','MIG23','F22','NGF'][i],{static:true});j.position.set(b.x+250,Y+.1+j.userData.gearH,b.z+30+i*45);j.rotation.y=-Math.PI/2;scene.add(j)}
 }
 
 /* ---------- sound ---------- */
@@ -884,6 +1076,7 @@ const SND={
     const ns=c.createBufferSource();ns.buffer=nb;ns.loop=true;const bp=this.windBP=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=700;bp.Q.value=.6;this.wind=c.createGain();this.wind.gain.value=0;ns.connect(bp);bp.connect(this.wind);this.wind.connect(this.master);
     const nr=c.createBufferSource();nr.buffer=nb;nr.loop=true;const rl=c.createBiquadFilter();rl.type='lowpass';rl.frequency.value=180;this.roar=c.createGain();this.roar.gain.value=0;nr.connect(rl);rl.connect(this.roar);this.roar.connect(this.master);ns.start();nr.start();
     this.beep=c.createOscillator();this.beep.type='square';this.beepG=c.createGain();this.beepG.gain.value=0;const bl=c.createBiquadFilter();bl.type='lowpass';bl.frequency.value=2200;this.beep.connect(bl);bl.connect(this.beepG);this.beepG.connect(this.master);this.beep.start();
+    this.wh=c.createOscillator();this.wh.type='triangle';this.whG=c.createGain();this.whG.gain.value=0;const whf=c.createBiquadFilter();whf.type='bandpass';whf.frequency.value=3000;whf.Q.value=3;this.whF=whf;this.wh.connect(whf);whf.connect(this.whG);this.whG.connect(this.master);this.wh.start();
     this.warn=c.createOscillator();this.warn.type='square';this.warnG=c.createGain();this.warnG.gain.value=0;this.warn.connect(this.warnG);this.warnG.connect(this.master);this.warn.start();
   }catch(e){this.ctx=null}},
   resume(){if(this.ctx&&this.ctx.state==='suspended')this.ctx.resume()},
@@ -896,8 +1089,9 @@ const SND={
   update(dt,s){const c=this.ctx;if(!c)return;const on=settings.sound&&s.active,t=c.currentTime;
     this.master.gain.setTargetAtTime(on?.55:0,t,.08);if(!on)return;
     const thr=s.thr,ab=clamp((thr-.82)/.18,0,1);
-    this.o1.frequency.setTargetAtTime(48+thr*70,t,.2);this.o2.frequency.setTargetAtTime(49.5+thr*72,t,.2);this.engLP.frequency.setTargetAtTime(300+thr*1300+ab*1200,t,.2);this.eng.gain.setTargetAtTime(.05+thr*.06,t,.2);
-    this.roar.gain.setTargetAtTime(.05+ab*.5,t,.15);this.wind.gain.setTargetAtTime(clamp(s.spd/600,0,1)*.22+s.g*.012,t,.2);this.windBP.frequency.setTargetAtTime(400+s.spd*2,t,.3);
+    if(s.prop){this.o1.frequency.setTargetAtTime(34+thr*58,t,.2);this.o2.frequency.setTargetAtTime(68.6+thr*117,t,.2);this.engLP.frequency.setTargetAtTime(500+thr*1100,t,.2);this.eng.gain.setTargetAtTime(.07+thr*.08,t,.2);this.roar.gain.setTargetAtTime(.02,t,.15);this.whG.gain.setTargetAtTime(0,t,.2)}
+    else{this.o1.frequency.setTargetAtTime(48+thr*70,t,.2);this.o2.frequency.setTargetAtTime(49.5+thr*72,t,.2);this.engLP.frequency.setTargetAtTime(300+thr*1300+ab*1200,t,.2);this.eng.gain.setTargetAtTime(.05+thr*.06,t,.2);
+    this.roar.gain.setTargetAtTime(.05+ab*.5*(.75+Math.random()*.5),t,.05);this.wh.frequency.setTargetAtTime(1700+thr*2900,t,.35);this.whF.frequency.setTargetAtTime(1700+thr*2900,t,.35);this.whG.gain.setTargetAtTime(.006+thr*.016,t,.25)}this.wind.gain.setTargetAtTime(clamp(s.spd/600,0,1)*.22+s.g*.012,t,.2);this.windBP.frequency.setTargetAtTime(400+s.spd*2,t,.3);
     const ph=performance.now()/1000;
     let bv=0,bf=1000;if(s.locked){bf=1550;bv=.05}else if(s.locking){bf=1000;bv=(ph*7%1)<.5?.04:0}
     this.beep.frequency.setTargetAtTime(bf,t,.01);this.beepG.gain.setTargetAtTime(bv,t,.005);
@@ -916,10 +1110,22 @@ function inPoly(x,z,pts){let c=false;for(let i=0,j=pts.length-1;i<pts.length;j=i
 const deckY=()=>carrier.userData.F+2.4;
 function toCarrier(p){carrier.updateMatrixWorld();return carrier.worldToLocal(p.clone())}
 function fromCarrier(l){carrier.updateMatrixWorld();return carrier.localToWorld(l.clone())}
+const FR_CARRIER={kind:'carrier',name:'空母',get obj(){return carrier},head:()=>CV.heading,vel:()=>CV.vel,deck:()=>deckY()};
+const FR_ESCORT={kind:'ship',name:'護衛艦',get obj(){return escort},head:()=>CV.heading,vel:()=>CV.vel,deck:()=>escort.userData.F,get u(){return escort.userData}};
+function shipFrame(e){return e._fr||(e._fr={kind:'ship',name:e.name,ship:e,obj:e.obj,head:()=>e.heading,vel:()=>e.vel,deck:()=>e.pos.y+e.F,u:{L:e.L,B:e.B,F:e.F,s:e.obj.userData.s||.88}})}
+function frLocal(fr,p){fr.obj.updateMatrixWorld();return fr.obj.worldToLocal(p.clone())}
+function frWorld(fr,l){fr.obj.updateMatrixWorld();return fr.obj.localToWorld(l.clone())}
+function padZone(u){return{z0:41*u.s+1,z1:u.L/2+3,x:u.B+2.5}}
+function inPad(fr,l){const z=padZone(fr.u);return l.z>z.z0&&l.z<z.z1&&Math.abs(l.x)<z.x}
+function shipFrames(){const a=[FR_ESCORT];for(const t of T)if(t.type==='ship'&&t.hp>0&&!t.dead)a.push(shipFrame(t));return a}
 function surfaceAt(p){
-  const b=ISLANDS[0].base;if(Math.abs(p.x-b.x)<b.w-20&&Math.abs(p.z-b.z)<b.l-20)return{type:'base',y:16.1};
-  const l=toCarrier(p);if(inPoly(l.x,l.z,DECK))return{type:'carrier',y:deckY(),local:l};return null;
+  for(const b of BASES)if(Math.abs(p.x-b.x)<b.w-20&&Math.abs(p.z-b.z)<b.l-20)return{type:'base',y:16.1,frame:null,base:b};
+  const l=toCarrier(p);if(inPoly(l.x,l.z,DECK))return{type:'carrier',y:deckY(),local:l,frame:FR_CARRIER};
+  for(const fr of shipFrames()){if(Math.abs(p.x-fr.obj.position.x)>110||Math.abs(p.z-fr.obj.position.z)>110)continue;const sl=frLocal(fr,p);if(inPad(fr,sl))return{type:'ship',y:fr.deck(),local:sl,frame:fr}}
+  return null;
 }
+// ship collision that leaves the stern landing pad open
+function shipCollide(s,p){if(!hitShipVolume(s,p,2))return false;const fr=shipFrame(s),l=frLocal(fr,p);if(inPad(fr,l)&&l.y>s.F-1)return false;return true}
 function carrierCollide(p){const l=toCarrier(p),dy=deckY();if(Math.abs(l.z)>175||Math.abs(l.x)>42)return false;if(inPoly(l.x,l.z,DECK)&&l.y<dy-.8&&l.y>-12)return true;if(Math.abs(l.x-30)<6.5&&Math.abs(l.z-40)<18&&l.y<dy+30)return true;return false}
 function updateCarrier(dt){const per=Math.PI*2/CV.turn,t=(Date.now()/1000)%per,R=CV.speed/CV.turn;CV.heading=-CV.turn*t;const h=CV.heading;CV.vel.set(Math.sin(h),0,-Math.cos(h)).multiplyScalar(CV.speed);carrier.position.set(-400+R*Math.cos(h),0,6200+R*Math.sin(h));carrier.rotation.y=-CV.heading;carrier.updateMatrixWorld();escort.position.copy(fromCarrier(new V3(110,0,140)));escort.rotation.y=-CV.heading}
 function buildWorld(){
@@ -952,13 +1158,21 @@ function updatePlayer(dt){
   P.gearAnim=clamp(P.gearAnim+(P.gear?1:-1)*dt/2.4,0,1);setGear(P.obj,P.gearAnim);
   if(P.ground)updateGround(dt);else flyAir(dt);
   if(!P.alive)return;
-  P.obj.position.copy(P.pos);P.obj.quaternion.copy(P.q);setThrottleGlow(P.obj,P.throttle);
-  P.gunCD-=dt;P.flareCD-=dt;if(P.invuln>0)P.invuln-=dt;
+  P.obj.position.copy(P.pos);P.obj.quaternion.copy(P.q);setThrottleGlow(P.obj,P.throttle);animateAircraft(P.obj,{roll:input.roll,pitch:input.pitch,yaw:input.yaw,spd:P.speed,gear:P.gearAnim,thr:P.throttle},dt);
+  P.gunCD-=dt;P.flareCD-=dt;P.mslCD=(P.mslCD||0)-dt;if(P.invuln>0)P.invuln-=dt;
   if((keys.Space||touch.gun))fireGun();
   if(!P.ground&&P.pos.y<34&&P.speed>40&&terrainH(P.pos.x,P.pos.z)<0)spray(dt);
   if(!P.ground){P.airT=(P.airT??99)+dt;if(settings.easy&&P.gear&&P.airT>4&&P.airT<4.1&&P.vel.y>0){P.gear=false;notice('ギアを自動で格納')}}
   // wingtip vortices at high G, contrails at altitude
   P.trailT-=dt;if(!P.ground&&P.trailT<=0&&(Math.abs(P.g)>5||P.pos.y>8500)){P.trailT=.03;for(const t of P.obj.userData.tips){const w=t.clone().applyQuaternion(P.q).add(P.pos);smoke.emit({pos:w,vel:P.vel.clone().multiplyScalar(.05),life:P.pos.y>8500?4:1.1,s0:.6,s1:P.pos.y>8500?9:3,a0:.35,c:[2.1,2.1,2.15],spin:0})}}
+  // condensation over the wings at high G, vapor cone near Mach 1
+  if(!P.ground&&P.pos.y<7500){const ag=Math.abs(P.g),u=P.obj.userData;P.vapT=(P.vapT||0)-dt;P.vcT=(P.vcT||0)-dt;
+    if(P.vapT<=0&&ag>5.2&&P.speed>110){P.vapT=.03;const k=clamp((ag-5.2)/3,0,1),rr=u.radius;
+      for(const t of u.tips)for(let i=0;i<3;i++){const f=rand(.2,.85),w=_v2.copy(t).multiplyScalar(f);w.y+=.35+rr*.02;w.z-=rand(.5,2.2);w.applyQuaternion(P.q).add(P.pos);
+        smoke.emit({pos:w.clone(),vel:P.vel.clone().multiplyScalar(.86),life:.16,s0:1.2+rr*.12,s1:2.6+rr*.2,a0:.1+.22*k,c:[2.4,2.4,2.45],spin:0})}}
+    const mk=1-Math.abs(P.speed-338)/22;
+    if(P.vcT<=0&&mk>0){P.vcT=.025;const rr=u.radius*.3,z=-u.length*.08;for(let i=0;i<10;i++){const a=i/10*6.283+Math.random()*.4,w=_v2.set(Math.cos(a)*rr,Math.sin(a)*rr*.8+.3,z).applyQuaternion(P.q).add(P.pos);
+        smoke.emit({pos:w.clone(),vel:P.vel.clone().multiplyScalar(.9),life:.12,s0:2.2,s1:3.8,a0:.16*mk,c:[2.3,2.3,2.35],spin:0})}}}
   // damage smoke
   if(P.hp<55){P.dmgSmoke-=dt;if(P.dmgSmoke<=0){P.dmgSmoke=.04;const b=_v2.set(0,0,P.obj.userData.length*.4).applyQuaternion(P.q).add(P.pos);smoke.emit({pos:b.clone(),vel:P.vel.clone().multiplyScalar(.1),life:2.4,s0:2,s1:14,a0:P.hp<28?.7:.4,c:P.hp<28?[.35,.33,.32]:[.9,.9,.9],rise:2});if(P.hp<28)fire.emit({pos:b.clone(),vel:P.vel.clone().multiplyScalar(.2),life:.25,s0:2.5,s1:.5,a0:.9,c:[3,1.4,.5]})}}
 }
@@ -984,32 +1198,78 @@ function flyAir(dt){
   const grip=1.4+3.2*auth;P.velDir.lerp(fwd,damp(grip,dt)).normalize();
   const lift=clamp(spd/(ac.stall*1.25),0,1)**2;P.sink=lerp(P.sink,(1-lift)*55,damp(1.2,dt));
   P.vel.copy(P.velDir).multiplyScalar(P.speed);P.vel.y-=P.sink;
+  landingAssist(dt);
   P.pos.addScaledVector(P.vel,dt);
   // contact with landable surfaces
   const gh=P.obj.userData.gearH,surf=surfaceAt(P.pos);
-  if(surf&&P.pos.y-gh<=surf.y&&P.pos.y>surf.y-6){touchdown(surf);return}
+  let cap=0;if(surf&&surf.type==='ship'&&P.gearAnim>.5){const rv=_v2.copy(P.vel).sub(surf.frame.vel()).setY(0).length();if(rv<P.ac.stall*1.9)cap=22}
+  if(surf&&P.pos.y-gh<=surf.y+cap&&P.pos.y>surf.y-6){touchdown(surf);return}
   if(carrierCollide(P.pos)){crashPlayer('空母の船体に衝突しました');return}
   const gy=terrainH(P.pos.x,P.pos.z);
-  if(P.pos.y<Math.max(gy,0)+1.5){crashPlayer(gy>0?'地表に激突しました':'海面に墜落しました');return}
-  for(const s of shipsAll()){if(hitShipVolume(s,P.pos,2)){crashPlayer('艦艇に衝突しました');return}}
+  if(P.pos.y<Math.max(gy,0)+Math.min(1.5,gh*.7)){crashPlayer(gy>0?'地表に激突しました':'海面に墜落しました');return}
+  checkRam(dt);
 }
+// --- easier landings: auto gear, wing leveller and sink-rate limiter close to a landing surface ---
+function nearLanding(){
+  const gh=P.obj.userData.gearH;let best=null;
+  const cs=[];for(const b of BASES)cs.push({p:new V3(b.x,16.1,b.z),y:16.1,r:b.l+1500});
+  cs.push({p:carrier.position,y:deckY(),r:2200});for(const fr of shipFrames())cs.push({p:fr.obj.position,y:fr.deck(),r:1600});
+  for(const c of cs){const d=Math.hypot(P.pos.x-c.p.x,P.pos.z-c.p.z);if(d<c.r){const agl=P.pos.y-gh-c.y;if(!best||agl<best.agl)best={agl,d,y:c.y}}}
+  return best;
+}
+function landingAssist(dt){
+  P.laT=(P.laT||0)-dt;if(P.laT<=0){P.laT=.25;P.nearL=nearLanding()}
+  const n=P.nearL;if(!n)return;
+  if(!P.gear&&P.vel.y<0&&n.agl<160&&n.agl>-5&&P.speed<P.ac.stall*1.9&&(P.airT??99)>6){P.gear=true;notice('着陸が近いのでギアを自動で下ろしました','amber');SND.tone(220,.25,.08,'square',160)}
+  if(P.gearAnim<.5||n.agl>45||n.agl<-4)return;
+  // level the wings
+  const fwd=_v1.set(0,0,-1).applyQuaternion(P.q),up=_v2.set(0,1,0).applyQuaternion(P.q),rt=_v3.crossVectors(fwd,UP);
+  if(rt.lengthSq()>1e-3){rt.normalize();const bank=Math.atan2(up.dot(rt),up.y);if(Math.abs(input.roll)<.5){_q1.setFromAxisAngle(fwd,-bank*Math.min(1,2.5*dt));P.q.premultiply(_q1).normalize()}}
+  // flare: limit descent rate near the surface
+  const lim=lerp(4,9,clamp(n.agl/45,0,1));if(-P.vel.y>lim){P.vel.y=-lim;P.sink=Math.min(P.sink,lim)}
+}
+// --- ramming ---
+function checkRam(dt){
+  if(!P.alive||P.ground)return;P.ramT=Math.max(0,(P.ramT||0)-dt);
+  for(const t of T){
+    if(t.hp<=0||t.falling||t.dead||t===P.ramIgnore&&P.ramT>0)continue;
+    if(t.type==='air'){
+      if(t.remote&&(!t.flying||t.friendly||mission.noWeapons))continue;
+      if(t.pos.distanceTo(P.pos)>t.radius+P.radius*.5)continue;
+      P.ramIgnore=t;P.ramT=1;
+      if(t.remote){if(NET.active)NET.send({t:'hit',to:t.id,d:100,ram:1});t.hp=0}else killTarget(t,true);
+      explode(P.pos.clone(),1.4,true);shake(1);notice(`体当たり — ${t.name} を撃破`,'amber');
+      damagePlayer(25,'体当たりの衝撃で大破しました');if(!P.alive)return;
+    }else if(t.type==='ship'&&shipCollide(t,P.pos)){
+      P.ramIgnore=t;P.ramT=1.6;
+      damageTarget(t,260,'ram');explode(P.pos.clone(),2,true);shake(1.2);if(t.hp>0)notice(`体当たり — ${t.name} に大打撃`,'amber');
+      damagePlayer(35,'艦艇への体当たりで大破しました');if(!P.alive)return;
+      P.velDir.y=Math.max(P.velDir.y,.25);P.velDir.normalize();
+    }
+  }
+}
+const LAND_LIM={base:14,carrier:15,ship:14};
 function touchdown(surf){
   const fwd=new V3(0,0,-1).applyQuaternion(P.q),up=new V3(0,1,0).applyQuaternion(P.q),right=new V3().crossVectors(fwd,UP).normalize();
-  const pitch=Math.asin(clamp(fwd.y,-1,1)),bank=Math.asin(clamp(up.dot(right),-1,1)),sink=-P.vel.y,car=surf.type==='carrier',lim=car?8.5:6.5;
-  let fail=null;
-  if(P.gearAnim<.95)fail='着陸装置（ギア）を出さずに接地しました';
-  else if(sink>lim)fail=`降下率 ${sink.toFixed(1)} m/s で叩きつけて大破しました（上限 ${lim} m/s）`;
-  else if(Math.abs(bank)>.3||up.y<.8)fail='機体を傾けたまま接地しました';
-  else if(pitch<-.1)fail='機首から接地しました';
+  const pitch=Math.asin(clamp(fwd.y,-1,1)),bank=Math.asin(clamp(up.dot(right),-1,1)),sink=surf.type==='ship'?Math.min(-P.vel.y,6):-P.vel.y,fr=surf.frame,lim=LAND_LIM[surf.type];
+  let fail=null,belly=false;
+  if(sink>lim)fail=`降下率 ${sink.toFixed(1)} m/s で叩きつけて大破しました（上限 ${lim} m/s）`;
+  else if(Math.abs(bank)>.6||up.y<.55)fail='機体を大きく傾けたまま接地しました';
+  else if(pitch<-.3)fail='急角度で機首から接地しました';
+  else if(P.gearAnim<.5)belly=true;
   if(fail){crashPlayer(fail);return}
   const gh=P.obj.userData.gearH,hv=P.vel.clone().setY(0);let local=P.pos.clone(),psi=Math.atan2(-fwd.x,-fwd.z);
-  if(car){local=toCarrier(P.pos);hv.sub(CV.vel);psi+=CV.heading}
+  if(fr){local=frLocal(fr,P.pos);hv.sub(fr.vel());psi+=fr.head()}
   local.y=surf.y+gh;
-  P.ground={frame:car?carrier:null,local,psi,gp:clamp(pitch,0,.2),arrest:false,cat:null};
+  P.ground={frame:fr,local,psi,gp:clamp(pitch,0,.2),arrest:false,cat:null};
+  if(belly){P.gear=true;P.gearAnim=1}
   P.speed=Math.max(0,hv.length());P.ang.set(0,0,0);P.sink=0;P.g=1;
   SND.noiseHit(.35,700,90,.45);shake(.3);
-  if(sink>4.5){damagePlayer(6);notice('ハードランディング','amber')}
-  if(car){if(local.z>25&&local.z<158&&Math.abs(local.x)<32){P.ground.arrest=true;notice('着艦 — アレスティングワイヤーを捕捉','amber')}else notice('ボルター — 推力を上げて再離陸せよ','red')}
+  if(belly){damagePlayer(20,'胴体着陸で大破しました');notice('胴体着陸 — 機体が損傷','red')}
+  else if(sink>9){damagePlayer(5);notice('ハードランディング','amber')}
+  if(!P.alive)return;
+  if(surf.type==='carrier'){P.ground.arrest=true;P.ground.stopD=45;notice('着艦 — アレスティングワイヤーを捕捉','amber')}
+  else if(surf.type==='ship'){P.ground.arrest=true;P.ground.stopD=14;notice(`${fr.name} に着艦 — 制動フックで停止`,'amber')}
   else notice('接地 — 推力を絞って減速（B でブレーキ）','amber');
 }
 function updateGround(dt){
@@ -1021,23 +1281,26 @@ function updateGround(dt){
   P.braking=keys.KeyB||touch.brake||P.throttle<.04;
   let dec=(P.speed>0?.3:0)+drag+(P.braking&&P.speed>0?7:0);
   let acc=thrust-dec;
-  if(G.arrest){acc=-(P.speed*P.speed/(2*45)+6);if(P.speed<.6){G.arrest=false;G.trapped=true;notice('停止 — ワイヤー解放','amber')}}
-  if(G.cat){if(!G.cat.launched){acc=0;P.speed=0;if(P.throttle>=.8){G.cat.t+=dt;if(G.cat.t>1.2){G.cat.launched=true;notice('カタパルト射出','amber');SND.noiseHit(2.2,1400,180,.6);shake(.6)}}else G.cat.t=0}else if(G.local.z>G.cat.endZ)acc+=34}
-  P.speed=Math.max(0,P.speed+acc*dt);
+  if(G.frame&&G.frame.ship&&(G.frame.ship.hp<=0||G.frame.ship.dead)){crashPlayer('乗っていた艦が撃沈されました');return}
+  if(G.arrest){acc=-(P.speed*P.speed/(2*(G.stopD||45))+6);if(P.speed<.6){G.arrest=false;G.trapped=true;P.speed=0;acc=0;G.cat={t:0,launched:false,instant:true};notice('停止 — 推力80%以上で射出して再出撃','amber')}}
   const vr=ac.stall*1.05,vlof=ac.stall*1.2;
+  if(G.cat){if(!G.cat.launched){acc=0;P.speed=0;if(P.throttle>=.8){G.cat.t+=dt;if(G.cat.t>1.2){G.cat.launched=true;notice('カタパルト射出','amber');SND.noiseHit(2.2,1400,180,.6);shake(.6);if(G.cat.instant){P.speed=vlof*1.25;G.gp=.2;if(G.frame&&G.frame.ship){P.ramIgnore=G.frame.ship;P.ramT=5}}}}else G.cat.t=0}else if(!G.cat.instant&&G.local.z>G.cat.endZ)acc+=34}
+  P.speed=Math.max(0,P.speed+acc*dt);
   if(P.speed>vr&&input.pitch>.2)G.gp=Math.min(.21,G.gp+.25*dt);else G.gp=Math.max(0,G.gp-.25*dt);
-  G.local.addScaledVector(_v1.set(-Math.sin(G.psi),0,-Math.cos(G.psi)),P.speed*dt);G.local.y=(G.frame?deckY():16.1)+gh;
-  P.q.setFromEuler(new THREE.Euler(G.gp,G.frame?G.psi-CV.heading:G.psi,0,'YXZ'));
-  P.pos.copy(G.frame?fromCarrier(G.local):G.local);
+  G.local.addScaledVector(_v1.set(-Math.sin(G.psi),0,-Math.cos(G.psi)),P.speed*dt);
+  if(G.frame&&G.frame.kind==='ship'&&!(G.cat&&G.cat.launched)){const z=padZone(G.frame.u),bx=G.frame.u.B-1.5,lx=G.local.x,lz=G.local.z;G.local.x=clamp(lx,-bx,bx);G.local.z=clamp(lz,z.z0+3,G.frame.u.L/2-3);if(G.local.x!==lx||G.local.z!==lz){P.speed*=Math.exp(-6*dt);if(G.arrest&&P.speed<4)P.speed=0}}G.local.y=(G.frame?G.frame.deck()-G.frame.obj.position.y:16.1)+gh;
+  P.q.setFromEuler(new THREE.Euler(G.gp,G.frame?G.psi-G.frame.head():G.psi,0,'YXZ'));
+  P.pos.copy(G.frame?frWorld(G.frame,G.local):G.local);
   const fwd=_v2.set(0,0,-1).applyQuaternion(P.q);
-  P.velDir.copy(fwd);P.vel.copy(fwd).multiplyScalar(P.speed);if(G.frame)P.vel.add(CV.vel);P.g=1;
+  P.velDir.copy(fwd);P.vel.copy(fwd).multiplyScalar(P.speed);if(G.frame)P.vel.add(G.frame.vel());P.g=1;
   if(P.speed>8&&P.braking&&Math.random()<.3)smoke.emit({pos:P.pos.clone().setY(P.pos.y-gh+.3),vel:new V3(0,1,0),life:1,s0:1,s1:4,a0:.25,c:[1.6,1.6,1.6]});
-  const s2=surfaceAt(P.pos),off=!s2||(s2.type==='carrier')!==!!G.frame;
+  const s2=surfaceAt(P.pos),off=!s2||s2.frame!==G.frame;
   if((P.speed>vlof&&G.gp>.07)||off){
     P.ground=null;P.airT=0;P.speed=Math.max(P.speed,1);P.velDir.copy(fwd);P.sink=0;P.ang.set(0,0,0);P.pos.y+=.05;
     if(off&&!G.frame&&P.speed<vlof){crashPlayer('滑走路から逸脱しました');return}
-    if(off&&G.frame){P.speed=P.vel.length();notice(P.speed>ac.stall?'発艦 — G でギアを格納':'甲板から落下 — 速度不足','red')}
-    else notice('離陸 — G でギアを格納','amber');
+    if(off&&G.frame&&!(G.cat&&G.cat.instant)){P.speed=P.vel.length();notice(P.speed>ac.stall?'発艦 — G でギアを格納':'甲板から落下 — 速度不足','red')}
+    else if(G.frame)notice('発艦 — G でギアを格納','amber');
+    else if(!G.frame)notice('離陸 — G でギアを格納','amber');
   }
 }
 function spray(dt){
@@ -1066,7 +1329,7 @@ function shipsAll(){return T.filter(t=>t.type==='ship'&&t.hp>0)}
 function hitShipVolume(s,p,pad=0){const lx=p.x-s.pos.x,lz=p.z-s.pos.z,c=Math.cos(-s.heading),sn=Math.sin(-s.heading);const x=lx*c-lz*sn,z=lx*sn+lz*c;return Math.abs(x)<s.B+pad&&Math.abs(z)<s.L/2+pad&&p.y<s.F+(s.friendly?24:22)+pad&&p.y>-8}
 function spawnAir(kind,pos,fwd,o={}){
   const obj=kind==='drone'?droneTemplate.clone():rvTemplate.clone();
-  obj.traverse(m=>{if(m.material===glowMat||m.material?.blending===THREE.AdditiveBlending){m.material=m.material.clone();m.material.opacity=.35}});
+  obj.traverse(m=>{if(m.material?.uniforms?.uI){m.material=m.material.clone();m.material.uniforms.uI.value=.35;m.material.uniforms.uAB.value=0;m.visible=true}});
   scene.add(obj);
   const e=Object.assign({type:'air',kind,obj,pos:pos.clone(),fwd:fwd.clone().normalize(),vel:new V3(),q:new Q(),bank:0,speed:kind==='drone'?150:280,hp:kind==='drone'?60:150,maxHp:kind==='drone'?60:150,radius:kind==='drone'?5:9,name:'',falling:false,turn:kind==='drone'?.42:.33,gunT:0,burst:0,mslCD:rand(9,16),lockT:0,jinkT:0,jink:new V3(),evadeT:0,smokeT:0,t:Math.random()*10},o);
   T.push(e);return e;
@@ -1130,7 +1393,7 @@ function updateShip(e,dt){
 }
 
 /* ---------- weapons ---------- */
-const WPN=[{label:'小型ミサイル',range:4500,cone:.24,lock:.5,speed:830,turn:.85,life:7,dmg:75,decoy:.45},{label:'大型ミサイル',range:9500,cone:.14,lock:1.2,speed:720,turn:.42,life:15,dmg:175,decoy:.25}];
+const WPN=[{label:'ミサイル',range:7500,cone:.22,lock:.5,speed:820,turn:.8,life:11,dmg:130,decoy:.35},{label:'大型ミサイル',range:9500,cone:.14,lock:1.2,speed:720,turn:.42,life:15,dmg:175,decoy:.25}];
 let mslTemplates;
 function fireGun(){
   if(P.gunCD>0||!P.alive||mission.noWeapons)return;if(P.ammo.gun<=0&&!mission.infinite){return}
@@ -1144,16 +1407,14 @@ function fireEnemyBullet(e){const sp=new V3(rand(-1,1),rand(-1,1),rand(-1,1)).mu
 function launchMissile(owner,pos,dir,spd,target,heavy,net){
   const w=owner==='player'||net?WPN[heavy?1:0]:{speed:560,turn:.5,life:13,dmg:38};
   const obj=mslTemplates[heavy?1:0].clone();scene.add(obj);
-  const down=owner==='player'?_v1.set(heavy?0:1.4,-1.2,0).applyQuaternion(P.q):ZERO;
-  const m={owner,obj,pos:pos.clone().add(down),dir:dir.clone(),speed:spd+20,max:w.speed,turn:w.turn,life:w.life,dmg:w.dmg,target,age:0,trailD:0,decoyChecked:false,heavy,vel:new V3()};
-  if(net){m.netId=net.mid;m.from=net.from;m.dmg=heavy?95:62}
+  let down=ZERO;if(owner==='player'){const py=P.obj.userData.pylons;if(py&&py.length){P.pyI=((P.pyI||0)+1)%py.length;const pp=py[P.pyI];down=_v1.copy(pp.p).applyQuaternion(P.q);pp.mesh.visible=false;pp.t=2.2}else down=_v1.set(0,-1.6,1).applyQuaternion(P.q)}
+  const m={owner,obj,pos:pos.clone().add(down),dir:dir.clone(),speed:spd+20,max:owner==='player'?Math.max(w.speed,spd+200):w.speed,turn:w.turn,life:w.life,dmg:w.dmg,target,age:0,trailD:0,decoyChecked:false,heavy,vel:new V3()};
+  if(net){m.netId=net.mid;m.from=net.from;m.dmg=heavy?95:80}
   else if(owner==='player'&&mission.mp&&NET.active){m.netId=NET.myId+'.'+(++NET.mid);NET.send({t:'m',mid:m.netId,p:NET.v(m.pos),d:NET.v(dir),sp:Math.round(spd),tg:target&&target.remote?target.id:null,hv:heavy?1:0})}
   missiles.push(m);SND.missile();return m;
 }
 function fireMissile(){
-  if(!P.alive||mission.over||mission.noWeapons)return;const key=P.weapon?'l':'s';
-  if(P.ammo[key]<=0&&!mission.infinite){notice(`${WPN[P.weapon].label}の残弾がありません`);return}
-  if(!mission.infinite)P.ammo[key]--;P.msl++;
+  if(!P.alive||mission.noWeapons||P.ground||(P.mslCD||0)>0)return;P.weapon=0;P.mslCD=.4;P.msl++;
   const fwd=_v1.set(0,0,-1).applyQuaternion(P.q).clone();
   launchMissile('player',P.pos,fwd,P.speed,P.locked?P.target:null,P.weapon);
   notice(P.locked?`${WPN[P.weapon].label}発射 — ${P.target.name}`:'ロックなし — 直進で発射');
@@ -1256,7 +1517,7 @@ const MISSIONS={
     },
     spawnDrone(c,i){const R=rand(700,1100),a=Math.random()*6.28;const e=spawnAir('drone',new V3(c.x+Math.cos(a)*R,c.y,c.z+Math.sin(a)*R),new V3(-Math.sin(a),0,Math.cos(a)),{center:c,R,dir:i%2?1:-1});const n=this.spawned=(this.spawned||0)+1;e.name='標的機 '+('ABCDEFGHIJ'[n-1]||'X');e.center=c},
     onKill(t){if(t.kind==='drone'){this.drones++;if(this.drones+liveTargets().filter(x=>x.kind==='drone').length<this.quota){const c=t.center;setTimeout(()=>{if(mission===this&&!this.over)this.spawnDrone(c,this.drones)},1500)}}else this.ship=true},
-    obj(){return[`標的機 ${this.drones}/${this.quota}　標的艦 ${this.ship?1:0}/1`,'訓練中は弾薬無制限。T で目標切替、ロックしたら F']},
+    obj(){return[`標的機 ${this.drones}/${this.quota}　標的艦 ${this.ship?1:0}/1`,'弾薬は無制限。T で目標切替、ロックしたら F。体当たりでも撃破できる']},
     done(){return this.drones>=this.quota&&this.ship}},
   intercept:{name:'COASTAL INTERCEPT',title:'沿岸迎撃',setup(){
       this.total=4;for(let i=0;i<4;i++){const e=spawnAir('rv',new V3(-2400+i*1600,2200+i*250,-15000-i*600),new V3(rand(-.1,.1),0,1),{engageR:16000});e.name=`敵戦闘機 ${String(i+1).padStart(2,'0')}`}
@@ -1266,7 +1527,7 @@ const MISSIONS={
       spawnShip('cruiser','巡洋艦 ヴァルナ',new V3(3500,0,-17000),1.35,7,620).flak=true;
       spawnShip('destroyer','護衛艦 セキレイ',new V3(6200,0,-18200),1.35,7,460).flak=true;
       for(let i=0;i<2;i++){const e=spawnAir('rv',new V3(3000+i*2500,2400,-15500),new V3(0,0,1),{engageR:8000,home:new V3(4500,2400,-17000),alt:2400});e.name=`護衛機 ${String(i+1).padStart(2,'0')}`}
-    },onKill(){},obj(){const s=T.filter(t=>t.type==='ship');return[`敵艦を撃沈 ${s.filter(x=>x.hp<=0).length}/${s.length}`,'大型ミサイルが有効。艦の3.6km以内は対空砲火に注意']},
+    },onKill(){},obj(){const s=T.filter(t=>t.type==='ship');return[`敵艦を撃沈 ${s.filter(x=>x.hp<=0).length}/${s.length}`,'艦の3.6km以内は対空砲火に注意。艦尾のオレンジ枠に着艦もできる']},
     done(){return T.filter(t=>t.type==='ship'&&t.hp>0).length===0}},
 };
 let mission={over:true,onKill(){}},missionKey=null,state='home',missionTime=0,missionDoneT=-1;
@@ -1275,17 +1536,17 @@ function clearMission(){
 }
 function startMission(key){
   SND.init();SND.resume();clearMission();missionKey=key;
-  mission=key==='online'?makeOnlineMission():Object.assign(Object.create(MISSIONS[key]),{over:false});mission.spawned=0;
+  mission=key==='online'?makeOnlineMission():Object.assign(Object.create(MISSIONS[key]),{over:false});mission.spawned=0;mission.infinite=true;
   const ac=AIRCRAFT[settings.aircraft];P.ac=ac;if(P.obj)scene.remove(P.obj);P.obj=models[settings.aircraft];P.obj.visible=true;scene.add(P.obj);
   P.radius=P.obj.userData.radius;
   P.ground=null;P.gear=false;P.gearAnim=0;P.deathMsg='';P.ang.set(0,0,0);P.sink=0;P.hp=100;P.alive=true;P.g=1;P.dmgTaken=0;P.velDir.set(0,0,-1);
-  const start=key==='online'&&NET.mode==='dogfight'?'air':settings.start;
+  const start=key==='online'&&NET.combat()?'air':settings.start;
   spawnPlayer(start,key==='online'?NET.slot:0);
   P.shots=0;P.hits=0;P.kills=0;P.msl=0;
   if(P.obj.userData.canopy)P.obj.userData.canopy.visible=P.camMode===0;
   if(key==='online')NET.rebuild();else mission.setup();
   autoTarget();missionTime=0;missionDoneT=-1;
-  $('#scoreBox').hidden=!(key==='online'&&NET.mode==='dogfight');$('#retryBtn').hidden=key==='online';$('#quitBtn').textContent=key==='online'?'部屋を出て拠点へ':'拠点へ戻る';
+  $('#scoreBox').hidden=!(key==='online'&&NET.combat());$('#retryBtn').hidden=key==='online';$('#quitBtn').textContent=key==='online'?'部屋を出て拠点へ':'拠点へ戻る';
   $('#mName').textContent=mission.name;$('#acName').textContent=ac.name;
   camSnap=true;state='play';
   $('#home').classList.add('hide');$('#hud').classList.add('show');$('#mui').classList.toggle('show',MOBILE);
@@ -1296,24 +1557,25 @@ function startMission(key){
 function spawnPlayer(start,slot){
   const ac=P.ac,gh=P.obj.userData.gearH;slot=slot||0;
   P.ground=null;P.gear=false;P.gearAnim=0;P.deathMsg='';P.ang.set(0,0,0);P.sink=0;P.hp=100;P.alive=true;P.g=1;P.dmgTaken=0;P.velDir.set(0,0,-1);P.lastHitBy=null;P.invuln=0;P.airT=99;
-  if(start==='carrier'){P.gear=true;P.gearAnim=1;P.throttle=.3;P.speed=0;P.ground={frame:carrier,local:new V3(slot%2?-9:6,deckY()+gh,-55+Math.floor(slot/2)*32),psi:0,gp:0,cat:{t:0,launched:false,endZ:-162}};P.pos.copy(fromCarrier(P.ground.local));P.q.setFromEuler(new THREE.Euler(0,-CV.heading,0,'YXZ'))}
+  if(start==='carrier'){P.gear=true;P.gearAnim=1;P.throttle=.3;P.speed=0;P.ground={frame:FR_CARRIER,local:new V3(slot%2?-9:6,deckY()+gh,-55+Math.floor(slot/2)*32),psi:0,gp:0,cat:{t:0,launched:false,endZ:-162}};P.pos.copy(fromCarrier(P.ground.local));P.q.setFromEuler(new THREE.Euler(0,-CV.heading,0,'YXZ'))}
   else if(start==='base'){const b=ISLANDS[0].base;P.gear=true;P.gearAnim=1;P.throttle=0;P.speed=0;P.ground={frame:null,local:new V3(b.x+(slot%2?-14:14),16.1+gh,b.z+1380-slot*90),psi:0,gp:0};P.pos.copy(P.ground.local);P.q.identity()}
-  else if(mission.mp&&NET.mode==='dogfight'){const a=slot*Math.PI/2+rand(-.3,.3),c=new V3(0,0,-9000);P.pos.set(c.x+Math.cos(a)*5200,1500+slot*120,c.z+Math.sin(a)*5200);P.q.setFromEuler(new THREE.Euler(0,Math.atan2(-(c.x-P.pos.x),-(c.z-P.pos.z)),0,'YXZ'));P.velDir.set(0,0,-1).applyQuaternion(P.q);P.speed=Math.min(250,ac.vmax*.6);P.throttle=.66;P.invuln=3}
+  else if(mission.mp&&NET.combat()){const a=NET.mode==='team'?(NET.team?Math.PI:0)+(slot-1.5)*.16+rand(-.05,.05):slot*Math.PI/2+rand(-.3,.3),c=new V3(0,0,-9000);P.pos.set(c.x+Math.cos(a)*5200,1500+slot*120,c.z+Math.sin(a)*5200);P.q.setFromEuler(new THREE.Euler(0,Math.atan2(-(c.x-P.pos.x),-(c.z-P.pos.z)),0,'YXZ'));P.velDir.set(0,0,-1).applyQuaternion(P.q);P.speed=Math.min(250,ac.vmax*.6);P.throttle=.66;P.invuln=3}
   else{P.pos.set(1200+slot*60,1150+slot*40,4200+slot*80);P.q.identity();P.speed=Math.min(250,ac.vmax*.6);P.throttle=.66}
   setGear(P.obj,P.gearAnim);P.vel.copy(P.velDir).multiplyScalar(P.speed);
   P.ammo={gun:940,s:8,l:4,flare:24};P.weapon=0;P.lockT=0;P.locked=false;P.deadT=0;P.obj.visible=true;
 }
 function makeOnlineMission(){
-  const free=NET.mode==='free';
-  return {mp:true,over:false,noWeapons:free,name:free?'ONLINE // FREE FLIGHT':'ONLINE // DOGFIGHT',title:free?'一緒に飛ぶ':'オンライン対戦',onKill(){},done(){return false},setup(){},
-    obj(){const n=NET.players.size;if(free)return[`一緒に飛ぶ — ${n}人`,'武器なし。空母や基地で離着陸、編隊飛行を楽しもう'];return[`撃墜 ${NET.k}　被撃墜 ${NET.d}`,`先に${NET.WIN}機撃墜で勝利 — ${n}人参加中`]}};
+  const free=NET.mode==='free',team=NET.mode==='team';
+  return {mp:true,over:false,noWeapons:free,name:free?'ONLINE // FREE FLIGHT':team?'ONLINE // TEAM BATTLE':'ONLINE // DOGFIGHT',title:free?'一緒に飛ぶ':team?'チーム戦':'オンライン対戦',onKill(){},done(){return false},setup(){},
+    obj(){const n=NET.players.size;if(free)return[`一緒に飛ぶ — ${n}人`,'武器なし。空母や基地で離着陸、編隊飛行を楽しもう'];
+      if(team){const sc=NET.teamScores();return[`ALPHA ${sc[0]} — BRAVO ${sc[1]}`,`あなたは ${TEAMN[NET.team]}。先に${NET.TWIN}機撃墜したチームの勝ち（味方は緑） — ${n+1}人参加中`]}return[`撃墜 ${NET.k}　被撃墜 ${NET.d}`,`先に${NET.WIN}機撃墜で勝利 — ${n}人参加中`]}};
 }
 function goHome(){if(mission.mp&&NET.active)NET.leave();state='home';$('#scoreBox').hidden=true;$('#rotate').classList.remove('show');clearMission();mission={over:true,onKill(){}};if(P.obj)scene.remove(P.obj);$('#hud').classList.remove('show');$('#mui').classList.remove('show');$('#pausePanel').classList.remove('show');$('#resultPanel').classList.remove('show');$('#home').classList.remove('hide');showcase(settings.aircraft)}
 function checkMission(dt){
   missionTime+=dt;
-  if(mission.mp){if(!P.alive&&P.deadT>4.5){spawnPlayer(NET.mode==='dogfight'?'air':settings.start,NET.slot);camSnap=true;notice('再出撃 — 3秒間は無敵','amber')}return}
+  if(mission.mp){if(!P.alive&&P.deadT>4.5){spawnPlayer(NET.combat()?'air':settings.start,NET.slot);camSnap=true;notice('再出撃 — 3秒間は無敵','amber')}return}
   if(!mission.over&&mission.done()&&P.alive){mission.over=true;mission.objDone=true;notice('任務目標をすべて達成 — 空母か基地へ帰投し着陸せよ','amber');$('#endBtn').hidden=false}
-  if(mission.objDone&&P.ground&&P.speed<2&&!P.ground.cat&&state==='play'){mission.landed=true;showResult(true)}
+  if(mission.objDone&&P.ground&&P.speed<2&&!(P.ground.cat&&!P.ground.cat.instant)&&state==='play'){mission.landed=true;showResult(true)}
   if(!P.alive&&P.deadT>3.2&&state==='play')showResult(mission.objDone?'lost':false);
 }
 function showResult(ok){
@@ -1321,7 +1583,7 @@ function showResult(ok){
   const acc=P.shots?Math.round(P.hits/P.shots*100):0,t=Math.round(missionTime);$('#endBtn').hidden=true;$('#pausePanel').classList.remove('show');
   const lost=ok==='lost';if(lost)ok=true;
   $('#rTitle').textContent=!ok?'任務失敗':lost?'任務完了（機体喪失）':'任務完了';$('#rEyebrow').textContent=(ok?'MISSION COMPLETE':'MISSION FAILED')+' // '+mission.name;
-  $('#rText').textContent=!ok?P.deathMsg+'。機体や進入角度を変えて再挑戦できます。':lost?`目標は達成しましたが、帰投中に機体を失いました（${P.deathMsg}）。`:mission.landed?`${mission.title}の目標を達成し、${P.ground&&P.ground.frame?'空母に着艦':'基地に着陸'}して帰投しました。`:`${mission.title}の目標をすべて達成しました（帰投は省略）。`;
+  $('#rText').textContent=!ok?P.deathMsg+'。機体や進入角度を変えて再挑戦できます。':lost?`目標は達成しましたが、帰投中に機体を失いました（${P.deathMsg}）。`:mission.landed?`${mission.title}の目標を達成し、${P.ground&&P.ground.frame?P.ground.frame.name+'に着艦':'基地に着陸'}して帰投しました。`:`${mission.title}の目標をすべて達成しました（帰投は省略）。`;
   $('#rTime').textContent=`${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`;$('#rKills').textContent=P.kills;$('#rAcc').textContent=acc+'%';$('#rMsl').textContent=P.msl;$('#rDmg').textContent=Math.round(P.dmgTaken)+'%';$('#rAc').textContent=P.ac.name;
   let rank='C';if(ok){const sc=(t<240?2:t<420?1:0)+(P.dmgTaken<10?2:P.dmgTaken<40?1:0)+(mission.landed?1:0)-(lost?2:0);rank=sc>=5?'S':sc>=4?'A':sc>=2?'B':'C'}else rank='—';$('#rRank').textContent=rank;
   $('#resultPanel').classList.add('show');
@@ -1333,7 +1595,7 @@ function updateCamera(dt){
   if(freeCam){camera.up.copy(UP);camera.position.copy(freeCam[0]);camera.lookAt(freeCam[1]);camera.fov=45;camera.updateProjectionMatrix();return}
   if(state==='home'||!P.alive)camera.up.copy(UP);
   if(state==='home'){showT+=dt;const o=models[settings.aircraft],r=o.userData.radius;const a=showT*.16;
-    o.position.set(1200,260,4600);o.quaternion.setFromEuler(new THREE.Euler(Math.sin(showT*.5)*.05,0,Math.sin(showT*.4)*.18));setThrottleGlow(o,.55);
+    o.position.set(1200,260,4600);o.quaternion.setFromEuler(new THREE.Euler(Math.sin(showT*.5)*.05,0,Math.sin(showT*.4)*.18));setThrottleGlow(o,.55);animateAircraft(o,{roll:Math.sin(showT*.9)*.7,pitch:Math.sin(showT*.63)*.6,yaw:Math.sin(showT*.71)*.6,spd:220+170*Math.sin(showT*.22),gear:0,thr:.55},dt);
     const c=new V3(Math.sin(a)*r*2.5,r*.55+Math.sin(showT*.21)*r*.25,Math.cos(a)*r*2.5);
     const shift=new V3().crossVectors(c,UP).normalize().multiplyScalar(W>760?r*.95:0);
     camera.position.copy(o.position).add(c).add(shift);camera.lookAt(_v1.copy(o.position).add(shift).add(new V3(0,W>760?0:r*.45,0)));camera.fov=40;camera.updateProjectionMatrix();return}
@@ -1348,7 +1610,33 @@ function updateCamera(dt){
   }
   camSnap=false;
   const fov=60+clamp((P.speed-200)/400,0,1)*10;camera.fov=lerp(camera.fov,fov,damp(2,dt));camera.updateProjectionMatrix();
+  if(!reduceMotion&&P.alive){const ag=Math.abs(P.g);let b=clamp((ag-6)/4,0,1)*.22+clamp(1-Math.abs(P.speed-338)/24,0,1)*.18+clamp((P.throttle-.82)/.18,0,1)*.05;
+    if(!P.ground&&P.speed<P.ac.stall*1.15)b+=.28;if(P.ground&&P.speed>4)b+=.06*clamp(P.speed/70,0,1);
+    if(b>0){const k=b*(P.camMode?.1:.22);camera.position.add(_v3.set(rand(-1,1)*k,rand(-1,1)*k,0).applyQuaternion(camera.quaternion))}}
   if(shakeAmt>0){camera.position.add(new V3(rand(-1,1),rand(-1,1),rand(-1,1)).multiplyScalar(shakeAmt*.35));shakeAmt=Math.max(0,shakeAmt-dt*2.2)}
+}
+const rearCam=new THREE.PerspectiveCamera(68,2.6,.5,40000);let rearOn=store.get('rear',true),rearRect=null;
+function toggleRear(){rearOn=!rearOn;store.set('rear',rearOn);notice('後方カメラ '+(rearOn?'ON':'OFF'));const b=$('#rearBtn');if(b)b.classList.toggle('on',rearOn)}
+function renderRear(){
+  rearRect=null;if(!rearOn||!(state==='play'||state==='paused')||!P.alive||!P.obj)return;
+  const mob=W<760||isTouch,w=Math.round(clamp(W*(mob?.24:.25),170,360)),h=Math.round(w/2.6),x=Math.round((W-w)/2),y=mob?44:74;
+  const r=P.obj.userData.radius;rearCam.position.set(0,r*.42+2.5,-r*.1).applyQuaternion(P.q).add(P.pos);
+  rearCam.quaternion.copy(P.q).multiply(_q1.setFromEuler(new THREE.Euler(-.09,Math.PI,0,'YXZ')));rearCam.aspect=w/h;rearCam.updateProjectionMatrix();rearCam.updateMatrixWorld();
+  const au=renderer.shadowMap.autoUpdate;renderer.shadowMap.autoUpdate=false;renderer.setRenderTarget(null);
+  renderer.setViewport(x,H-y-h,w,h);renderer.setScissor(x,H-y-h,w,h);renderer.setScissorTest(true);
+  try{renderer.render(scene,rearCam)}finally{renderer.setScissorTest(false);renderer.setViewport(0,0,W,H);renderer.shadowMap.autoUpdate=au}
+  rearRect={x,y,w,h};
+}
+function drawRearFrame(){
+  const R=rearRect;if(!R)return;const C='rgba(130,234,255,';
+  hx.strokeStyle=C+'.6)';hx.lineWidth=1.4;hx.strokeRect(R.x+.5,R.y+.5,R.w-1,R.h-1);
+  hx.fillStyle='rgba(6,17,25,.7)';hx.fillRect(R.x,R.y+R.h,46,15);hx.fillStyle=C+'1)';hx.font='600 11px "Barlow Condensed",sans-serif';hx.textAlign='left';hx.fillText('REAR',R.x+6,R.y+R.h+8);hx.textAlign='center';
+  const m=new THREE.Matrix4().multiplyMatrices(rearCam.projectionMatrix,rearCam.matrixWorldInverse);
+  hx.save();hx.beginPath();hx.rect(R.x,R.y,R.w,R.h);hx.clip();
+  const mark=(pos,col,sz)=>{const c=_v3.copy(pos).applyMatrix4(rearCam.matrixWorldInverse);if(c.z>0)return;const p=_v1.copy(pos).applyMatrix4(m);if(Math.abs(p.x)>1.1||Math.abs(p.y)>1.1)return;const px=R.x+(p.x+1)/2*R.w,py=R.y+(1-p.y)/2*R.h;hx.strokeStyle=col;hx.strokeRect(px-sz,py-sz,sz*2,sz*2)};
+  for(const t of liveTargets())mark(t.pos,t===P.target?'rgba(255,199,123,1)':t.kind==='drone'?C+'.9)':'rgba(255,100,119,1)',t.type==='ship'?7:5);
+  for(const mm of missiles)if(mm.owner!=='player')mark(mm.pos,'rgba(255,100,119,1)',3);
+  hx.restore();
 }
 function showcase(i){if(showIdx>=0&&models[showIdx])scene.remove(models[showIdx]);showIdx=i;const o=models[i];o.visible=true;setGear(o,0);if(o.userData.canopy)o.userData.canopy.visible=true;scene.add(o)}
 
@@ -1407,7 +1695,7 @@ function drawHUD(dt){
   hx.fillStyle=C+'.9)';hx.beginPath();hx.moveTo(rx,ry-5);hx.lineTo(rx+4,ry+4);hx.lineTo(rx-4,ry+4);hx.closePath();hx.fill();
   const hd=new V3(fwd.x,0,fwd.z).normalize(),hr=new V3().crossVectors(hd,UP),RANGE=12000;
   const blip=(pos,col,sz,shape)=>{const d=_v2.subVectors(pos,P.pos),fx=d.dot(hd),rx2=d.dot(hr);let bx=rx2/RANGE*rad,by=-fx/RANGE*rad;const l=Math.hypot(bx,by);if(l>rad-3){bx*=(rad-3)/l;by*=(rad-3)/l}hx.fillStyle=col;if(shape)hx.fillRect(rx+bx-sz,ry+by-sz,sz*2,sz*2);else{hx.beginPath();hx.arc(rx+bx,ry+by,sz,0,7);hx.fill()}};
-  blip(carrier.position,'rgba(140,220,160,.9)',3,true);for(const e of T)if(e.remote&&e.flying&&e.friendly)blip(e.pos,'rgba(140,230,170,1)',2.6);blip(new V3(ISLANDS[0].base.x,0,ISLANDS[0].base.z),'rgba(140,220,160,.9)',2.5,true);
+  blip(carrier.position,'rgba(140,220,160,.9)',3,true);for(const e of T)if(e.remote&&e.flying&&e.friendly)blip(e.pos,'rgba(140,230,170,1)',2.6);for(const b of BASES)blip(new V3(b.x,0,b.z),'rgba(140,220,160,.9)',2.5,true);
   for(const t of liveTargets())blip(t.pos,t===P.target?A+'1)':(t.kind==='drone'?C+'.9)':R+'.95)'),t.type==='ship'?3:2.4,t.type==='ship');
   for(const m of missiles)if(m.owner==='enemy')blip(m.pos,R+'1)',1.6);
   hx.fillStyle=C+'.6)';hx.font='600 10px "Barlow Condensed",sans-serif';hx.fillText('12 KM',rx,ry+rad+9);
@@ -1423,17 +1711,21 @@ function drawHUD(dt){
   if(P.alive&&Math.hypot(P.pos.x,P.pos.z+8000)>34000)warns.push(['作戦空域外 — 引き返せ',A]);
   if(P.alive&&!P.ground&&P.gearAnim>.5)landingAid(f,mob);
   if(P.alive&&P.ground){const G=P.ground;hx.font='600 14px "Noto Sans JP",sans-serif';hx.fillStyle=A+'1)';
-    const msg=G.cat&&!G.cat.launched?`カタパルト待機 — 推力 ${Math.round(P.throttle*100)}%（80%以上で射出）`:G.arrest&&P.speed>.5?'アレスティングワイヤー制動中':P.speed<2&&mission.objDone?'停止 — 帰投完了':`地上走行 ${Math.round(P.speed*3.6)} km/h　／　離陸速度 VR ${Math.round(P.ac.stall*1.05*3.6)} km/h${P.braking&&P.speed>0?'　／　ブレーキ':''}`;
+    const msg=G.cat&&!G.cat.launched&&P.speed<2&&mission.objDone?'停止 — 帰投完了':G.cat&&!G.cat.launched?`${G.cat.instant?'停止中':'カタパルト待機'} — 推力 ${Math.round(P.throttle*100)}%（80%以上で射出）`:G.arrest&&P.speed>.5?'アレスティングワイヤー制動中':P.speed<2&&mission.objDone?'停止 — 帰投完了':`地上走行 ${Math.round(P.speed*3.6)} km/h　／　離陸速度 VR ${Math.round(P.ac.stall*1.05*3.6)} km/h${P.braking&&P.speed>0?'　／　ブレーキ':''}`;
     hx.fillText(msg,W/2,mob?H*.2:H*.7)}
   if(P.alive&&!P.ground&&P.gearAnim>.5&&P.speed>150)warns.push(['GEAR SPEED',A]);
   hx.font='700 20px "Barlow Condensed",sans-serif';warns.forEach(([w,c],i)=>{if((hudT*3%1)<.72||i>0){hx.fillStyle=c+'1)';hx.fillText(w,W/2,H*.64+i*26)}});
-  SND.update(dt,{active:state==='play',thr:P.alive?P.throttle:0,spd:P.alive?P.speed:0,g:Math.abs(P.g),locked:P.locked,locking:P.lockT>0&&!P.locked,missile:incoming>0,lockedOn:lockedBy.size>0,pullup,stall});
+  SND.update(dt,{active:state==='play',prop:!!P.ac.prop,thr:P.alive?P.throttle:0,spd:P.alive?P.speed:0,g:Math.abs(P.g),locked:P.locked,locking:P.lockT>0&&!P.locked,missile:incoming>0,lockedOn:lockedBy.size>0,pullup,stall});
 }
 let touchUI=null,lvEls=null;
 function updateLever(){if(!lvEls)lvEls={h:$('#lvHandle'),f:$('#lvFill'),v:$('#lvVal')};const t=P.throttle;lvEls.h.style.top=(1-t)*100+'%';lvEls.f.style.height=t*100+'%';lvEls.h.classList.toggle('ab',t>.82);lvEls.v.textContent=Math.round(t*100)+'%';lvEls.v.style.color=t>.82?'var(--amber)':''}
 function updatePanels(){if(!touchUI&&MOBILE)touchUI={gun:$('#mGunN'),msl:$('#mMsl'),msln:$('#mMslN'),flr:$('#mFlr'),flrn:$('#mFlrN'),wpn:$('#mWpnN'),gear:$('#mGear'),gearn:$('#mGearN'),brake:$('#mBrake'),ctx:$('#mCtx')};
   if(state!=='play')return;const t=P.target;
-  if(mission.mp&&NET.mode==='dogfight'){const box=$('#scoreBox'),rows=NET.scoreRows();box.replaceChildren(...rows.map(r=>{const d=document.createElement('div');if(r.me)d.className='me';const a=document.createElement('span');a.textContent=r.name;const b=document.createElement('span');b.textContent=`${r.k} / ${r.d}`;d.append(a,b);return d}))}
+  if(mission.mp&&NET.mode==='team'){const box=$('#scoreBox'),rows=NET.scoreRows(),sc=NET.teamScores(),out=[];
+    for(const t of [0,1]){const h=document.createElement('div');h.style.color=TEAMC[t];h.style.fontWeight='700';const a=document.createElement('span');a.textContent=TEAMN[t]+(t===NET.team?'（味方）':'');const b=document.createElement('span');b.textContent=`${sc[t]} / ${NET.TWIN}`;h.append(a,b);out.push(h);
+      for(const r of rows.filter(r=>NET.teamOf(r.id)===t)){const d=document.createElement('div');if(r.me)d.className='me';const x=document.createElement('span');x.textContent='　'+r.name;const y=document.createElement('span');y.textContent=`${r.k} / ${r.d}`;d.append(x,y);out.push(d)}}
+    box.replaceChildren(...out)}
+  else if(mission.mp&&NET.mode==='dogfight'){const box=$('#scoreBox'),rows=NET.scoreRows();box.replaceChildren(...rows.map(r=>{const d=document.createElement('div');if(r.me)d.className='me';const a=document.createElement('span');a.textContent=r.name;const b=document.createElement('span');b.textContent=`${r.k} / ${r.d}`;d.append(a,b);return d}))}
   const [o1,o2]=mission.objDone?['帰投 — 空母か基地に着陸して停止','G でギアを下ろし、緑のリングに沿って進入（Esc で省略も可）']:mission.obj?mission.obj():['',''];hudEl.objText.textContent=o1;hudEl.objSub.textContent=o2;
   if(t&&t.hp>0){hudEl.tName.textContent=t.name;hudEl.tKind.textContent=t.type==='ship'?'SURFACE / NAVAL':t.kind==='drone'?'AIR / TARGET DRONE':'AIR / HOSTILE';hudEl.tBar.style.width=(t.hp/t.maxHp*100)+'%';hudEl.tInfo.textContent=`耐久 ${Math.ceil(t.hp)}/${t.maxHp}　距離 ${(t.pos.distanceTo(P.pos)/1000).toFixed(1)} km`;hudEl.lockState.textContent=P.locked?'LOCK':P.lockT>0?'LOCKING':'TRACK';hudEl.lockState.style.color=P.locked?'var(--amber)':''}
   else{hudEl.tName.textContent=liveTargets().length?'—':'CLEAR';hudEl.tKind.textContent='NO TARGET';hudEl.tBar.style.width='0%';hudEl.tInfo.textContent=liveTargets().length?'T で目標を選択':'敵影なし';hudEl.lockState.textContent='NO LOCK';hudEl.lockState.style.color=''}
@@ -1441,11 +1733,11 @@ function updatePanels(){if(!touchUI&&MOBILE)touchUI={gun:$('#mGunN'),msl:$('#mMs
   hudEl.vAlt.textContent=Math.round(P.ground?0:P.pos.y-Math.max(0,terrainH(P.pos.x,P.pos.z))>300?P.pos.y:Math.max(0,P.pos.y-P.obj.userData.gearH-(surfaceAt(P.pos)?.y??Math.max(0,terrainH(P.pos.x,P.pos.z)))));
   hudEl.vGear.textContent=P.gearAnim>.98?'DOWN':P.gearAnim<.02?'UP':'· · ·';hudEl.vGear.style.color=P.gearAnim>.98?'var(--amber)':'';
   updateLever();hudEl.vG.textContent=P.g.toFixed(1);hudEl.vG.style.color=Math.abs(P.g)>7?'var(--amber)':'';hudEl.vHp.textContent=Math.round(P.hp);hudEl.bHp.style.width=P.hp+'%';hudEl.bHp.style.background=P.hp<30?'var(--red)':'';
-  const inf=mission.infinite?'∞':null;hudEl.aGun.textContent=inf||P.ammo.gun;hudEl.aS.textContent=inf||P.ammo.s;hudEl.aL.textContent=inf||P.ammo.l;hudEl.aF.textContent=inf||P.ammo.flare;
+  const inf='∞';hudEl.aGun.textContent=inf||P.ammo.gun;hudEl.aS.textContent=inf||P.ammo.s;hudEl.aL.textContent=inf||P.ammo.l;hudEl.aF.textContent=inf||P.ammo.flare;
   hudEl.wS.classList.toggle('sel',P.weapon===0);hudEl.wL.classList.toggle('sel',P.weapon===1);
-  if(touchUI){const u=touchUI,a=P.weapon?hudEl.aL.textContent:hudEl.aS.textContent;u.gun.textContent=hudEl.aGun.textContent;u.msln.textContent=`${P.weapon?'大型':'小型'} ${a}`;u.msl.classList.toggle('lock',P.locked);u.flrn.textContent=hudEl.aF.textContent;u.wpn.textContent=P.weapon?'→小型':'→大型';
+  if(touchUI){const u=touchUI,a=P.weapon?hudEl.aL.textContent:hudEl.aS.textContent;u.gun.textContent=hudEl.aGun.textContent;u.msln.textContent='∞';u.msl.classList.toggle('lock',P.locked);u.flrn.textContent=hudEl.aF.textContent;u.wpn.textContent=P.weapon?'→小型':'→大型';
     u.gearn.textContent=hudEl.vGear.textContent;const G=P.ground;u.brake.hidden=!G;u.flr.hidden=!!G;
-    const b=ISLANDS[0].base,near=Math.min(Math.hypot(P.pos.x-b.x,P.pos.z-b.z),P.pos.distanceTo(carrier.position));
+    const near=Math.min(...BASES.map(b=>Math.hypot(P.pos.x-b.x,P.pos.z-b.z)),P.pos.distanceTo(carrier.position));
     u.gear.classList.toggle('warn',!G&&!P.gear&&P.alive&&near<7000&&P.speed<140&&P.pos.y<900);
     let ctx=null;if(G&&P.alive){if(G.cat&&!G.cat.launched)ctx=P.throttle<.8?['▲ 推力をMILにして射出',()=>{P.throttle=.82}]:null;else if(!mission.objDone&&P.speed<P.ac.stall)ctx=P.throttle<.95?['▲ 離陸推力（100%）',()=>{P.throttle=1}]:null}
     u.ctx.hidden=!ctx;if(ctx){u.ctx.textContent=ctx[0];u.ctx._fn=ctx[1]}
@@ -1454,9 +1746,10 @@ function updatePanels(){if(!touchUI&&MOBILE)touchUI={gun:$('#mGunN'),msl:$('#mMs
 
 function landingAid(f,mob){
   const A='rgba(255,199,123,',G='rgba(140,230,170,';
-  const b=ISLANDS[0].base,dy=deckY(),fwd=new V3(0,0,-1).applyQuaternion(P.q).setY(0).normalize();
-  const cands=[{name:'着艦点',pt:fromCarrier(new V3(-4,dy,100)),dir:new V3(Math.sin(CV.heading),0,-Math.cos(CV.heading)),y:dy,lim:8.5},
-    {name:'滑走路 北向き',pt:new V3(b.x,16.1,b.z+1300),dir:new V3(0,0,-1),y:16.1,lim:6.5},{name:'滑走路 南向き',pt:new V3(b.x,16.1,b.z-1300),dir:new V3(0,0,1),y:16.1,lim:6.5}];
+  const dy=deckY(),fwd=new V3(0,0,-1).applyQuaternion(P.q).setY(0).normalize();
+  const cands=[{name:'空母',pt:fromCarrier(new V3(-4,dy,100)),dir:new V3(Math.sin(CV.heading),0,-Math.cos(CV.heading)),y:dy,lim:LAND_LIM.carrier}];
+  for(const b of BASES)cands.push({name:b.name+' 北向き',pt:new V3(b.x,16.1,b.z+1300),dir:new V3(0,0,-1),y:16.1,lim:LAND_LIM.base},{name:b.name+' 南向き',pt:new V3(b.x,16.1,b.z-1300),dir:new V3(0,0,1),y:16.1,lim:LAND_LIM.base});
+  for(const fr of shipFrames()){const z=padZone(fr.u),h=fr.head();cands.push({name:fr.name+' 艦尾',pt:frWorld(fr,new V3(0,fr.u.F,(z.z0+z.z1)/2-2)),dir:new V3(Math.sin(h),0,-Math.cos(h)),y:fr.deck(),lim:LAND_LIM.ship})}
   let best=null,bs=1e12;for(const c of cands){const d=c.pt.distanceTo(P.pos),al=fwd.dot(c.dir);const sc=d*(al>.3?1:2.5);if(sc<bs){bs=sc;best=c}}
   const c=best,toP=P.pos.clone().sub(c.pt),hd=Math.hypot(toP.x,toP.z),gs=Math.tan(THREE.MathUtils.degToRad(3.5)),ideal=hd*gs,ah=P.pos.y-P.obj.userData.gearH-c.y,dev=ah-ideal;
   // glide path rings
@@ -1472,7 +1765,16 @@ function landingAid(f,mob){
 }
 
 /* ---------- online: shared game logic ---------- */
-const NET={tp:null,active:false,myId:null,mode:'dogfight',code:null,slot:0,players:new Map(),stats:new Map(),k:0,d:0,rd:0,WIN:5,sendT:0,hitT:0,hits:{},mid:0,roomP:null,
+const TEAMN=['ALPHA','BRAVO'],TEAMC=['#7cc4ff','#ff8a7a'];
+const NET={tp:null,active:false,myId:null,mode:'dogfight',team:0,TWIN:7,code:null,slot:0,players:new Map(),stats:new Map(),k:0,d:0,rd:0,WIN:5,sendT:0,hitT:0,hits:{},mid:0,roomP:null,
+  normMode(m){return m==='free'||m==='team'?m:'dogfight'},
+  combat(){return this.mode!=='free'},
+  teamOf(id){if(id===this.myId)return this.team;const p=this.players.get(id);return p&&p.team?1:0},
+  isFriendly(id){return this.mode==='free'||(this.mode==='team'&&this.teamOf(id)===this.team)},
+  pickTeam(teams){if(this.mode!=='team'){this.team=0;return}const c=[0,0];for(const t of teams)c[t?1:0]++;this.team=c[1]<c[0]?1:0},
+  setTeam(t){t=t?1:0;if(t===this.team)return;this.team=t;try{this.tp&&this.tp.announce&&this.tp.announce()}catch(e){}this.refreshFriendly();this.renderLobby();if(mission.mp)notice(`${TEAMN[t]} チームに移りました`,'amber')},
+  refreshFriendly(){for(const e of T)if(e.remote){e.friendly=this.isFriendly(e.id);if(e.friendly&&P.target===e){P.target=null;P.locked=false;P.lockT=0}}},
+  teamScores(){const sc=[0,0];sc[this.team]+=this.k;for(const[id,st]of this.stats){if(!this.players.has(id)||st.rd!==this.rd)continue;sc[this.teamOf(id)]+=st.k}return sc},
   v(a){return[Math.round(a.x*100)/100,Math.round(a.y*100)/100,Math.round(a.z*100)/100]},
   num(a,n){return Array.isArray(a)&&a.length===n&&a.every(Number.isFinite)},
   clean(t){return String(t||'').replace(/[\u0000-\u001f\u007f-\u009f​-‏‪-‮⁦-⁩]/g,'').trim().slice(0,12)||'PILOT'},
@@ -1492,10 +1794,10 @@ const NET={tp:null,active:false,myId:null,mode:'dogfight',code:null,slot:0,playe
     }finally{this.busy=false}},
   async join(code){code=String(code||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(code.length!==6){this.status('6文字の部屋コードを入力してください',true);return}
     if(this.busy)return;this.busy=true;try{this.status('部屋を探しています…');const tp=await this.pickTp();if(!tp)return;this.tp=tp;this.code=code;const r=await tp.open(code,false);this.opened(r.slot)}catch(e){this.fail(e)}finally{this.busy=false}},
-  opened(slot){this.active=true;this.slot=slot|0;this.k=this.d=this.rd=0;this.stats.clear();this.status('');this.showLobby()},
+  opened(slot){if(this.mode!=='team')this.team=0;this.active=true;this.slot=slot|0;this.k=this.d=this.rd=0;this.stats.clear();this.status('');this.showLobby()},
   fail(e){const m=e&&(e.message||e.type||e.code);try{this.tp&&this.tp.leave()}catch(x){}this.active=false;this.players.clear();
     this.status(m==='empty'||m==='peer-unavailable'?'その部屋コードは見つかりません（誰もいない部屋には入れません）':m==='full'?'その部屋は満員です（4人まで）':m==='lib'?'通信ライブラリを読み込めませんでした。ネットワークを確認してください。':m==='timeout'?'接続できませんでした。ネットワークを確認して、もう一度お試しください。':m==='not_permitted'?'この共有権限ではオンラインに参加できません。':'接続できませんでした（'+String(m||'error').slice(0,40)+'）',true)},
-  upsertPlayer(id,name,slot){if(!id||id===this.myId)return;const nm=this.clean(name),old=this.players.get(id);this.players.set(id,{id,name:nm,slot:slot|0});if(!old){this.renderLobby();if(mission.mp)notice(`${nm} が参加しました`)}else if(old.name!==nm)this.renderLobby()},
+  upsertPlayer(id,name,slot,team){if(!id||id===this.myId)return;const nm=this.clean(name),old=this.players.get(id);const tm=team==null?(old?old.team:0):(team?1:0);this.players.set(id,{id,name:nm,slot:slot|0,team:tm});if(!old){this.renderLobby();this.refreshFriendly();if(mission.mp)notice(this.mode==='team'?`${nm} が ${TEAMN[tm]} に参加しました`:`${nm} が参加しました`)}else if(old.name!==nm||old.team!==tm){this.refreshFriendly();this.renderLobby()}},
   peerLeave(id){const p=this.players.get(id);if(!p)return;this.players.delete(id);this.stats.delete(id);this.removeEnt(id);this.renderLobby();if(mission.mp)notice(`${p.name} が退出しました`)},
   send(d){if(!this.active||!this.tp)return;try{this.tp.send(d)}catch(e){reportError(e)}},
   recv(d){
@@ -1503,7 +1805,7 @@ const NET={tp:null,active:false,myId:null,mode:'dogfight',code:null,slot:0,playe
     try{switch(d.t){
       case 'm':if(mission.mp&&!mission.noWeapons&&state!=='home'&&this.num(d.p,3)&&this.num(d.d,3)){const tg=d.tg===this.myId?P:T.find(e=>e.remote&&e.id===d.tg)||null;if(tg===P&&!P.alive)break;launchMissile(tg===P?'enemy':'remote',new V3(...d.p),new V3(...d.d).normalize(),clamp(+d.sp||250,50,900),tg,d.hv?1:0,{mid:String(d.mid).slice(0,80),from:d.id});if(tg===P)notice(`${this.name(d.id)} のミサイル接近 — フレア［X］か急旋回`,'red')}break;
       case 'mx':{const i=missiles.findIndex(m=>m.netId===d.mid);if(i>=0){const m=missiles[i];if(d.h)explode(m.pos.clone(),1);scene.remove(m.obj);missiles.splice(i,1)}}break;
-      case 'hit':if(d.to===this.myId&&mission.mp&&!mission.noWeapons&&Number.isFinite(d.d))damagePlayer(clamp(d.d,0,40),`${this.name(d.by)} の機関砲で撃墜されました`,d.by);break;
+      case 'hit':if(d.to===this.myId&&mission.mp&&!mission.noWeapons&&Number.isFinite(d.d))damagePlayer(d.ram?100:clamp(d.d,0,40),`${this.name(d.by)} の${d.ram?'体当たり':'機関砲'}で撃墜されました`,d.by);break;
       case 'down':{const e=T.find(x=>x.remote&&x.id===d.id);if(e){if(this.num(d.p,3))explode(new V3(...d.p),1.4);e.obj.visible=false;e.flying=false;e.hp=0;if(P.target===e){P.target=null;P.locked=false;P.lockT=0}}
         if(d.by===this.myId&&mission.mp){this.k++;P.kills++;notice(`${this.name(d.id)} を撃墜`,'amber');SND.tone(880,.2,.08,'square',1320)}}break;
       case 'fl':{const e=T.find(x=>x.remote&&x.id===d.id);if(e&&e.flying)releaseFlares(e.pos,e.vel,e.obj.quaternion)}break;
@@ -1514,13 +1816,14 @@ const NET={tp:null,active:false,myId:null,mode:'dogfight',code:null,slot:0,playe
   ensureEnt(id,ac){
     let e=T.find(x=>x.remote&&x.id===id);const acI=clamp(ac|0,0,AIRCRAFT.length-1);
     if(e&&e.ac!==acI){scene.remove(e.obj);T.splice(T.indexOf(e),1);if(P.target===e)P.target=null;e=null}
-    if(!e){const obj=buildAircraft(AIRCRAFT[acI].id);obj.visible=false;scene.add(obj);e={type:'air',kind:'player',remote:true,id,ac:acI,obj,pos:new V3(),vel:new V3(),fwd:new V3(0,0,-1),tq:new Q(),hp:100,maxHp:100,radius:Math.max(6,obj.userData.radius*.55),name:this.name(id),flying:false,friendly:this.mode==='free',last:0,fireT:0,firing:false,lockMe:0};T.push(e)}
+    if(!e){const obj=buildAircraft(AIRCRAFT[acI].id);obj.visible=false;scene.add(obj);e={type:'air',kind:'player',remote:true,id,ac:acI,obj,pos:new V3(),vel:new V3(),fwd:new V3(0,0,-1),tq:new Q(),hp:100,maxHp:100,radius:Math.max(6,obj.userData.radius*.55),name:this.name(id),flying:false,friendly:this.isFriendly(id),last:0,fireT:0,firing:false,lockMe:0};T.push(e)}
     return e},
   removeEnt(id){const i=T.findIndex(x=>x.remote&&x.id===id);if(i>=0){scene.remove(T[i].obj);if(P.target===T[i]){P.target=null;P.locked=false}T.splice(i,1)}},
   rebuild(){for(const p of this.players.values())this.ensureEnt(p.id,0)},
   onState(id,st){
     if(!st||typeof st!=='object')return;
     this.stats.set(id,{k:st.k|0,d:st.d|0,rd:st.rd|0});
+    if(st.tm!=null){const pl=this.players.get(id),tm=st.tm?1:0;if(pl&&pl.team!==tm){pl.team=tm;this.refreshFriendly();this.renderLobby()}}
     if(!mission.mp||state==='home'||!this.players.has(id)||!this.num(st.p,3)||!this.num(st.q,4)||!this.num(st.v,3))return;
     const e=this.ensureEnt(id,st.ac);const fresh=!e.flying;
     e.np=new V3(...st.p);e.vel.set(...st.v);e.tq.set(...st.q).normalize();e.last=performance.now();e.hp=clamp(+st.hp||0,0,100);e.flying=!!st.al;e.firing=!!st.f;e.thr=clamp(+st.th||0,0,1);e.gearA=clamp(+st.g||0,0,1);e.name=this.name(id);
@@ -1533,7 +1836,7 @@ const NET={tp:null,active:false,myId:null,mode:'dogfight',code:null,slot:0,playe
     if(age>3){e.flying=false;e.obj.visible=false;return}
     const pred=_v1.copy(e.np).addScaledVector(e.vel,Math.min(age,.6));e.pos.lerp(pred,damp(12,dt));
     e.obj.quaternion.slerp(e.tq,damp(14,dt));e.obj.position.copy(e.pos);e.fwd.set(0,0,-1).applyQuaternion(e.obj.quaternion);
-    setThrottleGlow(e.obj,e.thr||0);setGear(e.obj,e.gearA||0);
+    setThrottleGlow(e.obj,e.thr||0);setGear(e.obj,e.gearA||0);animateAircraft(e.obj,{spd:e.vel.length(),gear:e.gearA||0,thr:e.thr||0},dt);
     if(e.flying&&e.firing){e.fireT-=dt;if(e.fireT<=0){e.fireT=.07;ebullets.push({pos:e.pos.clone().addScaledVector(e.fwd,8),vel:e.fwd.clone().multiplyScalar(1050).add(e.vel),life:1.4,harm:false})}}
     if(e.flying&&performance.now()-e.lockMe<700)lockedBy.add(e);
   },
@@ -1543,9 +1846,13 @@ const NET={tp:null,active:false,myId:null,mode:'dogfight',code:null,slot:0,playe
     this.sendT-=dt;if(this.sendT>0)return;this.sendT=1/(this.tp.rate||15);
     this.roundCheck();
     const q=P.q;
-    try{this.tp.state({p:this.v(P.pos),q:[+q.x.toFixed(4),+q.y.toFixed(4),+q.z.toFixed(4),+q.w.toFixed(4)],v:this.v(P.vel),th:+P.throttle.toFixed(2),g:+P.gearAnim.toFixed(2),ac:settings.aircraft,hp:Math.round(P.hp),al:P.alive?1:0,f:P.alive&&!mission.noWeapons&&(keys.Space||touch.gun)&&P.ammo.gun>0?1:0,lk:P.lockT>0&&P.target&&P.target.remote?P.target.id:null,k:this.k,d:this.d,rd:this.rd})}catch(e){reportError(e)}
+    try{this.tp.state({p:this.v(P.pos),q:[+q.x.toFixed(4),+q.y.toFixed(4),+q.z.toFixed(4),+q.w.toFixed(4)],v:this.v(P.vel),th:+P.throttle.toFixed(2),g:+P.gearAnim.toFixed(2),ac:settings.aircraft,tm:this.team,hp:Math.round(P.hp),al:P.alive?1:0,f:P.alive&&!mission.noWeapons&&(keys.Space||touch.gun)&&P.ammo.gun>0?1:0,lk:P.lockT>0&&P.target&&P.target.remote?P.target.id:null,k:this.k,d:this.d,rd:this.rd})}catch(e){reportError(e)}
   },
   roundCheck(){
+    if(this.mode==='team'){let maxRd=this.rd;for(const[id,st]of this.stats)if(this.players.has(id))maxRd=Math.max(maxRd,st.rd);
+      const sc=this.teamScores(),win=sc[0]>=this.TWIN?0:sc[1]>=this.TWIN?1:-1;
+      if(win>=0){if(mission.mp)notice(`${TEAMN[win]} チームの勝利！ 次のラウンドへ`,'amber');this.rd++;this.k=this.d=0}
+      else if(maxRd>this.rd){this.rd=maxRd;this.k=this.d=0}return}
     if(this.mode!=='dogfight')return;let maxRd=this.rd,win=this.k>=this.WIN?this.myId:null;
     for(const[id,st]of this.stats){if(!this.players.has(id))continue;maxRd=Math.max(maxRd,st.rd);if(!win&&st.rd===this.rd&&st.k>=this.WIN)win=id}
     if(win){if(mission.mp)notice(`${this.name(win)} の勝利！ 次のラウンドへ`,'amber');this.rd++;this.k=this.d=0}
@@ -1557,16 +1864,17 @@ const NET={tp:null,active:false,myId:null,mode:'dogfight',code:null,slot:0,playe
   cleanup(){this.active=false;this.players.clear();this.stats.clear();this.hits={};this.k=this.d=this.rd=0;for(let i=T.length-1;i>=0;i--)if(T[i].remote){scene.remove(T[i].obj);T.splice(i,1)}},
   showStart(){$('#netStart').hidden=false;$('#netLobby').hidden=true;$('#netRoomsWrap').hidden=!(this.tp===ROOM||ROOM.room)},
   showLobby(){$('#netStart').hidden=true;$('#netLobby').hidden=false;$('#netCode').textContent=this.code;
-    $('#netModeTxt').textContent=(this.mode==='free'?'モード：一緒に飛ぶ（武器なし）。出撃拠点はホームの設定に従います。':`モード：対戦（ドッグファイト）。空中から出撃、先に${this.WIN}機撃墜で勝利。撃墜されると5秒後に再出撃。`)+'　誰が抜けても、残った人がいれば部屋は続きます。';
+    $('#netModeTxt').textContent=(this.mode==='free'?'モード：一緒に飛ぶ（武器なし）。出撃拠点はホームの設定に従います。':this.mode==='team'?`モード：チーム戦。ALPHA（青）とBRAVO（赤）に分かれ、チームの撃墜数の合計が先に${this.TWIN}機に届いたほうが勝ち。味方には弾が当たらず、ロックもしない。ミサイルは無制限。`:`モード：対戦（ドッグファイト）。空中から出撃、先に${this.WIN}機撃墜で勝利。撃墜されると5秒後に再出撃。`)+'　誰が抜けても、残った人がいれば部屋は続きます。';
     $('#netCopy').textContent=this.tp===ROOM?'部屋コードをコピー':'招待リンクをコピー';this.renderLobby()},
-  renderLobby(){const ul=$('#netPlayers');const list=[{id:this.myId,name:this.myName(),slot:this.slot,me:true},...this.players.values()].sort((a,b)=>a.slot-b.slot);
-    ul.replaceChildren(...list.map(p=>{const li=document.createElement('li');const a=document.createElement('span');a.textContent=p.name;const b=document.createElement('small');b.textContent=p.me?'あなた':'';li.append(a,b);return li}))},
+  renderLobby(){const ul=$('#netPlayers');if(!ul)return;const tm=this.mode==='team';const tr=$('#netTeamRow');if(tr){tr.hidden=!tm;tr.querySelectorAll('[data-team]').forEach(b=>b.classList.toggle('on',+b.dataset.team===this.team))}
+    const list=[{id:this.myId,name:this.myName(),slot:this.slot,team:this.team,me:true},...this.players.values()].sort((a,b)=>tm?((a.team|0)-(b.team|0)||a.slot-b.slot):a.slot-b.slot);
+    ul.replaceChildren(...list.map(p=>{const li=document.createElement('li');const a=document.createElement('span');a.textContent=p.name;const b=document.createElement('small');b.textContent=(tm?TEAMN[p.team?1:0]+(p.me?'　あなた':''):(p.me?'あなた':''));if(tm){b.style.color=TEAMC[p.team?1:0];a.style.borderLeft='3px solid '+TEAMC[p.team?1:0];a.style.paddingLeft='8px'}li.append(a,b);return li}))},
   renderRooms(peers){
     const box=$('#netRooms');if(!box)return;const by=new Map();
-    for(const p of peers){if(p.isMe&&p.sameTab)continue;const lb=p.presence&&p.presence.lb;if(!lb||typeof lb!=='object')continue;const c=String(lb.c||'').toUpperCase();if(!/^[A-Z0-9]{6}$/.test(c))continue;const g=by.get(c)||{c,m:lb.m==='free'?'free':'dogfight',nm:this.clean(lb.nm),n:0};g.n++;by.set(c,g)}
+    for(const p of peers){if(p.isMe&&p.sameTab)continue;const lb=p.presence&&p.presence.lb;if(!lb||typeof lb!=='object')continue;const c=String(lb.c||'').toUpperCase();if(!/^[A-Z0-9]{6}$/.test(c))continue;const g=by.get(c)||{c,m:this.normMode(lb.m),nm:this.clean(lb.nm),n:0};g.n++;by.set(c,g)}
     const rows=[...by.values()].filter(g=>!(this.active&&g.c===this.code));
     if(!rows.length){const em=document.createElement('p');em.className='note';em.textContent='今開いている部屋はありません。部屋を作るか、コードで入ってください。';box.replaceChildren(em);return}
-    box.replaceChildren(...rows.map(g=>{const bt=document.createElement('button');bt.className='mbtn';const sp=document.createElement('span');const st=document.createElement('strong');st.textContent=`${g.nm} の部屋`;const sm=document.createElement('small');sm.textContent=`${g.m==='free'?'一緒に飛ぶ':'対戦'}・${g.n}人・${g.c}`;sp.append(st,sm);const ar=document.createElement('span');ar.className='ar';ar.textContent=g.n>=4?'満員':'参加';bt.append(sp,ar);bt.disabled=g.n>=4||this.active;bt.onclick=()=>{store.set('callsign',$('#callsign').value=this.clean($('#callsign').value));this.join(g.c)};return bt}));
+    box.replaceChildren(...rows.map(g=>{const bt=document.createElement('button');bt.className='mbtn';const sp=document.createElement('span');const st=document.createElement('strong');st.textContent=`${g.nm} の部屋`;const sm=document.createElement('small');sm.textContent=`${g.m==='free'?'一緒に飛ぶ':g.m==='team'?'チーム戦':'対戦'}・${g.n}人・${g.c}`;sp.append(st,sm);const ar=document.createElement('span');ar.className='ar';ar.textContent=g.n>=4?'満員':'参加';bt.append(sp,ar);bt.disabled=g.n>=4||this.active;bt.onclick=()=>{store.set('callsign',$('#callsign').value=this.clean($('#callsign').value));this.join(g.c)};return bt}));
   },
 };
 
@@ -1580,10 +1888,11 @@ const ROOM={room:null,r:null,seen:new Map(),unsubs:[],lobbyOn:false,
     const others=r.peers().filter(p=>!(p.isMe&&p.sameTab));
     if(!create&&!others.length){await this.leave();throw new Error('empty')}
     if(others.length>=4){await this.leave();throw new Error('full')}
-    if(!create){const h=others.find(p=>p.presence&&(p.presence.md==='free'||p.presence.md==='dogfight'));NET.mode=h?h.presence.md:'dogfight'}
+    if(!create){const h=others.find(p=>p.presence&&p.presence.md);NET.mode=NET.normMode(h&&h.presence.md)}
+    NET.pickTeam(create?[]:others.map(p=>p.presence&&p.presence.tm));
     const used=new Set(others.map(p=>p.presence&&p.presence.sl));let slot=0;while(used.has(slot))slot++;
     const me=r.peers().find(p=>p.isMe&&p.sameTab);NET.myId=me?me.peer:'me-'+Math.random().toString(36).slice(2,10);
-    await r.presence({nm:NET.myName(),sl:slot,md:NET.mode});
+    NET.slot=slot;await r.presence({nm:NET.myName(),sl:slot,md:NET.mode,tm:NET.team});
     this.unsubs.push(r.onPeers(ch=>this.peers(ch),e=>NET.lost('オンライン接続が切れました（'+(e&&e.code)+'）')));
     for(const t of ['m','mx','hit','down','fl'])this.unsubs.push(r.on(t,msg=>{if(msg.isMe&&msg.sameTab)return;const d=Object.assign({},msg.data&&typeof msg.data==='object'?msg.data:{},{t,id:msg.peer});if(t==='hit')d.by=msg.peer;NET.recv(d)},()=>{}));
     let offT=0;this.unsubs.push(r.onConnection(c=>{clearTimeout(offT);if(!c)offT=setTimeout(()=>{if(this.r&&!this.r.connected())notice('接続が不安定です','red')},2500)},()=>{}));
@@ -1592,12 +1901,13 @@ const ROOM={room:null,r:null,seen:new Map(),unsubs:[],lobbyOn:false,
     return {slot};
   },
   peers(ch){
-    for(const p of ch.peers){if(p.isMe&&p.sameTab){NET.myId=p.peer;continue}const pr=p.presence||{};if(!pr.nm&&!pr.s)continue;NET.upsertPlayer(p.peer,pr.nm,pr.sl);if(pr.s&&this.seen.get(p.peer)!==pr.s){this.seen.set(p.peer,pr.s);NET.onState(p.peer,pr.s)}}
+    for(const p of ch.peers){if(p.isMe&&p.sameTab){NET.myId=p.peer;continue}const pr=p.presence||{};if(!pr.nm&&!pr.s)continue;NET.upsertPlayer(p.peer,pr.nm,pr.sl,pr.tm??(pr.s&&pr.s.tm));if(pr.s&&this.seen.get(p.peer)!==pr.s){this.seen.set(p.peer,pr.s);NET.onState(p.peer,pr.s)}}
     for(const p of ch.left||[]){if(!(p.isMe&&p.sameTab)){this.seen.delete(p.peer);NET.peerLeave(p.peer)}}
     if(NET.active&&this.room)this.room.presence({lb:{c:NET.code,m:NET.mode,nm:NET.myName(),n:NET.players.size+1}}).catch(()=>{});
   },
   send(d){if(!this.r)return;const {t,id,...rest}=d;this.r.emit(t,rest).catch(e=>{if(e&&e.code==='not_permitted'&&!this.warned){this.warned=true;notice('共有権限が「閲覧」のため、攻撃を相手に送れません','red')}})},
   state(st){if(this.r)this.r.presence({s:st}).catch(()=>{})},
+  announce(){if(this.r)this.r.presence({nm:NET.myName(),sl:NET.slot,md:NET.mode,tm:NET.team}).catch(()=>{});if(this.room)this.room.presence({lb:{c:NET.code,m:NET.mode,nm:NET.myName(),n:NET.players.size+1}}).catch(()=>{})},
   async leave(){for(const u of this.unsubs)try{u()}catch(e){}this.unsubs=[];const r=this.r;this.r=null;if(r)try{await r.leave()}catch(e){}if(this.room)this.room.presence({lb:null}).catch(()=>{})},
 };
 
@@ -1623,23 +1933,25 @@ const RELAY={c:null,topic:null,info:null,last:new Map(),hbT:0,slot:0,rate:10,hiT
     if(create)c.publish(infoT,JSON.stringify({m:NET.mode,t:Date.now()}),{qos:1,retain:true});
     this.pub({k:'hi',nm:NET.myName(),sl:-1,md:NET.mode,ask:1});
     await new Promise(r=>setTimeout(r,create?600:2600));
-    if(!create){if(!this.last.size){this.leave();throw new Error('empty')}const md=(this.info&&this.info.m)||[...this.last.values()].map(v=>v.md).find(Boolean);NET.mode=md==='free'?'free':'dogfight'}
+    if(!create){if(!this.last.size){this.leave();throw new Error('empty')}const md=(this.info&&this.info.m)||[...this.last.values()].map(v=>v.md).find(Boolean);NET.mode=NET.normMode(md)}
     if(this.last.size>=4){this.leave();throw new Error('full')}
-    const used=new Set([...this.last.values()].map(v=>v.sl));let slot=0;while(used.has(slot))slot++;this.slot=slot;
+    const used=new Set([...this.last.values()].map(v=>v.sl));let slot=0;while(used.has(slot))slot++;this.slot=slot;NET.slot=slot;
+    NET.pickTeam(create?[]:[...this.last.values()].map(v=>v.tm));
     this.hello();clearInterval(this.hbT);this.hbT=setInterval(()=>{this.hello();this.expire()},2000);
-    setTimeout(()=>{for(const[id,v]of this.last)if(v.nm)NET.upsertPlayer(id,v.nm,v.sl)},0);
+    setTimeout(()=>{for(const[id,v]of this.last)if(v.nm)NET.upsertPlayer(id,v.nm,v.sl,v.tm)},0);
     return {slot};
   },
-  hello(){this.pub({k:'hi',nm:NET.myName(),sl:this.slot,md:NET.mode})},
+  hello(){this.pub({k:'hi',nm:NET.myName(),sl:this.slot,md:NET.mode,tm:NET.team})},
+  announce(){this.hello()},
   pub(d){if(this.c&&this.c.connected){d.id=NET.myId;try{this.c.publish(this.topic,JSON.stringify(d),{qos:0})}catch(e){}}},
   onMsg(d){
     if(!d||typeof d!=='object'||typeof d.id!=='string'||d.id.length>40||d.id===NET.myId)return;
     if(d.k==='bye'){this.last.delete(d.id);NET.peerLeave(d.id);return}
     const v=this.last.get(d.id)||{};v.t=performance.now();
-    if(d.k==='hi'){v.nm=NET.clean(d.nm);if(d.sl>=0)v.sl=d.sl|0;v.md=d.md==='free'?'free':'dogfight';this.last.set(d.id,v);if(NET.active&&d.sl>=0)NET.upsertPlayer(d.id,v.nm,v.sl);
+    if(d.k==='hi'){v.nm=NET.clean(d.nm);if(d.sl>=0)v.sl=d.sl|0;v.md=NET.normMode(d.md);v.tm=d.tm?1:0;this.last.set(d.id,v);if(NET.active&&d.sl>=0)NET.upsertPlayer(d.id,v.nm,v.sl,v.tm);
       if(d.ask&&NET.active&&performance.now()-this.hiT>500){this.hiT=performance.now();this.hello()}return}
     this.last.set(d.id,v);if(!NET.active)return;
-    if(!NET.players.has(d.id)&&v.nm)NET.upsertPlayer(d.id,v.nm,v.sl);
+    if(!NET.players.has(d.id)&&v.nm)NET.upsertPlayer(d.id,v.nm,v.sl,v.tm);
     if(d.k==='s')NET.onState(d.id,d.s);
     else if(d.k==='e'&&d.e&&typeof d.e==='object'){const ev=Object.assign({},d.e,{id:d.id});if(ev.t==='hit')ev.by=d.id;NET.recv(ev)}
   },
@@ -1682,7 +1994,8 @@ function frameBody(now){
   flash.intensity*=Math.exp(-dt*7);
   cloudSortT-=dt;if(cloudSortT<=0){cloudSortT=.6;sortClouds()}
   if(HIGH())composer.render();else renderer.render(scene,camera);
-  try{drawHUD(dt)}catch(e){reportError(e)}
+  try{renderRear()}catch(e){rearRect=null;reportError(e)}
+  try{drawHUD(dt);drawRearFrame()}catch(e){reportError(e)}
   panelT-=dt;if(panelT<=0){panelT=.08;try{updatePanels()}catch(e){reportError(e)}}
 }
 
@@ -1714,7 +2027,7 @@ function wireUI(){
   addEventListener('wheel',e=>{if(state!=='play')return;P.throttle=clamp(P.throttle-Math.sign(e.deltaY)*.04,0,1);updateLever()},{passive:true});
   $('#callsign').value=store.get('callsign','')||'PILOT-'+Math.floor(Math.random()*90+10);
   $('#callsign').addEventListener('change',()=>{$('#callsign').value=NET.clean($('#callsign').value);store.set('callsign',$('#callsign').value)});
-  const syncN=()=>{document.querySelectorAll('[data-nmode]').forEach(b=>b.classList.toggle('on',b.dataset.nmode===NET.mode));$('#nmodeNote').textContent=NET.mode==='free'?'一緒に飛ぶ：武器なしで同じ空を飛ぶ。空母・基地からの離着陸や編隊飛行に。':`対戦：プレイヤー同士で撃ち合う。先に${NET.WIN}機撃墜で勝利。`};
+  const syncN=()=>{document.querySelectorAll('[data-nmode]').forEach(b=>b.classList.toggle('on',b.dataset.nmode===NET.mode));$('#nmodeNote').textContent=NET.mode==='free'?'一緒に飛ぶ：武器なしで同じ空を飛ぶ。空母・基地からの離着陸や編隊飛行に。':NET.mode==='team'?`チーム戦：ALPHA（青）とBRAVO（赤）に分かれて戦う（2対2まで）。チーム合計で先に${NET.TWIN}機撃墜したほうが勝ち。ミサイル無制限。`:`対戦：プレイヤー同士で撃ち合う。先に${NET.WIN}機撃墜で勝利。`};
   document.querySelectorAll('[data-nmode]').forEach(b=>b.onclick=()=>{NET.mode=b.dataset.nmode;syncN()});syncN();
   $('#onlineBtn').onclick=()=>{$('#netPanel').classList.add('show');if(!NET.active){NET.showStart();NET.status('');NET.roomCap().then(r=>{if(r){ROOM.room=r;ROOM.watchLobby();$('#netRoomsWrap').hidden=false;NET.renderRooms(r.peers())}})}};
   NET.roomCap().then(r=>{if(r){ROOM.room=r;ROOM.watchLobby()}});
@@ -1723,12 +2036,13 @@ function wireUI(){
   $('#netJoin').onclick=()=>{store.set('callsign',$('#callsign').value=NET.clean($('#callsign').value));NET.join($('#roomCode').value)};
   $('#roomCode').addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter')$('#netJoin').click()});$('#callsign').addEventListener('keydown',e=>e.stopPropagation());
   $('#netLeave').onclick=()=>NET.leave();
+  document.querySelectorAll('[data-team]').forEach(b=>b.onclick=()=>NET.setTeam(+b.dataset.team));
   $('#netGo').onclick=()=>{$('#netPanel').classList.remove('show');startMission('online')};
   $('#netCopy').onclick=()=>{const link=NET.tp===ROOM?NET.code:location.origin+location.pathname+'#room-'+NET.code;const done=()=>NET.status(NET.tp===ROOM?'部屋コードをコピーしました：'+link:'招待リンクをコピーしました：'+link);try{navigator.clipboard.writeText(link).then(done,()=>NET.status('コピーできませんでした。このリンクを送ってください：'+link,true))}catch(e){NET.status('このリンクを送ってください：'+link,true)}};
   {const m=/^#room-([A-Za-z0-9]{6})$/.exec(location.hash);if(m){$('#roomCode').value=m[1].toUpperCase();$('#netPanel').classList.add('show');NET.showStart();NET.status('招待された部屋コードを入力しました。コールサインを決めて「入る」を押してください。')}}
   $('#pauseBtn').onclick=pause;$('#resumeBtn').onclick=resume;$('#quitBtn').onclick=goHome;$('#retryBtn').onclick=()=>startMission(missionKey);$('#rRetry').onclick=()=>startMission(missionKey);$('#rHome').onclick=goHome;
   const toggleCam=()=>{P.camMode=1-P.camMode;if(P.obj?.userData.canopy)P.obj.userData.canopy.visible=P.camMode===0;camSnap=true;notice(P.camMode?'コックピット視点':'追跡視点')};
-  $('#camBtn').onclick=toggleCam;
+  $('#camBtn').onclick=toggleCam;$('#rearBtn').onclick=toggleRear;$('#rearBtn').classList.toggle('on',rearOn);
   addEventListener('keydown',e=>{
     if(document.activeElement&&document.activeElement.type==='range'&&$('#ctrlPanel').classList.contains('show')&&e.code!=='Escape')return;
     if(e.code==='Tab'||e.code==='Space'||e.code.startsWith('Arrow'))e.preventDefault();
@@ -1739,7 +2053,7 @@ function wireUI(){
     if(/^Digit[0-9]$/.test(e.code)){const n=+e.code.slice(5);P.throttle=n===0?1:n/10;updateLever()}
     if(e.code==='KeyG')toggleGear();
     if(e.code==='KeyF'||e.code==='Enter')fireMissile();
-    if(e.code==='KeyC'){P.weapon=1-P.weapon;P.lockT=0;P.locked=false;notice(WPN[P.weapon].label+'を選択')}
+    if(e.code==='KeyR')toggleRear();
     if(e.code==='KeyT'||e.code==='Tab')cycleTarget();
     if(e.code==='KeyX')playerFlares();
     if(e.code==='KeyV')toggleCam();
@@ -1750,7 +2064,7 @@ function wireUI(){
   const hold=(id,on,off)=>{const el=$(id);el.addEventListener('pointerdown',e=>{e.preventDefault();el.setPointerCapture(e.pointerId);el.classList.add('down');SND.resume();on()});for(const ev of['pointerup','pointercancel','lostpointercapture'])el.addEventListener(ev,()=>{el.classList.remove('down');off()})};
   hold('#mGun',()=>touch.gun=true,()=>touch.gun=false);hold('#mBrake',()=>touch.brake=true,()=>touch.brake=false);
   const tap=(id,fn)=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();SND.resume();if(state==='play')fn()});
-  tap('#mMsl',fireMissile);tap('#mGear',toggleGear);tap('#mTgt',cycleTarget);tap('#mFlr',playerFlares);tap('#mWpn',()=>{P.weapon=1-P.weapon;P.lockT=0;notice(WPN[P.weapon].label+'を選択')});
+  tap('#mMsl',fireMissile);tap('#mGear',toggleGear);tap('#mTgt',cycleTarget);tap('#mFlr',playerFlares);
   tap('#mCtx',()=>{const f=$('#mCtx')._fn;if(f){f();updateLever()}});
   const fz=$('#flyZone'),base=$('#fzBase'),knob=$('#fzKnob');let fd=null,ox=0,oy=0;const RAD=62;
   fz.addEventListener('pointerdown',e=>{e.preventDefault();if(fd!==null)return;fd=e.pointerId;fz.setPointerCapture(fd);SND.resume();const r=fz.getBoundingClientRect();ox=e.clientX-r.left;oy=e.clientY-r.top;base.style.left=ox+'px';base.style.top=oy+'px';base.classList.add('on');$('#fzHint').hidden=true;knob.style.transform='';touch.x=touch.y=0});
@@ -1778,9 +2092,8 @@ buildWorld();
 AIRCRAFT.forEach(a=>models.push(buildAircraft(a.id)));
 rvTemplate=buildAircraft('RV31');droneTemplate=buildAircraft('DRONE');mslTemplates=[buildMissile(false),buildMissile(true)];
 wireUI();showcase(settings.aircraft);
-window.__sky={NET,P,T,state:()=>state,startMission,missiles,keys,step,smoke,fire,fireMissile,cycleTarget,playerFlares,mission:()=>mission,CV,surfaceAt,deckY,fromCarrier,toCarrier,input,settings,freeCam:(a,b)=>{freeCam=a?[new V3(...a),new V3(...b)]:null},models,carrier:()=>carrier};
+window.__sky={animateAircraft,setThrottleGlow,BASES,shipFrames,shipFrame,frWorld,frLocal,FR_CARRIER,FR_ESCORT,spawnShip,spawnAir,rearRect:()=>rearRect,toggleRear,V3,NET,P,T,state:()=>state,startMission,missiles,keys,step,smoke,fire,fireMissile,cycleTarget,playerFlares,mission:()=>mission,CV,surfaceAt,deckY,fromCarrier,toCarrier,input,settings,freeCam:(a,b)=>{freeCam=a?[new V3(...a),new V3(...b)]:null},models,carrier:()=>carrier};
 requestAnimationFrame(t=>{last=t;frame(t);$('#loading').classList.add('hide')});
 </script>
 
-</body>
-</html>
+</body></html>
