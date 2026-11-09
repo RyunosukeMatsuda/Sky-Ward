@@ -247,7 +247,7 @@ body.mobile .opts{gap:6px}
   <div class="home-in">
    <div class="h-left">
     <div>
-      <div class="eyebrow">FLIGHT COMBAT // PROTOTYPE 09 — 3D</div>
+      <div class="eyebrow">FLIGHT COMBAT // PROTOTYPE 10 — 3D</div>
       <h1>SKY<span>WARD</span></h1>
     </div>
     <p class="lead">空母打撃群から出撃し、訓練や迎撃任務に挑むフライトアクション。機体を傾けて旋回し、速度を管理しながら敵機や艦船をロックオンして攻撃せよ。</p>
@@ -269,6 +269,18 @@ body.mobile .opts{gap:6px}
           <span>速度</span><div class="bar"><i id="stSpd"></i></div>
           <span>旋回</span><div class="bar"><i id="stTrn"></i></div>
           <span>安定</span><div class="bar"><i id="stStb"></i></div>
+        </div>
+      </div>
+      <div class="lbl" style="margin-top:12px">ミサイル</div>
+      <div class="acl" id="mslList"></div>
+      <div class="acard pnl">
+        <div class="r" id="mslRole">—</div>
+        <p id="mslDesc">—</p>
+        <div class="stats">
+          <span>射程</span><div class="bar"><i id="msRng"></i></div>
+          <span>誘導</span><div class="bar"><i id="msTrn"></i></div>
+          <span>対空</span><div class="bar"><i id="msAir"></i></div>
+          <span>対艦</span><div class="bar"><i id="msShp"></i></div>
         </div>
       </div>
     </div>
@@ -473,7 +485,7 @@ const store={get(k,d){try{const v=localStorage.getItem('skyward.'+k);return v==n
 const isTouch=matchMedia('(pointer: coarse)').matches;
 const MOBILE=isTouch||matchMedia('(hover: none)').matches;if(MOBILE)document.body.classList.add('mobile');
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const settings={easy:store.get('easy',MOBILE),sPitch:store.get('sPitch',70),sRoll:store.get('sRoll',70),sSmooth:store.get('sSmooth',50),sCurve:store.get('sCurve',50),start:store.get('start','carrier'),quality:store.get('quality',isTouch?'low':'high'),invert:store.get('invert',false),sound:store.get('sound',true),aircraft:store.get('aircraft',0)};
+const settings={missile:clamp(store.get('missile',0)|0,0,3),easy:store.get('easy',MOBILE),sPitch:store.get('sPitch',70),sRoll:store.get('sRoll',70),sSmooth:store.get('sSmooth',50),sCurve:store.get('sCurve',50),start:store.get('start','carrier'),quality:store.get('quality',isTouch?'low':'high'),invert:store.get('invert',false),sound:store.get('sound',true),aircraft:store.get('aircraft',0)};
 const HIGH=()=>settings.quality==='high';
 
 /* ---------- renderer ---------- */
@@ -709,6 +721,7 @@ const AIRCRAFT=[
   {id:'NGF',name:'XF-X NEXTGEN',role:'次世代の制空戦闘機',desc:'垂直尾翼を持たない次世代機。翼端後方の安定板で姿勢を制御し、速度と旋回の両方が高水準。',vmax:650,thrust:31,roll:3.5,pitch:1.15,yaw:.42,stall:64,glim:9.5,stats:[.95,.88,.82]},
   {id:'HX1',name:'HX-1 MERIDIAN',role:'極超音速機（オリジナル）',desc:'このゲームのために設計したオリジナルの極超音速機。最高速度は全機体で一番だが、高速では舵が重く旋回半径が大きい。',vmax:900,thrust:36,roll:2.4,pitch:.72,yaw:.22,stall:92,glim:6,stats:[1,.35,.75]},
   {id:'TB2',name:'TB2 BAYRAKTAR',role:'低速の無人攻撃機',desc:'プロペラ推進の無人機。とても遅いが失速しにくく、低空で地上や艦船を落ち着いて狙える。速度はゲーム用に実機より上げている。',vmax:115,thrust:6.5,roll:1.9,pitch:1.0,yaw:.45,stall:28,glim:5,stats:[.12,.62,.95],prop:true,fixedGear:true},
+  {id:'FX7',name:'FX-7 PETREL',role:'可変翼のカナード艦上戦闘機（オリジナル）',desc:'このゲームのために設計したオリジナル機。可変翼にカナード（前翼）を組み合わせた双発の艦上戦闘機で、低速でも機首がよく回り、翼を畳めば高速も出る。',vmax:610,thrust:27.5,roll:3.0,pitch:1.1,yaw:.38,stall:58,glim:9,stats:[.86,.84,.78],swing:true},
 ];
 /* skin shader: panel lines, weathering, camouflage and (fictional) insignia, all procedural in model space */
 const SKIN_GLSL=`varying vec3 vOP;varying vec3 vON;uniform float uPL,uCamo;uniform vec3 uC1,uC2,uC3,uDT,uDS,uI1,uI2;
@@ -747,7 +760,6 @@ function flameMat(){return new THREE.ShaderMaterial({uniforms:{uI:{value:0},uAB:
     vec3 col=mix(vec3(1.6,.6,.2),vec3(.6,.75,1.7),uAB*(1.-z)*.75)*body+vec3(1.3,1.15,1.4)*dia*1.7;
     float a=uI*e*(body+dia*.9)*(.88+.12*sin(uT*55.+z*24.));gl_FragColor=vec4(col*a,1.);}`})}
 const coreMat=new THREE.MeshBasicMaterial({color:new THREE.Color(1.3,.48,.18),side:THREE.DoubleSide});
-let pylonTpl=null;
 function pilotParts(c,list){
   const h=new THREE.SphereGeometry(.15,14,10);h.translate(c.x,c.y-.2,c.z+.12);list.helmet.push(h);
   const v=new THREE.SphereGeometry(.156,14,8,-Math.PI*.8,Math.PI*.6,Math.PI*.3,Math.PI*.32);v.translate(c.x,c.y-.2,c.z+.12);list.visor.push(v);
@@ -863,6 +875,36 @@ function buildAircraft(id,opt={}){
     swing={min:16*Math.PI/180,max:72*Math.PI/180,v0:120,v1:330};
     P.glass.push(canopy(-6.3,-3.7,.62,.42,.55));cockpit.set(0,1.2,-5.1);crew.push(new V3(0,1.18,-4.9));
     tips=[new V3(7.1,.1,2.5),new V3(-7.1,.1,2.5)];
+  }else if(id==='FX7'){
+    paint=skinMat('pFX7',{color:'#3d5266',roughness:.5,metalness:.3},{camo:2,c2:'#b9c3ca',top:[6.4,3.0,.55],side:[.05,3.2,.4],i1:'#1f2c38',i2:'#c9d2d8',pl:.24});
+    // long slim forebody, shoulder intakes, broad flat rear fuselage housing two close-set engines
+    P.paint.push(loft([{z:-10.2,w:.04,h:.04},{z:-9.3,w:.3,h:.3},{z:-7.8,w:.56,h:.58,hb:.5},{z:-6.2,w:.72,h:.76,hb:.6},{z:-4.6,w:.82,h:.82,hb:.66},{z:-2.8,w:1.2,h:.7,hb:.66},{z:0,w:1.62,h:.62,hb:.64},{z:3.5,w:1.66,h:.58,hb:.6},{z:6.5,w:1.4,h:.5,hb:.52},{z:8.3,w:1.18,h:.44,hb:.46}],E(2.6,24)));
+    P.dark.push(loft([{z:-10.25,w:.045,h:.045},{z:-9.3,w:.315,h:.315},{z:-8.5,w:.45,h:.46,hb:.42}],E(2.6,24),{capE:false}));
+    // dorsal spine behind the canopy
+    P.paint.push(loft([{z:-3.9,w:.3,h:.05,y:.7},{z:-1.5,w:.42,h:.24,y:.66},{z:3.2,w:.38,h:.2,y:.6},{z:5,w:.12,h:.06,y:.56}],E(2,12)));
+    swingSide('R',new V3(1.95,.12,.9));swingSide('L',new V3(-1.95,.12,.9));
+    for(const s of [1,-1]){const sd=s>0?'R':'L';
+      // shoulder intake trunk with a raked square mouth
+      P.paint.push(loft([{z:-4.2,w:.42,h:.5,x:s*1.12,y:.18},{z:-2,w:.48,h:.56,x:s*1.2,y:.16},{z:1.5,w:.4,h:.48,x:s*1.12,y:.12},{z:3.2,w:.2,h:.3,x:s*.95,y:.1}],E(4.5,14),{capS:false}));
+      P.dark.push(box(.8,.98,.06,s*1.12,.18,-4.15,s*.22,.3));
+      // all-moving canard just ahead of the wing glove
+      mv(wing([{x:1.2,le:-3.6,te:-2.0,y:.32,t:.12},{x:3.15,le:-2.55,te:-1.9,y:.36,t:.05}],s<0),new V3(s*1.2,.32,-2.6),new V3(s*3.15,.36,-2.3),'stab',s);
+      // fixed glove, then the swinging outer panel
+      P.paint.push(wing([{x:.95,le:-1.6,te:2.6,y:.12,t:.3},{x:2.25,le:.3,te:2.6,y:.12,t:.24}],s<0));
+      W([{x:1.8,le:.2,te:2.9,y:.12,t:.3},{x:8.6,le:2.2,te:3.5,y:.1,t:.08}],s<0,[{x0:2.4,x1:5.6,f:.3,k:'flap'},{x0:5.6,x1:8.2,f:.3,k:'ail'}],'paint',sd);
+      // small tailerons
+      mv(wing([{x:1.25,le:5.9,te:8.0,y:.0,t:.16},{x:3.6,le:7.4,te:8.4,y:.0,t:.05}],s<0),new V3(s*1.25,0,6.9),new V3(s*3.6,0,6.9),'stab',s);
+      // twin ventral strakes
+      P.paint.push(tail([{x:0,le:5.0,te:7.2,t:.1},{x:.75,le:6.1,te:7.3,t:.04}],s*.75,-.42,Math.PI-s*.4));
+      noz.push({x:s*.52,y:0,z:8.3,r:.46,len:1.0,petal:true});
+      PY.push(new V3(s*1.55,-.5,-.6),new V3(s*.55,-.68,2.2));
+    }
+    // single tall swept fin with a tip fairing
+    TL([{x:0,le:2.6,te:7.9,t:.3},{x:1.2,le:4.4,te:8.0,t:.24},{x:3.7,le:7.0,te:8.6,t:.08}],0,.55,0,[{x0:1.1,x1:3.3,f:.28,k:'rud'}]);
+    P.mark.push(cyl(.07,.07,1.3,0,4.28,8.0,'z',8));
+    swing={min:18*Math.PI/180,max:70*Math.PI/180,v0:120,v1:330};
+    P.glass.push(canopy(-7.0,-3.6,.6,.44,.6));cockpit.set(0,1.2,-5.6);crew.push(new V3(0,1.18,-5.4));
+    tips=[new V3(8.6,.1,2.9),new V3(-8.6,.1,2.9)];
   }else if(id==='NGF'){
     paint=skinMat('pNGF',{color:'#6d7277',roughness:.46,metalness:.42},{top:[4.2,3.4,.55],side:[.0,2.2,.42],pl:.24});glass=M('glassGold',{color:'#a88a46',roughness:.06,metalness:.9,envMapIntensity:1.6,transparent:true,opacity:.62,depthWrite:false});
     P.paint.push(loft([{z:-10.5,w:.03,h:.03},{z:-9.5,w:.28,h:.22,hb:.2},{z:-8,w:.5,h:.42,hb:.32},{z:-6.5,w:.66,h:.62,hb:.4},{z:-5,w:.8,h:.72,hb:.45},{z:-3,w:1.0,h:.62,hb:.5},{z:0,w:1.15,h:.55,hb:.5},{z:4,w:1.15,h:.5,hb:.48},{z:7,w:1.0,h:.45,hb:.45},{z:8.6,w:.82,h:.42,hb:.42}],E(2.2,24)));
@@ -944,8 +986,8 @@ function buildAircraft(id,opt={}){
   if(prop){grp.add(prop)}
   // external stores on pylons
   const pylons=[];
-  if(PY.length&&!ST){if(!pylonTpl)pylonTpl=buildMissile(false);const sc=id==='TB2'?.5:.92,pm=M('pylon',{color:'#9aa1a6',roughness:.5,metalness:.4});
-    for(const p of PY){const ms=pylonTpl.clone();ms.scale.setScalar(sc);ms.position.copy(p);grp.add(ms);const py=new THREE.Mesh(box(.1,.3*sc,1.3*sc,p.x,p.y+.26*sc,p.z+.1),pm);grp.add(py);pylons.push({p:p.clone(),mesh:ms,t:0})}}
+  if(PY.length&&!ST){const pylonTpl=mslTpl(settings.missile);const sc=id==='TB2'?.5:.92,pm=M('pylon',{color:'#9aa1a6',roughness:.5,metalness:.4});
+    for(const p of PY){const ms=pylonTpl.clone();ms.scale.setScalar(sc);ms.position.copy(p);grp.add(ms);const py=new THREE.Mesh(box(.1,.3*sc,1.3*sc,p.x,p.y+.26*sc,p.z+.1),pm);grp.add(py);pylons.push({p:p.clone(),mesh:ms,t:0,sc})}}
   const glows=[];
   for(const n of noz){
     let ng;if(n.rect)ng=box(n.rect[0],n.rect[1],n.len,n.x,n.y,n.z+n.len/2);
@@ -964,7 +1006,7 @@ function buildAircraft(id,opt={}){
   return grp;
 }
 const GEAR={F15:{nz:-6,nb:-.55,mz:1.6,mx:1.35,mb:-.85,s:1.4,r:.38},F22:{nz:-6,nb:-.5,mz:1.8,mx:1.55,mb:-.62,s:1.4,r:.38},F35:{nz:-5,nb:-.5,mz:1.2,mx:1.35,mb:-.6,s:1.3,r:.36},F117:{nz:-6.2,nb:-.2,mz:2.4,mx:1.9,mb:-.22,s:1.5,r:.4},B2:{nz:-6.5,nb:-.8,mz:1.5,mx:4.6,mb:-.4,s:1.8,r:.5},
-  F14:{nz:-6.6,nb:-.55,mz:1.4,mx:2.1,mb:-.85,s:1.25,r:.42},MIG23:{nz:-5.6,nb:-.6,mz:.9,mx:1.45,mb:-.75,s:1.2,r:.36},NGF:{nz:-6.6,nb:-.42,mz:1.8,mx:1.4,mb:-.5,s:1.4,r:.38},HX1:{nz:-9,nb:-.2,mz:4.5,mx:2.3,mb:-.85,s:1.6,r:.5},TB2:{nz:-2.4,nb:-.35,mz:.35,mx:.85,mb:-.32,s:.68,r:.18}};
+  F14:{nz:-6.6,nb:-.55,mz:1.4,mx:2.1,mb:-.85,s:1.25,r:.42},MIG23:{nz:-5.6,nb:-.6,mz:.9,mx:1.45,mb:-.75,s:1.2,r:.36},NGF:{nz:-6.6,nb:-.42,mz:1.8,mx:1.4,mb:-.5,s:1.4,r:.38},HX1:{nz:-9,nb:-.2,mz:4.5,mx:2.3,mb:-.85,s:1.6,r:.5},TB2:{nz:-2.4,nb:-.35,mz:.35,mx:.85,mb:-.32,s:.68,r:.18},FX7:{nz:-6.2,nb:-.5,mz:1.7,mx:1.3,mb:-.55,s:1.3,r:.38}};
 function addGear(grp,id){
   const g=GEAR[id];if(!g){grp.userData.gearH=1.5;return}
   const cy=Math.min(g.nb,g.mb)-g.s-g.r,S=[],Wh=[];
@@ -992,11 +1034,14 @@ function animateAircraft(o,st,dt){
   if(u.prop){const w=10+(st.thr||0)*95;u.prop.rotation.z+=w*dt;u.prop.userData.disc.material.opacity=clamp((w-20)/80,0,.22)}
   for(const p of u.pylons){if(p.t>0){p.t-=dt;if(p.t<=0)p.mesh.visible=true}}
 }
-function buildMissile(heavy){
-  const r=heavy?.16:.1,L=heavy?3.8:2.9;const P=[],D=[];
+function buildMissile(k){
+  if(typeof k!=='object'||!k)k=k?{r:.16,L:3.8}:{r:.1,L:2.9};
+  const r=k.r,L=k.L,fs=k.fin||1,P=[],D=[],B=[];
   P.push(cyl(r,r,L*.82,0,0,L*.06,'z',12));D.push(cyl(r,.001,L*.18,0,0,-L*.44,'z',12));
-  for(let i=0;i<4;i++){const f=box(.02,r*4.2,L*.16,0,0,L*.38);f.rotateZ(i*Math.PI/2+Math.PI/4);P.push(f);const c=box(.02,r*2.6,L*.1,0,0,-L*.12);c.rotateZ(i*Math.PI/2+Math.PI/4);P.push(c)}
-  const g=new THREE.Group();g.add(meshFrom(P,M('mslWhite',{color:'#dcdfe0',roughness:.4,metalness:.2})));g.add(meshFrom(D,M('mslNose',{color:'#3b3f42',roughness:.4,metalness:.3})));
+  for(let i=0;i<4;i++){const f=box(.02,r*4.2*fs,L*.16,0,0,L*.38);f.rotateZ(i*Math.PI/2+Math.PI/4);P.push(f);const c=box(.02,r*2.6*fs,L*.1,0,0,-L*.12);c.rotateZ(i*Math.PI/2+Math.PI/4);P.push(c)}
+  if(k.band)B.push(cyl(r*1.04,r*1.04,L*.05,0,0,-L*.27,'z',12));
+  const g=new THREE.Group();g.add(meshFrom(P,M('msl_'+(k.body||'#dcdfe0'),{color:k.body||'#dcdfe0',roughness:.4,metalness:.2})));g.add(meshFrom(D,M('mslN_'+(k.nose||'#3b3f42'),{color:k.nose||'#3b3f42',roughness:.4,metalness:.3})));
+  if(B.length)g.add(meshFrom(B,M('mslB_'+k.band,{color:k.band,roughness:.5,metalness:.1})));
   return g;
 }
 
@@ -1032,7 +1077,7 @@ function buildShip(type){
     const T=F+2.4;P.gray.push(box(10,14,34,30,T+7,40),box(9,8,20,30,T+18,36),cyl(.9,1.3,18,30,T+31,34),box(12,.6,.6,30,T+36,34));
     P.dark.push(box(9.2,1.4,.3,30,T+19,25.8),box(.3,1.4,19,25.4,T+19,36),box(4,4,.3,34.5,T+15,22.8,.6),box(4,4,.3,25.5,T+15,22.8,-.6));
     P.gray.push(box(9,6,7,30,T+3,64));
-    const jets=[];for(let i=0;i<6;i++){const j=buildAircraft(['F15','F35','F14','F15','F35','F14'][i],{static:true});j.position.set(-24+(i%3)*6,T+j.userData.gearH,95+Math.floor(i/3)*20+(i%3)*3);j.rotation.y=Math.PI*.78;j.scale.setScalar(.98);grp.add(j);jets.push(j)}
+    const jets=[];for(let i=0;i<6;i++){const j=buildAircraft(['F15','F35','F14','FX7','F35','F14'][i],{static:true});j.position.set(-24+(i%3)*6,T+j.userData.gearH,95+Math.floor(i/3)*20+(i%3)*3);j.rotation.y=Math.PI*.78;j.scale.setScalar(.98);grp.add(j);jets.push(j)}
   }else{
     const s=type==='cruiser'?1:.88,T=F;
     P.gray.push(box(13*s,9,34*s,0,T+4.5,-8*s),box(10*s,6,14*s,0,T+12,-14*s),box(11*s,7,22*s,0,T+3.5,30*s),box(5.4*s,9.5,8*s,0,T+13,6*s,0,-.08));
@@ -1363,7 +1408,7 @@ function updateAir(e,dt){
     if(e.burst>0){e.burst-=dt;if(Math.random()<dt*14)fireEnemyBullet(e)}
     // missile
     if(P.alive&&!mission.over&&dist<5600&&dist>900&&ang<.4){e.lockT+=dt;lockedBy.add(e)}else e.lockT=Math.max(0,e.lockT-dt*2);
-    e.mslCD-=dt;if(e.lockT>2.4&&e.mslCD<=0&&missiles.filter(m=>m.owner==='enemy').length<2){launchMissile('enemy',e.pos,e.fwd,e.speed,P,1);e.mslCD=rand(13,22);e.lockT=0;notice('ミサイル接近 — フレア［X］か急旋回で回避','red')}
+    e.mslCD-=dt;if(e.lockT>2.4&&e.mslCD<=0&&missiles.filter(m=>m.owner==='enemy').length<2){launchMissile('enemy',e.pos,e.fwd,e.speed,P,2);e.mslCD=rand(13,22);e.lockT=0;notice('ミサイル接近 — フレア［X］か急旋回で回避','red')}
   }
   const gy=groundY(e.pos.x,e.pos.z),agl=e.pos.y-gy;if(agl<550)desired.y=Math.max(desired.y,.25+(550-agl)/400);
   const ahead=groundY(e.pos.x+e.fwd.x*1200,e.pos.z+e.fwd.z*1200);if(e.pos.y-ahead<450)desired.y=Math.max(desired.y,.6);
@@ -1393,8 +1438,16 @@ function updateShip(e,dt){
 }
 
 /* ---------- weapons ---------- */
-const WPN=[{label:'ミサイル',range:7500,cone:.22,lock:.5,speed:820,turn:.8,life:11,dmg:130,decoy:.35},{label:'大型ミサイル',range:9500,cone:.14,lock:1.2,speed:720,turn:.42,life:15,dmg:175,decoy:.25}];
-let mslTemplates;
+/* missile types, chosen on the home screen with the aircraft. air/ship = damage multiplier per target kind, net = damage in online play */
+const WPN=[
+  {id:'std',name:'標準',label:'標準ミサイル',desc:'射程7.5km。誘導・威力・連射のバランスが良い万能型。',range:7500,cone:.22,lock:.5,speed:820,turn:.8,life:11,dmg:130,decoy:.35,cd:.4,air:1,ship:1,net:80,look:{r:.1,L:2.9,body:'#dcdfe0',nose:'#3b3f42',band:'#c9a13a'}},
+  {id:'srm',name:'格闘',label:'格闘ミサイル',desc:'射程4.5km。ロック範囲が広く一瞬でロックでき、急旋回する敵にも食いつく。威力はやや低い。',range:4500,cone:.5,lock:.2,speed:790,turn:1.7,life:7,dmg:105,decoy:.22,cd:.35,air:1,ship:.7,net:70,look:{r:.085,L:2.5,body:'#e4e1d8',nose:'#2f3336',band:'#3d8fd1',fin:1.25}},
+  {id:'lrm',name:'長射程',label:'長射程ミサイル',desc:'射程13km。高速で遠くの敵を狙えるが、ロックに時間がかかり旋回は鈍い。連射間隔も長い。',range:13000,cone:.13,lock:1.3,speed:1050,turn:.42,life:16,dmg:150,decoy:.45,cd:1.0,air:1,ship:.9,net:90,look:{r:.14,L:3.9,body:'#d6d9da',nose:'#e8e2cf',band:'#b8442f',fin:.8}},
+  {id:'asm',name:'対艦',label:'対艦ミサイル',desc:'艦船に約2倍の大打撃。遅く旋回も鈍いので、空中の目標には向かない。',range:9000,cone:.2,lock:.8,speed:600,turn:.45,life:18,dmg:150,decoy:.6,cd:.9,air:.55,ship:2,net:55,look:{r:.19,L:4.2,body:'#8d9384',nose:'#3a3d38',band:'#d8c54a',fin:.9}},
+];
+let mslTemplates=null;
+function mslTpl(i){if(!mslTemplates)mslTemplates=WPN.map(w=>buildMissile(w.look));return mslTemplates[clamp(i|0,0,WPN.length-1)]}
+function setPylonMissile(obj,ti){const py=obj&&obj.userData.pylons;if(!py)return;for(const p of py){const v=p.mesh.visible;obj.remove(p.mesh);const ms=mslTpl(ti).clone();ms.scale.setScalar(p.sc);ms.position.copy(p.p);ms.visible=v;obj.add(ms);p.mesh=ms}}
 function fireGun(){
   if(P.gunCD>0||!P.alive||mission.noWeapons)return;if(P.ammo.gun<=0&&!mission.infinite){return}
   P.gunCD=.055;if(!mission.infinite)P.ammo.gun--;P.shots++;
@@ -1404,17 +1457,18 @@ function fireGun(){
   if(P.shots%2)SND.gun();shake(.05);
 }
 function fireEnemyBullet(e){const sp=new V3(rand(-1,1),rand(-1,1),rand(-1,1)).multiplyScalar(.012);ebullets.push({pos:e.pos.clone().addScaledVector(e.fwd,8),vel:e.fwd.clone().add(sp).normalize().multiplyScalar(1000).add(e.vel),life:1.6,harm:true})}
-function launchMissile(owner,pos,dir,spd,target,heavy,net){
-  const w=owner==='player'||net?WPN[heavy?1:0]:{speed:560,turn:.5,life:13,dmg:38};
-  const obj=mslTemplates[heavy?1:0].clone();scene.add(obj);
+function launchMissile(owner,pos,dir,spd,target,type,net){
+  type=clamp(type|0,0,WPN.length-1);
+  const w=owner==='player'||net?WPN[type]:{speed:560,turn:.5,life:13,dmg:38,air:1,ship:1};
+  const obj=mslTpl(type).clone();scene.add(obj);
   let down=ZERO;if(owner==='player'){const py=P.obj.userData.pylons;if(py&&py.length){P.pyI=((P.pyI||0)+1)%py.length;const pp=py[P.pyI];down=_v1.copy(pp.p).applyQuaternion(P.q);pp.mesh.visible=false;pp.t=2.2}else down=_v1.set(0,-1.6,1).applyQuaternion(P.q)}
-  const m={owner,obj,pos:pos.clone().add(down),dir:dir.clone(),speed:spd+20,max:owner==='player'?Math.max(w.speed,spd+200):w.speed,turn:w.turn,life:w.life,dmg:w.dmg,target,age:0,trailD:0,decoyChecked:false,heavy,vel:new V3()};
-  if(net){m.netId=net.mid;m.from=net.from;m.dmg=heavy?95:80}
-  else if(owner==='player'&&mission.mp&&NET.active){m.netId=NET.myId+'.'+(++NET.mid);NET.send({t:'m',mid:m.netId,p:NET.v(m.pos),d:NET.v(dir),sp:Math.round(spd),tg:target&&target.remote?target.id:null,hv:heavy?1:0})}
+  const m={owner,obj,pos:pos.clone().add(down),dir:dir.clone(),speed:spd+20,max:owner==='player'?Math.max(w.speed,spd+200):w.speed,turn:w.turn,life:w.life,dmg:w.dmg,target,age:0,trailD:0,decoyChecked:false,type,air:w.air,ship:w.ship,vel:new V3()};
+  if(net){m.netId=net.mid;m.from=net.from;m.dmg=WPN[type].net}
+  else if(owner==='player'&&mission.mp&&NET.active){m.netId=NET.myId+'.'+(++NET.mid);NET.send({t:'m',mid:m.netId,p:NET.v(m.pos),d:NET.v(dir),sp:Math.round(spd),tg:target&&target.remote?target.id:null,hv:type})}
   missiles.push(m);SND.missile();return m;
 }
 function fireMissile(){
-  if(!P.alive||mission.noWeapons||P.ground||(P.mslCD||0)>0)return;P.weapon=0;P.mslCD=.4;P.msl++;
+  if(!P.alive||mission.noWeapons||P.ground||(P.mslCD||0)>0)return;P.mslCD=WPN[P.weapon].cd;P.msl++;
   const fwd=_v1.set(0,0,-1).applyQuaternion(P.q).clone();
   launchMissile('player',P.pos,fwd,P.speed,P.locked?P.target:null,P.weapon);
   notice(P.locked?`${WPN[P.weapon].label}発射 — ${P.target.name}`:'ロックなし — 直進で発射');
@@ -1436,7 +1490,7 @@ function updateMissiles(dt){
     let tgt=m.target;if(tgt&&(tgt.hp<=0||tgt.dead||tgt.falling||(tgt.life!==undefined&&tgt.life<=0)||(tgt===P&&!P.alive)))tgt=m.target=null;
     if(tgt){const tv=tgt.vel||ZERO,d=tgt.pos.distanceTo(m.pos),lead=_v1.copy(tgt.pos).addScaledVector(tv,clamp(d/m.speed,0,3)*.85),des=lead.sub(m.pos).normalize();
       if(m.dir.angleTo(des)>1.35&&m.age>.6){m.target=null}else turnToward(m.dir,des,m.turn*dt*(m.age<.3?.25:1));
-      if(m.owner==='player'&&tgt.type==='air'&&!m.decoyChecked&&d<2600){m.decoyChecked=true;if(tgt.kind!=='drone'&&Math.random()<.5){releaseFlares(tgt.pos,tgt.vel,tgt.obj.quaternion);if(Math.random()<WPN[m.heavy].decoy)m.target=flares[flares.length-1];tgt.evadeT=2.5;tgt.evade=new V3().crossVectors(m.dir,UP).normalize().addScaledVector(UP,.2)}}
+      if(m.owner==='player'&&tgt.type==='air'&&!m.decoyChecked&&d<2600){m.decoyChecked=true;if(tgt.kind!=='drone'&&Math.random()<.5){releaseFlares(tgt.pos,tgt.vel,tgt.obj.quaternion);if(Math.random()<WPN[m.type].decoy)m.target=flares[flares.length-1];tgt.evadeT=2.5;tgt.evade=new V3().crossVectors(m.dir,UP).normalize().addScaledVector(UP,.2)}}
     }
     m.vel.copy(m.dir).multiplyScalar(m.speed);m.pos.addScaledVector(m.vel,dt);
     m.obj.position.copy(m.pos);m.obj.quaternion.setFromUnitVectors(_v1.set(0,0,-1),m.dir);
@@ -1447,9 +1501,9 @@ function updateMissiles(dt){
     else if(m.owner==='remote'){if(P.alive&&segSphere(prev,m.pos,P.pos,20)){hit=true;explode(m.pos.clone(),1);damagePlayer(m.dmg,'ミサイルで撃墜されました',m.from)}}
     else if(tgt&&tgt.hp!==undefined){const r=tgt===P?22:tgt.type==='ship'?0:(tgt.radius+11);
       if(tgt.type==='ship'){if(hitShipVolume(tgt,m.pos,2))hit=true}else if(segSphere(prev,m.pos,tgt.pos,r))hit=true;
-      if(hit){explode(m.pos.clone(),tgt.type==='ship'?1.6:1);if(tgt===P)damagePlayer(m.dmg,'ミサイルで撃墜されました',m.from);else damageTarget(tgt,m.dmg,'msl')}}
+      if(hit){explode(m.pos.clone(),tgt.type==='ship'?1.6:1);if(tgt===P)damagePlayer(m.dmg,'ミサイルで撃墜されました',m.from);else damageTarget(tgt,m.dmg*(tgt.type==='ship'?m.ship:m.air),'msl')}}
     else if(tgt&&tgt.life!==undefined&&m.pos.distanceTo(tgt.pos)<15){hit=true;explode(m.pos.clone(),.6)}
-    if(!hit&&m.owner==='player'&&!tgt){for(const t of T){if(t.hp<=0||t.falling||t.remote)continue;if(t.type==='ship'?hitShipVolume(t,m.pos,1):segSphere(prev,m.pos,t.pos,t.radius+8)){hit=true;explode(m.pos.clone(),1.2);damageTarget(t,m.dmg,'msl');break}}}
+    if(!hit&&m.owner==='player'&&!tgt){for(const t of T){if(t.hp<=0||t.falling||t.remote)continue;if(t.type==='ship'?hitShipVolume(t,m.pos,1):segSphere(prev,m.pos,t.pos,t.radius+8)){hit=true;explode(m.pos.clone(),1.2);damageTarget(t,m.dmg*(t.type==='ship'?m.ship:m.air),'msl');break}}}
     if(!hit&&m.pos.y<groundY(m.pos.x,m.pos.z)){hit=true;if(m.pos.y<2)splash(m.pos.clone().setY(0),1);else explode(m.pos.clone(),.8)}
     if(hit||m.life<=0){if(!hit&&m.life<=0)explode(m.pos.clone(),.4,false,true);if(m.netId&&m.owner!=='player'&&NET.active)NET.send({t:'mx',mid:m.netId,p:NET.v(m.pos),h:hit?1:0});scene.remove(m.obj);missiles.splice(i,1)}
   }
@@ -1562,7 +1616,7 @@ function spawnPlayer(start,slot){
   else if(mission.mp&&NET.combat()){const a=NET.mode==='team'?(NET.team?Math.PI:0)+(slot-1.5)*.16+rand(-.05,.05):slot*Math.PI/2+rand(-.3,.3),c=new V3(0,0,-9000);P.pos.set(c.x+Math.cos(a)*5200,1500+slot*120,c.z+Math.sin(a)*5200);P.q.setFromEuler(new THREE.Euler(0,Math.atan2(-(c.x-P.pos.x),-(c.z-P.pos.z)),0,'YXZ'));P.velDir.set(0,0,-1).applyQuaternion(P.q);P.speed=Math.min(250,ac.vmax*.6);P.throttle=.66;P.invuln=3}
   else{P.pos.set(1200+slot*60,1150+slot*40,4200+slot*80);P.q.identity();P.speed=Math.min(250,ac.vmax*.6);P.throttle=.66}
   setGear(P.obj,P.gearAnim);P.vel.copy(P.velDir).multiplyScalar(P.speed);
-  P.ammo={gun:940,s:8,l:4,flare:24};P.weapon=0;P.lockT=0;P.locked=false;P.deadT=0;P.obj.visible=true;
+  P.ammo={gun:940,s:8,l:4,flare:24};P.weapon=settings.missile;setPylonMissile(P.obj,P.weapon);$('#wS span').textContent=WPN[P.weapon].label;P.lockT=0;P.locked=false;P.deadT=0;P.obj.visible=true;
 }
 function makeOnlineMission(){
   const free=NET.mode==='free',team=NET.mode==='team';
@@ -1638,7 +1692,7 @@ function drawRearFrame(){
   for(const mm of missiles)if(mm.owner!=='player')mark(mm.pos,'rgba(255,100,119,1)',3);
   hx.restore();
 }
-function showcase(i){if(showIdx>=0&&models[showIdx])scene.remove(models[showIdx]);showIdx=i;const o=models[i];o.visible=true;setGear(o,0);if(o.userData.canopy)o.userData.canopy.visible=true;scene.add(o)}
+function showcase(i){if(showIdx>=0&&models[showIdx])scene.remove(models[showIdx]);showIdx=i;const o=models[i];setPylonMissile(o,settings.missile);o.visible=true;setGear(o,0);if(o.userData.canopy)o.userData.canopy.visible=true;scene.add(o)}
 
 /* ---------- HUD ---------- */
 const hudEl={};['vGear','objText','objSub','tName','tKind','tBar','tInfo','lockState','vSpd','vThr','bThr','vAlt','vG','vHp','bHp','aGun','aS','aL','aF','wS','wL'].forEach(k=>hudEl[k]=$('#'+k));
@@ -1734,7 +1788,7 @@ function updatePanels(){if(!touchUI&&MOBILE)touchUI={gun:$('#mGunN'),msl:$('#mMs
   hudEl.vGear.textContent=P.gearAnim>.98?'DOWN':P.gearAnim<.02?'UP':'· · ·';hudEl.vGear.style.color=P.gearAnim>.98?'var(--amber)':'';
   updateLever();hudEl.vG.textContent=P.g.toFixed(1);hudEl.vG.style.color=Math.abs(P.g)>7?'var(--amber)':'';hudEl.vHp.textContent=Math.round(P.hp);hudEl.bHp.style.width=P.hp+'%';hudEl.bHp.style.background=P.hp<30?'var(--red)':'';
   const inf='∞';hudEl.aGun.textContent=inf||P.ammo.gun;hudEl.aS.textContent=inf||P.ammo.s;hudEl.aL.textContent=inf||P.ammo.l;hudEl.aF.textContent=inf||P.ammo.flare;
-  hudEl.wS.classList.toggle('sel',P.weapon===0);hudEl.wL.classList.toggle('sel',P.weapon===1);
+  hudEl.wS.classList.add('sel');
   if(touchUI){const u=touchUI,a=P.weapon?hudEl.aL.textContent:hudEl.aS.textContent;u.gun.textContent=hudEl.aGun.textContent;u.msln.textContent='∞';u.msl.classList.toggle('lock',P.locked);u.flrn.textContent=hudEl.aF.textContent;u.wpn.textContent=P.weapon?'→小型':'→大型';
     u.gearn.textContent=hudEl.vGear.textContent;const G=P.ground;u.brake.hidden=!G;u.flr.hidden=!!G;
     const near=Math.min(...BASES.map(b=>Math.hypot(P.pos.x-b.x,P.pos.z-b.z)),P.pos.distanceTo(carrier.position));
@@ -1803,7 +1857,7 @@ const NET={tp:null,active:false,myId:null,mode:'dogfight',team:0,TWIN:7,code:nul
   recv(d){
     if(!d||typeof d!=='object')return;
     try{switch(d.t){
-      case 'm':if(mission.mp&&!mission.noWeapons&&state!=='home'&&this.num(d.p,3)&&this.num(d.d,3)){const tg=d.tg===this.myId?P:T.find(e=>e.remote&&e.id===d.tg)||null;if(tg===P&&!P.alive)break;launchMissile(tg===P?'enemy':'remote',new V3(...d.p),new V3(...d.d).normalize(),clamp(+d.sp||250,50,900),tg,d.hv?1:0,{mid:String(d.mid).slice(0,80),from:d.id});if(tg===P)notice(`${this.name(d.id)} のミサイル接近 — フレア［X］か急旋回`,'red')}break;
+      case 'm':if(mission.mp&&!mission.noWeapons&&state!=='home'&&this.num(d.p,3)&&this.num(d.d,3)){const tg=d.tg===this.myId?P:T.find(e=>e.remote&&e.id===d.tg)||null;if(tg===P&&!P.alive)break;launchMissile(tg===P?'enemy':'remote',new V3(...d.p),new V3(...d.d).normalize(),clamp(+d.sp||250,50,900),tg,d.hv|0,{mid:String(d.mid).slice(0,80),from:d.id});if(tg===P)notice(`${this.name(d.id)} のミサイル接近 — フレア［X］か急旋回`,'red')}break;
       case 'mx':{const i=missiles.findIndex(m=>m.netId===d.mid);if(i>=0){const m=missiles[i];if(d.h)explode(m.pos.clone(),1);scene.remove(m.obj);missiles.splice(i,1)}}break;
       case 'hit':if(d.to===this.myId&&mission.mp&&!mission.noWeapons&&Number.isFinite(d.d))damagePlayer(d.ram?100:clamp(d.d,0,40),`${this.name(d.by)} の${d.ram?'体当たり':'機関砲'}で撃墜されました`,d.by);break;
       case 'down':{const e=T.find(x=>x.remote&&x.id===d.id);if(e){if(this.num(d.p,3))explode(new V3(...d.p),1.4);e.obj.visible=false;e.flying=false;e.hp=0;if(P.target===e){P.target=null;P.locked=false;P.lockT=0}}
@@ -2001,10 +2055,14 @@ function frameBody(now){
 
 /* ---------- UI wiring ---------- */
 function refreshAcCard(){const a=AIRCRAFT[settings.aircraft];$('#acRole').textContent=a.name+'　/　'+a.role;$('#acDesc').textContent=a.desc;$('#stSpd').style.width=a.stats[0]*100+'%';$('#stTrn').style.width=a.stats[1]*100+'%';$('#stStb').style.width=a.stats[2]*100+'%';[...$('#acList').children].forEach((b,i)=>b.classList.toggle('on',i===settings.aircraft))}
+function refreshMsl(){const w=WPN[settings.missile];$('#mslRole').textContent=`${w.label}　/　射程 ${(w.range/1000).toFixed(1)}km・連射 ${w.cd}秒`;$('#mslDesc').textContent=w.desc;
+  $('#msRng').style.width=w.range/13000*100+'%';$('#msTrn').style.width=Math.min(1,w.turn/1.7)*100+'%';$('#msAir').style.width=Math.min(1,w.dmg*w.air/150)*100+'%';$('#msShp').style.width=Math.min(1,w.dmg*w.ship/300)*100+'%';
+  [...$('#mslList').children].forEach((b,i)=>b.classList.toggle('on',i===settings.missile))}
 function refreshOpts(){$('#qHigh').classList.toggle('on',HIGH());$('#qLow').classList.toggle('on',!HIGH());$('#optInvert').classList.toggle('on',settings.invert);$('#optSound').classList.toggle('on',settings.sound);$('#optSound').textContent='サウンド '+(settings.sound?'ON':'OFF');$('#optInvert').textContent='ピッチ反転 '+(settings.invert?'ON':'OFF')}
 function wireUI(){
   AIRCRAFT.forEach((a,i)=>{const b=document.createElement('button');b.className='chip';b.textContent=a.name.split(' ')[0];b.title=a.name;b.onclick=()=>{settings.aircraft=i;store.set('aircraft',i);refreshAcCard();showcase(i)};$('#acList').appendChild(b)});
-  refreshAcCard();refreshOpts();
+  WPN.forEach((w,i)=>{const b=document.createElement('button');b.className='chip';b.textContent=w.name;b.title=w.label;b.onclick=()=>{settings.missile=i;store.set('missile',i);refreshMsl();setPylonMissile(models[settings.aircraft],i)};$('#mslList').appendChild(b)});
+  refreshAcCard();refreshOpts();refreshMsl();
   document.querySelectorAll('.mbtn').forEach(b=>b.onclick=()=>startMission(b.dataset.mission));
   document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{settings.quality=b.dataset.q;store.set('quality',settings.quality);applyQuality();refreshOpts()});
   $('#optInvert').onclick=()=>{settings.invert=!settings.invert;store.set('invert',settings.invert);refreshOpts()};
@@ -2090,7 +2148,7 @@ function wireUI(){
 applyQuality();
 buildWorld();
 AIRCRAFT.forEach(a=>models.push(buildAircraft(a.id)));
-rvTemplate=buildAircraft('RV31');droneTemplate=buildAircraft('DRONE');mslTemplates=[buildMissile(false),buildMissile(true)];
+rvTemplate=buildAircraft('RV31');droneTemplate=buildAircraft('DRONE');
 wireUI();showcase(settings.aircraft);
 window.__sky={animateAircraft,setThrottleGlow,BASES,shipFrames,shipFrame,frWorld,frLocal,FR_CARRIER,FR_ESCORT,spawnShip,spawnAir,rearRect:()=>rearRect,toggleRear,V3,NET,P,T,state:()=>state,startMission,missiles,keys,step,smoke,fire,fireMissile,cycleTarget,playerFlares,mission:()=>mission,CV,surfaceAt,deckY,fromCarrier,toCarrier,input,settings,freeCam:(a,b)=>{freeCam=a?[new V3(...a),new V3(...b)]:null},models,carrier:()=>carrier};
 requestAnimationFrame(t=>{last=t;frame(t);$('#loading').classList.add('hide')});
