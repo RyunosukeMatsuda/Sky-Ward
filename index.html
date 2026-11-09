@@ -248,7 +248,7 @@ body.mobile .opts{gap:6px}
   <div class="home-in">
    <div class="h-left">
     <div>
-      <div class="eyebrow">FLIGHT COMBAT // PROTOTYPE 11 — 3D</div>
+      <div class="eyebrow">FLIGHT COMBAT // PROTOTYPE 12 — 3D</div>
       <h1>SKY<span>WARD</span></h1>
     </div>
     <p class="lead">空母打撃群から出撃し、訓練や迎撃任務に挑むフライトアクション。機体を傾けて旋回し、速度を管理しながら敵機や艦船をロックオンして攻撃せよ。</p>
@@ -724,6 +724,8 @@ const AIRCRAFT=[
   {id:'HX1',name:'HX-1 MERIDIAN',role:'極超音速機（オリジナル）',desc:'このゲームのために設計したオリジナルの極超音速機。最高速度は全機体で一番だが、高速では舵が重く旋回半径が大きい。',vmax:900,thrust:36,roll:2.4,pitch:.72,yaw:.22,stall:92,glim:6,stats:[1,.35,.75]},
   {id:'TB2',name:'TB2 BAYRAKTAR',role:'低速の無人攻撃機',desc:'プロペラ推進の無人機。とても遅いが失速しにくく、低空で地上や艦船を落ち着いて狙える。速度はゲーム用に実機より上げている。',vmax:115,thrust:6.5,roll:1.9,pitch:1.0,yaw:.45,stall:28,glim:5,stats:[.12,.62,.95],prop:true,fixedGear:true},
   {id:'FX7',name:'FX-7 PETREL',role:'可変翼のカナード艦上戦闘機（オリジナル）',desc:'このゲームのために設計したオリジナル機。可変翼にカナード（前翼）を組み合わせた双発の艦上戦闘機で、低速でも機首がよく回り、翼を畳めば高速も出る。',vmax:610,thrust:27.5,roll:3.0,pitch:1.1,yaw:.38,stall:58,glim:9,stats:[.86,.84,.78],swing:true},
+  {id:'F2Y',name:'F2Y SEA DART',role:'水上ジェット戦闘機',desc:'実在した水上ジェット戦闘機の試作機がモデル。三角翼で、腹の水上スキー（G で出し入れ）で海のどこにでも着水・離水できる。速度と旋回は控えめ。',vmax:380,thrust:20.5,roll:2.7,pitch:.95,yaw:.32,stall:60,glim:7,stats:[.56,.62,.76],sea:true,skis:true},
+  {id:'SF9',name:'SF-9 TIDERUNNER',role:'飛行艇戦闘機（オリジナル）',desc:'このゲームのために設計した飛行艇型の戦闘機。船底の胴体と翼端のフロートで海のどこにでも着水・離水でき、車輪で滑走路にも降りられる。低速で安定し、失速しにくい。',vmax:430,thrust:22,roll:2.8,pitch:1.0,yaw:.36,stall:54,glim:7.5,stats:[.64,.7,.88],sea:true},
 ];
 /* skin shader: panel lines, weathering, camouflage and (fictional) insignia, all procedural in model space */
 const SKIN_GLSL=`varying vec3 vOP;varying vec3 vON;uniform float uPL,uCamo;uniform vec3 uC1,uC2,uC3,uDT,uDS,uI1,uI2;
@@ -930,6 +932,43 @@ function buildAircraft(id,opt={}){
     swing={min:18*Math.PI/180,max:70*Math.PI/180,v0:120,v1:330};
     P.glass.push(canopy(-7.0,-3.6,.6,.44,.6));cockpit.set(0,1.2,-5.6);crew.push(new V3(0,1.18,-5.4));
     tips=KIT?[new V3(8.72,.1,4.0),new V3(-8.72,.1,4.0)]:[new V3(8.6,.1,2.9),new V3(-8.6,.1,2.9)];
+  }else if(id==='F2Y'){
+    paint=skinMat('pF2Y',{color:'#24364c',roughness:.36,metalness:.38},{top:[3.0,5.0,.5],side:[.15,2.6,.42],i1:'#d6dbe0',i2:'#24364c',pl:.2});
+    const HULL=[[0,1],[.7,.85],[1,.35],[.95,-.2],[.6,-.62],[0,-1],[-.6,-.62],[-.95,-.2],[-1,.35],[-.7,.85]];
+    P.paint.push(loft([{z:-8.6,w:.04,h:.05},{z:-7.8,w:.35,h:.42},{z:-6.4,w:.66,h:.8},{z:-4.5,w:.86,h:.98},{z:-2,w:1.0,h:1.02},{z:2,w:1.02,h:.98},{z:5,w:.9,h:.82},{z:7.4,w:.66,h:.6},{z:8.1,w:.58,h:.52}],HULL));
+    P.dark.push(loft([{z:-8.65,w:.045,h:.055},{z:-7.8,w:.365,h:.44},{z:-7.3,w:.48,h:.6}],HULL,{capE:false}));
+    P.dark.push(box(1.5,.06,.12,0,-.98,.6));
+    for(const s of [1,-1]){
+      // dorsal intakes behind the canopy
+      P.paint.push(loft([{z:-3.6,w:.34,h:.36,x:s*.62,y:.88},{z:-1,w:.4,h:.42,x:s*.66,y:.86},{z:3,w:.3,h:.3,x:s*.56,y:.8},{z:4.6,w:.1,h:.1,x:s*.45,y:.72}],E(3.5,14),{capS:false}));
+      P.dark.push(box(.66,.7,.06,s*.62,.88,-3.55,0,-.35));
+      W([{x:.8,le:-2.6,te:6.9,y:.18,t:.42},{x:5.15,le:5.7,te:7.5,y:.24,t:.07}],s<0,[{x0:1.4,x1:4.8,f:.24,k:'elev'}]);
+      noz.push({x:s*.42,y:.12,z:8.1,r:.36,len:.6});
+    }
+    TL([{x:0,le:1.8,te:7.5,t:.3},{x:3.7,le:6.5,te:8.0,t:.08}],0,.8,0,[{x0:.6,x1:3.2,f:.3,k:'rud'}]);
+    P.glass.push(canopy(-6.4,-3.7,.78,.42,.58));cockpit.set(0,1.35,-5.3);crew.push(new V3(0,1.33,-5.1));
+    tips=[new V3(5.15,.24,6.6),new V3(-5.15,.24,6.6)];
+  }else if(id==='SF9'){
+    paint=skinMat('pSF9',{color:'#7c8a94',roughness:.46,metalness:.3},{camo:2,c2:'#e2e5e4',top:[4.6,2.4,.55],side:[.4,-1.4,.42],i1:'#2c3a44',i2:'#d9dfe2',pl:.22});
+    const HULL=[[0,1],[.75,.8],[1,.2],[.96,-.3],[.55,-.7],[0,-1],[-.55,-.7],[-.96,-.3],[-1,.2],[-.75,.8]];
+    P.paint.push(loft([{z:-9.4,w:.05,h:.06,y:.15},{z:-8.4,w:.48,h:.6,y:.1},{z:-6.6,w:.86,h:1.0},{z:-4,w:1.05,h:1.12},{z:0,w:1.1,h:1.12},{z:1.2,w:1.06,h:1.0,y:.08},{z:4.5,w:.85,h:.82,y:.25},{z:7.6,w:.55,h:.6,y:.45},{z:9.2,w:.3,h:.4,y:.6}],HULL));
+    P.dark.push(loft([{z:-9.45,w:.055,h:.065,y:.15},{z:-8.4,w:.5,h:.62,y:.1},{z:-8.0,w:.6,h:.72,y:.08}],HULL,{capE:false}));
+    P.dark.push(box(1.6,.07,.16,0,-1.1,1.0));P.mark.push(box(.05,.1,9,0,-1.1,-3.5));
+    for(const s of [1,-1]){
+      W([{x:.7,le:-1.7,te:2.4,y:1.0,t:.42},{x:8.4,le:1.5,te:3.1,y:1.2,t:.1}],s<0,[{x0:1.6,x1:4.8,f:.3,k:'flap'},{x0:4.8,x1:8.0,f:.3,k:'ail'}]);
+      // engine nacelles riding on the wing roots, clear of spray
+      P.paint.push(loft([{z:-2.3,w:.5,h:.5,x:s*1.75,y:1.62},{z:-.5,w:.56,h:.56,x:s*1.75,y:1.64},{z:2.6,w:.5,h:.5,x:s*1.75,y:1.62},{z:3.6,w:.42,h:.42,x:s*1.75,y:1.6}],E(2,18),{capS:false}));
+      P.dark.push(cyl(.46,.46,.06,s*1.75,1.62,-2.27,'z',18));P.paint.push(box(.16,.5,2.6,s*1.6,1.25,.4));
+      noz.push({x:s*1.75,y:1.6,z:3.6,r:.38,len:.7,petal:true});
+      // wingtip floats
+      P.paint.push(loft([{z:-.7,w:.05,h:.05,x:s*7.4,y:.05},{z:-.2,w:.26,h:.3,x:s*7.4,y:.05},{z:1.6,w:.28,h:.3,x:s*7.4,y:.05},{z:2.4,w:.08,h:.1,x:s*7.4,y:.1}],HULL));
+      P.paint.push(box(.08,1.0,.7,s*7.4,.62,.9));
+      PY.push(new V3(s*3.6,.62,1.0),new V3(s*5.1,.68,1.4));
+    }
+    TL([{x:0,le:4.6,te:8.4,t:.3},{x:3.0,le:7.1,te:8.9,t:.12}],0,.95,0,[{x0:.5,x1:2.7,f:.28,k:'rud'}]);
+    for(const s of [1,-1])mv(wing([{x:.1,le:7.1,te:8.9,y:3.95,t:.14},{x:3.0,le:8.4,te:9.3,y:3.95,t:.06}],s<0),new V3(s*.1,3.95,8.0),new V3(s*3.0,3.95,8.0),'stab',s);
+    P.glass.push(canopy(-6.9,-3.9,.95,.48,.62));cockpit.set(0,1.55,-5.6);crew.push(new V3(0,1.52,-5.4));
+    tips=[new V3(8.4,1.2,2.6),new V3(-8.4,1.2,2.6)];
   }else if(id==='NGF'){
     paint=skinMat('pNGF',{color:'#6d7277',roughness:.46,metalness:.42},{top:[4.2,3.4,.55],side:[.0,2.2,.42],pl:.24});glass=M('glassGold',{color:'#a88a46',roughness:.06,metalness:.9,envMapIntensity:1.6,transparent:true,opacity:.62,depthWrite:false});
     P.paint.push(loft([{z:-10.5,w:.03,h:.03},{z:-9.5,w:.28,h:.22,hb:.2},{z:-8,w:.5,h:.42,hb:.32},{z:-6.5,w:.66,h:.62,hb:.4},{z:-5,w:.8,h:.72,hb:.45},{z:-3,w:1.0,h:.62,hb:.5},{z:0,w:1.15,h:.55,hb:.5},{z:4,w:1.15,h:.5,hb:.48},{z:7,w:1.0,h:.45,hb:.45},{z:8.6,w:.82,h:.42,hb:.42}],E(2.2,24)));
@@ -1031,9 +1070,16 @@ function buildAircraft(id,opt={}){
   return grp;
 }
 const GEAR={F15:{nz:-6,nb:-.55,mz:1.6,mx:1.35,mb:-.85,s:1.4,r:.38},F22:{nz:-6,nb:-.5,mz:1.8,mx:1.55,mb:-.62,s:1.4,r:.38},F35:{nz:-5,nb:-.5,mz:1.2,mx:1.35,mb:-.6,s:1.3,r:.36},F117:{nz:-6.2,nb:-.2,mz:2.4,mx:1.9,mb:-.22,s:1.5,r:.4},B2:{nz:-6.5,nb:-.8,mz:1.5,mx:4.6,mb:-.4,s:1.8,r:.5},
-  F14:{nz:-6.6,nb:-.55,mz:1.4,mx:2.1,mb:-.85,s:1.25,r:.42},MIG23:{nz:-5.6,nb:-.6,mz:.9,mx:1.45,mb:-.75,s:1.2,r:.36},NGF:{nz:-6.6,nb:-.42,mz:1.8,mx:1.4,mb:-.5,s:1.4,r:.38},HX1:{nz:-9,nb:-.2,mz:4.5,mx:2.3,mb:-.85,s:1.6,r:.5},TB2:{nz:-2.4,nb:-.35,mz:.35,mx:.85,mb:-.32,s:.68,r:.18},FX7:{nz:-6.2,nb:-.5,mz:1.7,mx:1.3,mb:-.55,s:1.3,r:.38}};
+  F14:{nz:-6.6,nb:-.55,mz:1.4,mx:2.1,mb:-.85,s:1.25,r:.42},MIG23:{nz:-5.6,nb:-.6,mz:.9,mx:1.45,mb:-.75,s:1.2,r:.36},NGF:{nz:-6.6,nb:-.42,mz:1.8,mx:1.4,mb:-.5,s:1.4,r:.38},HX1:{nz:-9,nb:-.2,mz:4.5,mx:2.3,mb:-.85,s:1.6,r:.5},TB2:{nz:-2.4,nb:-.35,mz:.35,mx:.85,mb:-.32,s:.68,r:.18},FX7:{nz:-6.2,nb:-.5,mz:1.7,mx:1.3,mb:-.55,s:1.3,r:.38},SF9:{nz:-6.2,nb:-1.0,mz:.8,mx:1.0,mb:-.95,s:.75,r:.36}};
+const HULL_H={F2Y:.82,SF9:.92};
 function addGear(grp,id){
-  const g=GEAR[id];if(!g){grp.userData.gearH=1.5;return}
+  if(HULL_H[id])grp.userData.hullH=HULL_H[id];
+  if(id==='F2Y'){const S=[],K=[];
+    for(const s of [1,-1]){K.push(box(.5,.09,3.6,s*.5,-1.8,-2.6));K.push(box(.5,.08,.6,s*.5,-1.72,-4.6,0,.3));S.push(box(.08,.85,.12,s*.5,-1.35,-3.6,0,0,));S.push(box(.08,.85,.12,s*.5,-1.35,-1.6))}
+    K.push(box(.18,.06,1.0,0,-1.2,6.6));S.push(box(.06,.3,.1,0,-1.04,6.6));
+    const gear=new THREE.Group();gear.add(meshFrom(S,M('strut',{color:'#a3a8ab',roughness:.35,metalness:.85})),meshFrom(K,M('ski',{color:'#8e959b',roughness:.4,metalness:.6})));
+    grp.add(gear);grp.userData.gear=gear;grp.userData.gearH=1.85;return}
+  const g=GEAR[id];if(!g){grp.userData.gearH=HULL_H[id]||1.5;return}
   const cy=Math.min(g.nb,g.mb)-g.s-g.r,S=[],Wh=[];
   const leg=(x,z,top,twin)=>{const len=top-(cy+g.r);S.push(cyl(.08,.11,len,x,top-len/2,z,'y',8));S.push(box(.06,len*.7,len*.5,x+(x>=0?.12:-.12),top-len*.35,z+.25));const w=dx=>{const c=new THREE.CylinderGeometry(g.r,g.r,g.r*.68,16);c.rotateZ(Math.PI/2);c.translate(x+dx,cy+g.r,z);Wh.push(c)};if(twin){w(-.19);w(.19)}else w(0)};
   const tw=id==='B2'||id==='F14';leg(0,g.nz,g.nb,tw);leg(g.mx,g.mz,g.mb,id==='B2');leg(-g.mx,g.mz,g.mb,id==='B2');
@@ -1192,6 +1238,7 @@ function surfaceAt(p){
   for(const b of BASES)if(Math.abs(p.x-b.x)<b.w-20&&Math.abs(p.z-b.z)<b.l-20)return{type:'base',y:16.1,frame:null,base:b};
   const l=toCarrier(p);if(inPoly(l.x,l.z,DECK))return{type:'carrier',y:deckY(),local:l,frame:FR_CARRIER};
   for(const fr of shipFrames()){if(Math.abs(p.x-fr.obj.position.x)>110||Math.abs(p.z-fr.obj.position.z)>110)continue;const sl=frLocal(fr,p);if(inPad(fr,sl))return{type:'ship',y:fr.deck(),local:sl,frame:fr}}
+  if(P.ac&&P.ac.sea&&terrainH(p.x,p.z)<-1&&!carrierCollide(p))return{type:'water',y:0,frame:null};
   return null;
 }
 // ship collision that leaves the stern landing pad open
@@ -1273,7 +1320,7 @@ function flyAir(dt){
   landingAssist(dt);
   P.pos.addScaledVector(P.vel,dt);
   // contact with landable surfaces
-  const gh=P.obj.userData.gearH,surf=surfaceAt(P.pos);
+  const surf=surfaceAt(P.pos),gh=surf&&surf.type==='water'?waterH():P.obj.userData.gearH;
   let cap=0;if(surf&&surf.type==='ship'&&P.gearAnim>.5){const rv=_v2.copy(P.vel).sub(surf.frame.vel()).setY(0).length();if(rv<P.ac.stall*1.9)cap=22}
   if(surf&&P.pos.y-gh<=surf.y+cap&&P.pos.y>surf.y-6){touchdown(surf);return}
   if(carrierCollide(P.pos)){crashPlayer('空母の船体に衝突しました');return}
@@ -1287,6 +1334,7 @@ function nearLanding(){
   const cs=[];for(const b of BASES)cs.push({p:new V3(b.x,16.1,b.z),y:16.1,r:b.l+1500});
   cs.push({p:carrier.position,y:deckY(),r:2200});for(const fr of shipFrames())cs.push({p:fr.obj.position,y:fr.deck(),r:1600});
   for(const c of cs){const d=Math.hypot(P.pos.x-c.p.x,P.pos.z-c.p.z);if(d<c.r){const agl=P.pos.y-gh-c.y;if(!best||agl<best.agl)best={agl,d,y:c.y}}}
+  if(P.ac.sea&&terrainH(P.pos.x,P.pos.z)<-1){const agl=P.pos.y-waterH();if(!best||agl<best.agl)best={agl,d:0,y:0,water:true}}
   return best;
 }
 function landingAssist(dt){
@@ -1320,7 +1368,9 @@ function checkRam(dt){
     }
   }
 }
-const LAND_LIM={base:14,carrier:15,ship:14};
+const LAND_LIM={base:14,carrier:15,ship:14,water:13};
+// how high the player's origin rides above the sea: on skis when they are down, otherwise on the hull
+function waterH(){const u=P.obj.userData;return P.ac.skis&&P.gearAnim>.5?u.gearH:(u.hullH||u.gearH)}
 function touchdown(surf){
   const fwd=new V3(0,0,-1).applyQuaternion(P.q),up=new V3(0,1,0).applyQuaternion(P.q),right=new V3().crossVectors(fwd,UP).normalize();
   const pitch=Math.asin(clamp(fwd.y,-1,1)),bank=Math.asin(clamp(up.dot(right),-1,1)),sink=surf.type==='ship'?Math.min(-P.vel.y,6):-P.vel.y,fr=surf.frame,lim=LAND_LIM[surf.type];
@@ -1328,12 +1378,14 @@ function touchdown(surf){
   if(sink>lim)fail=`降下率 ${sink.toFixed(1)} m/s で叩きつけて大破しました（上限 ${lim} m/s）`;
   else if(Math.abs(bank)>.6||up.y<.55)fail='機体を大きく傾けたまま接地しました';
   else if(pitch<-.3)fail='急角度で機首から接地しました';
-  else if(P.gearAnim<.5)belly=true;
+  else if(P.gearAnim<.5&&surf.type!=='water')belly=true;
   if(fail){crashPlayer(fail);return}
+  const WATER=surf.type==='water';
   const gh=P.obj.userData.gearH,hv=P.vel.clone().setY(0);let local=P.pos.clone(),psi=Math.atan2(-fwd.x,-fwd.z);
   if(fr){local=frLocal(fr,P.pos);hv.sub(fr.vel());psi+=fr.head()}
-  local.y=surf.y+gh;
-  P.ground={frame:fr,local,psi,gp:clamp(pitch,0,.2),arrest:false,cat:null};
+  local.y=surf.y+(WATER?waterH():gh);
+  P.ground={frame:fr,local,psi,gp:clamp(pitch,0,.2),arrest:false,cat:null,water:WATER};
+  if(WATER){splash(P.pos.clone().setY(0),1.4);P.ground.gp=0}
   if(belly){P.gear=true;P.gearAnim=1}
   P.speed=Math.max(0,hv.length());P.ang.set(0,0,0);P.sink=0;P.g=1;
   SND.noiseHit(.35,700,90,.45);shake(.3);
@@ -1342,6 +1394,7 @@ function touchdown(surf){
   if(!P.alive)return;
   if(surf.type==='carrier'){P.ground.arrest=true;P.ground.stopD=45;notice('着艦 — アレスティングワイヤーを捕捉','amber')}
   else if(surf.type==='ship'){P.ground.arrest=true;P.ground.stopD=14;notice(`${fr.name} に着艦 — 制動フックで停止`,'amber')}
+  else if(WATER)notice('着水 — 推力を絞って減速。推力を上げて機首を起こせば離水','amber');
   else notice('接地 — 推力を絞って減速（B でブレーキ）','amber');
 }
 function updateGround(dt){
@@ -1352,6 +1405,7 @@ function updateGround(dt){
   const drag=ac.thrust/(ac.vmax*ac.vmax)*P.speed*P.speed*(1+.7*P.gearAnim);
   P.braking=keys.KeyB||touch.brake||P.throttle<.04;
   let dec=(P.speed>0?.3:0)+drag+(P.braking&&P.speed>0?7:0);
+  if(G.water)dec+=P.speed>0?1.2+P.speed*(P.ac.skis&&P.gearAnim>.5?.02:.04):0;
   let acc=thrust-dec;
   if(G.frame&&G.frame.ship&&(G.frame.ship.hp<=0||G.frame.ship.dead)){crashPlayer('乗っていた艦が撃沈されました');return}
   if(G.arrest){acc=-(P.speed*P.speed/(2*(G.stopD||45))+6);if(P.speed<.6){G.arrest=false;G.trapped=true;P.speed=0;acc=0;G.cat={t:0,launched:false,instant:true};notice('停止 — 推力80%以上で射出して再出撃','amber')}}
@@ -1360,18 +1414,21 @@ function updateGround(dt){
   P.speed=Math.max(0,P.speed+acc*dt);
   if(P.speed>vr&&input.pitch>.2)G.gp=Math.min(.21,G.gp+.25*dt);else G.gp=Math.max(0,G.gp-.25*dt);
   G.local.addScaledVector(_v1.set(-Math.sin(G.psi),0,-Math.cos(G.psi)),P.speed*dt);
-  if(G.frame&&G.frame.kind==='ship'&&!(G.cat&&G.cat.launched)){const z=padZone(G.frame.u),bx=G.frame.u.B-1.5,lx=G.local.x,lz=G.local.z;G.local.x=clamp(lx,-bx,bx);G.local.z=clamp(lz,z.z0+3,G.frame.u.L/2-3);if(G.local.x!==lx||G.local.z!==lz){P.speed*=Math.exp(-6*dt);if(G.arrest&&P.speed<4)P.speed=0}}G.local.y=(G.frame?G.frame.deck()-G.frame.obj.position.y:16.1)+gh;
+  if(G.frame&&G.frame.kind==='ship'&&!(G.cat&&G.cat.launched)){const z=padZone(G.frame.u),bx=G.frame.u.B-1.5,lx=G.local.x,lz=G.local.z;G.local.x=clamp(lx,-bx,bx);G.local.z=clamp(lz,z.z0+3,G.frame.u.L/2-3);if(G.local.x!==lx||G.local.z!==lz){P.speed*=Math.exp(-6*dt);if(G.arrest&&P.speed<4)P.speed=0}}G.local.y=G.water?waterH()+Math.sin(performance.now()/700)*.08:(G.frame?G.frame.deck()-G.frame.obj.position.y:16.1)+gh;
+  if(G.water&&terrainH(G.local.x,G.local.z)>-1){if(P.speed>6){crashPlayer('岸に乗り上げて大破しました');return}P.speed=0}
+  if(G.water&&P.speed>10)spray(dt);
   P.q.setFromEuler(new THREE.Euler(G.gp,G.frame?G.psi-G.frame.head():G.psi,0,'YXZ'));
   P.pos.copy(G.frame?frWorld(G.frame,G.local):G.local);
   const fwd=_v2.set(0,0,-1).applyQuaternion(P.q);
   P.velDir.copy(fwd);P.vel.copy(fwd).multiplyScalar(P.speed);if(G.frame)P.vel.add(G.frame.vel());P.g=1;
   if(P.speed>8&&P.braking&&Math.random()<.3)smoke.emit({pos:P.pos.clone().setY(P.pos.y-gh+.3),vel:new V3(0,1,0),life:1,s0:1,s1:4,a0:.25,c:[1.6,1.6,1.6]});
-  const s2=surfaceAt(P.pos),off=!s2||s2.frame!==G.frame;
+  const s2=G.water?{type:'water',frame:null}:surfaceAt(P.pos),off=!s2||s2.frame!==G.frame||(s2.type==='water')!==!!G.water;
   if((P.speed>vlof&&G.gp>.07)||off){
     P.ground=null;P.airT=0;P.speed=Math.max(P.speed,1);P.velDir.copy(fwd);P.sink=0;P.ang.set(0,0,0);P.pos.y+=.05;
     if(off&&!G.frame&&P.speed<vlof){crashPlayer('滑走路から逸脱しました');return}
     if(off&&G.frame&&!(G.cat&&G.cat.instant)){P.speed=P.vel.length();notice(P.speed>ac.stall?'発艦 — G でギアを格納':'甲板から落下 — 速度不足','red')}
     else if(G.frame)notice('発艦 — G でギアを格納','amber');
+    else if(G.water)notice('離水','amber');
     else if(!G.frame)notice('離陸 — G でギアを格納','amber');
   }
 }
@@ -1655,7 +1712,7 @@ function goHome(){if(mission.mp&&NET.active)NET.leave();state='home';$('#scoreBo
 function checkMission(dt){
   missionTime+=dt;
   if(mission.mp){if(!P.alive&&P.deadT>4.5){spawnPlayer(NET.combat()?'air':settings.start,NET.slot);camSnap=true;notice('再出撃 — 3秒間は無敵','amber')}return}
-  if(!mission.over&&mission.done()&&P.alive){mission.over=true;mission.objDone=true;notice('任務目標をすべて達成 — 空母か基地へ帰投し着陸せよ','amber');$('#endBtn').hidden=false}
+  if(!mission.over&&mission.done()&&P.alive){mission.over=true;mission.objDone=true;notice(P.ac.sea?'任務目標をすべて達成 — 着陸するか海に着水して停止せよ':'任務目標をすべて達成 — 空母か基地へ帰投し着陸せよ','amber');$('#endBtn').hidden=false}
   if(mission.objDone&&P.ground&&P.speed<2&&!(P.ground.cat&&!P.ground.cat.instant)&&state==='play'){mission.landed=true;showResult(true)}
   if(!P.alive&&P.deadT>3.2&&state==='play')showResult(mission.objDone?'lost':false);
 }
@@ -1807,7 +1864,7 @@ function updatePanels(){if(!touchUI&&MOBILE)touchUI={gun:$('#mGunN'),msl:$('#mMs
       for(const r of rows.filter(r=>NET.teamOf(r.id)===t)){const d=document.createElement('div');if(r.me)d.className='me';const x=document.createElement('span');x.textContent='　'+r.name;const y=document.createElement('span');y.textContent=`${r.k} / ${r.d}`;d.append(x,y);out.push(d)}}
     box.replaceChildren(...out)}
   else if(mission.mp&&NET.mode==='dogfight'){const box=$('#scoreBox'),rows=NET.scoreRows();box.replaceChildren(...rows.map(r=>{const d=document.createElement('div');if(r.me)d.className='me';const a=document.createElement('span');a.textContent=r.name;const b=document.createElement('span');b.textContent=`${r.k} / ${r.d}`;d.append(a,b);return d}))}
-  const [o1,o2]=mission.objDone?['帰投 — 空母か基地に着陸して停止','G でギアを下ろし、緑のリングに沿って進入（Esc で省略も可）']:mission.obj?mission.obj():['',''];hudEl.objText.textContent=o1;hudEl.objSub.textContent=o2;
+  const [o1,o2]=mission.objDone?[P.ac.sea?'帰投 — 空母・基地に着陸するか、海に着水して停止':'帰投 — 空母か基地に着陸して停止','G でギアを下ろし、緑のリングに沿って進入（Esc で省略も可）']:mission.obj?mission.obj():['',''];hudEl.objText.textContent=o1;hudEl.objSub.textContent=o2;
   if(t&&t.hp>0){hudEl.tName.textContent=t.name;hudEl.tKind.textContent=t.type==='ship'?'SURFACE / NAVAL':t.kind==='drone'?'AIR / TARGET DRONE':'AIR / HOSTILE';hudEl.tBar.style.width=(t.hp/t.maxHp*100)+'%';hudEl.tInfo.textContent=`耐久 ${Math.ceil(t.hp)}/${t.maxHp}　距離 ${(t.pos.distanceTo(P.pos)/1000).toFixed(1)} km`;hudEl.lockState.textContent=P.locked?'LOCK':P.lockT>0?'LOCKING':'TRACK';hudEl.lockState.style.color=P.locked?'var(--amber)':''}
   else{hudEl.tName.textContent=liveTargets().length?'—':'CLEAR';hudEl.tKind.textContent='NO TARGET';hudEl.tBar.style.width='0%';hudEl.tInfo.textContent=liveTargets().length?'T で目標を選択':'敵影なし';hudEl.lockState.textContent='NO LOCK';hudEl.lockState.style.color=''}
   hudEl.vSpd.textContent=Math.round(P.speed*3.6);hudEl.vThr.textContent=Math.round(P.throttle*100)+(P.throttle>.82?' AB':'');hudEl.bThr.style.width=P.throttle*100+'%';
