@@ -249,12 +249,12 @@ body.mobile .opts{gap:6px}
   <div class="home-in">
    <div class="h-left">
     <div>
-      <div class="eyebrow">FLIGHT COMBAT // PROTOTYPE 13 — 3D</div>
+      <div class="eyebrow">FLIGHT COMBAT // PROTOTYPE 14 — 3D</div>
       <h1>SKY<span>WARD</span></h1>
     </div>
     <p class="lead">空母打撃群から出撃し、訓練や迎撃任務に挑むフライトアクション。機体を傾けて旋回し、速度を管理しながら敵機や艦船をロックオンして攻撃せよ。</p>
     <div class="mlist">
-      <button class="mbtn online" id="onlineBtn"><span><strong>オンライン（2〜4人）</strong><small>友達と対戦、または一緒に飛ぶ。部屋コードで参加</small></span><span class="ar">⇄</span></button>
+      <button class="mbtn online" id="onlineBtn"><span><strong>オンライン（2〜8人）</strong><small>友達と対戦、または一緒に飛ぶ。部屋コードで参加</small></span><span class="ar">⇄</span></button>
       <button class="mbtn" data-mission="training"><span><strong>飛行・射撃訓練</strong><small>標的機5機と標的艦。反撃なし</small></span><span class="ar">↗</span></button>
       <button class="mbtn" data-mission="intercept"><span><strong>沿岸迎撃</strong><small>領空に接近する敵戦闘機4機を排除。敵は反撃してくる</small></span><span class="ar">↗</span></button>
       <button class="mbtn" data-mission="fleet"><span><strong>艦隊攻撃</strong><small>護衛機と対空砲火をかわし、巡洋艦と護衛艦を撃沈。艦尾に着艦もできる</small></span><span class="ar">↗</span></button>
@@ -1736,9 +1736,9 @@ function startMission(key){
 function spawnPlayer(start,slot){
   const ac=P.ac,gh=P.obj.userData.gearH;slot=slot||0;
   P.ground=null;P.gear=false;P.gearAnim=0;P.deathMsg='';P.ang.set(0,0,0);P.sink=0;P.hp=100;P.alive=true;P.g=1;P.dmgTaken=0;P.velDir.set(0,0,-1);P.lastHitBy=null;P.invuln=0;P.airT=99;
-  if(start==='carrier'){P.gear=true;P.gearAnim=1;P.throttle=.3;P.speed=0;P.ground={frame:FR_CARRIER,local:new V3(slot%2?-9:6,deckY()+gh,-55+Math.floor(slot/2)*32),psi:0,gp:0,cat:{t:0,launched:false,endZ:-162}};P.pos.copy(fromCarrier(P.ground.local));P.q.setFromEuler(new THREE.Euler(0,-CV.heading,0,'YXZ'))}
+  if(start==='carrier'){P.gear=true;P.gearAnim=1;P.throttle=.3;P.speed=0;P.ground={frame:FR_CARRIER,local:new V3(slot%2?-9:6,deckY()+gh,-55+Math.floor(slot/2)*26),psi:0,gp:0,cat:{t:0,launched:false,endZ:-162}};P.pos.copy(fromCarrier(P.ground.local));P.q.setFromEuler(new THREE.Euler(0,-CV.heading,0,'YXZ'))}
   else if(start==='base'){const b=ISLANDS[0].base;P.gear=true;P.gearAnim=1;P.throttle=0;P.speed=0;P.ground={frame:null,local:new V3(b.x+(slot%2?-14:14),16.1+gh,b.z+1380-slot*90),psi:0,gp:0};P.pos.copy(P.ground.local);P.q.identity()}
-  else if(mission.mp&&NET.combat()){const a=NET.mode==='team'?(NET.team?Math.PI:0)+(slot-1.5)*.16+rand(-.05,.05):slot*Math.PI/2+rand(-.3,.3),c=new V3(0,0,-9000);P.pos.set(c.x+Math.cos(a)*5200,1500+slot*120,c.z+Math.sin(a)*5200);P.q.setFromEuler(new THREE.Euler(0,Math.atan2(-(c.x-P.pos.x),-(c.z-P.pos.z)),0,'YXZ'));P.velDir.set(0,0,-1).applyQuaternion(P.q);P.speed=Math.min(250,ac.vmax*.6);P.throttle=.66;P.invuln=3}
+  else if(mission.mp&&NET.combat()){const a=NET.mode==='team'?(NET.team?Math.PI:0)+(slot-3.5)*.1+rand(-.04,.04):slot*Math.PI/4+rand(-.2,.2),c=new V3(0,0,-9000);P.pos.set(c.x+Math.cos(a)*5200,1500+slot*90,c.z+Math.sin(a)*5200);P.q.setFromEuler(new THREE.Euler(0,Math.atan2(-(c.x-P.pos.x),-(c.z-P.pos.z)),0,'YXZ'));P.velDir.set(0,0,-1).applyQuaternion(P.q);P.speed=Math.min(250,ac.vmax*.6);P.throttle=.66;P.invuln=3}
   else{P.pos.set(1200+slot*60,1150+slot*40,4200+slot*80);P.q.identity();P.speed=Math.min(250,ac.vmax*.6);P.throttle=.66}
   setGear(P.obj,P.gearAnim);P.vel.copy(P.velDir).multiplyScalar(P.speed);
   P.ammo={gun:940,s:8,l:4,flare:24};P.slot=0;P.weapon=settings.mslA;setPylonMissile(P.obj,settings.mslA,settings.mslB);$('#wS span').textContent=WPN[settings.mslA].label;$('#wL span').textContent=WPN[settings.mslB].label;$('#wL').hidden=false;P.lockT=0;P.locked=false;P.deadT=0;P.obj.visible=true;
@@ -1945,7 +1945,7 @@ function landingAid(f,mob){
 
 /* ---------- online: shared game logic ---------- */
 const TEAMN=['ALPHA','BRAVO'],TEAMC=['#7cc4ff','#ff8a7a'];
-const NET={tp:null,active:false,myId:null,mode:'dogfight',team:0,TWIN:7,code:null,slot:0,players:new Map(),stats:new Map(),k:0,d:0,rd:0,WIN:5,sendT:0,hitT:0,hits:{},mid:0,roomP:null,
+const NET={MAXP:8,tp:null,active:false,myId:null,mode:'dogfight',team:0,TWIN:7,code:null,slot:0,players:new Map(),stats:new Map(),k:0,d:0,rd:0,WIN:5,sendT:0,hitT:0,hits:{},mid:0,roomP:null,
   normMode(m){return m==='free'||m==='team'?m:'dogfight'},
   combat(){return this.mode!=='free'},
   teamOf(id){if(id===this.myId)return this.team;const p=this.players.get(id);return p&&p.team?1:0},
@@ -1975,7 +1975,7 @@ const NET={tp:null,active:false,myId:null,mode:'dogfight',team:0,TWIN:7,code:nul
     if(this.busy)return;this.busy=true;try{this.status('部屋を探しています…');const tp=await this.pickTp();if(!tp)return;this.tp=tp;this.code=code;const r=await tp.open(code,false);this.opened(r.slot)}catch(e){this.fail(e)}finally{this.busy=false}},
   opened(slot){if(this.mode!=='team')this.team=0;this.active=true;this.slot=slot|0;this.k=this.d=this.rd=0;this.stats.clear();this.status('');this.showLobby()},
   fail(e){const m=e&&(e.message||e.type||e.code);try{this.tp&&this.tp.leave()}catch(x){}this.active=false;this.players.clear();
-    this.status(m==='empty'||m==='peer-unavailable'?'その部屋コードは見つかりません（誰もいない部屋には入れません）':m==='full'?'その部屋は満員です（4人まで）':m==='lib'?'通信ライブラリを読み込めませんでした。ネットワークを確認してください。':m==='timeout'?'接続できませんでした。ネットワークを確認して、もう一度お試しください。':m==='not_permitted'?'この共有権限ではオンラインに参加できません。':'接続できませんでした（'+String(m||'error').slice(0,40)+'）',true)},
+    this.status(m==='empty'||m==='peer-unavailable'?'その部屋コードは見つかりません（誰もいない部屋には入れません）':m==='full'?'その部屋は満員です（8人まで）':m==='lib'?'通信ライブラリを読み込めませんでした。ネットワークを確認してください。':m==='timeout'?'接続できませんでした。ネットワークを確認して、もう一度お試しください。':m==='not_permitted'?'この共有権限ではオンラインに参加できません。':'接続できませんでした（'+String(m||'error').slice(0,40)+'）',true)},
   upsertPlayer(id,name,slot,team){if(!id||id===this.myId)return;const nm=this.clean(name),old=this.players.get(id);const tm=team==null?(old?old.team:0):(team?1:0);this.players.set(id,{id,name:nm,slot:slot|0,team:tm});if(!old){this.renderLobby();this.refreshFriendly();if(mission.mp)notice(this.mode==='team'?`${nm} が ${TEAMN[tm]} に参加しました`:`${nm} が参加しました`)}else if(old.name!==nm||old.team!==tm){this.refreshFriendly();this.renderLobby()}},
   peerLeave(id){const p=this.players.get(id);if(!p)return;this.players.delete(id);this.stats.delete(id);this.removeEnt(id);this.renderLobby();if(mission.mp)notice(`${p.name} が退出しました`)},
   send(d){if(!this.active||!this.tp)return;try{this.tp.send(d)}catch(e){reportError(e)}},
@@ -2066,7 +2066,7 @@ const ROOM={room:null,r:null,seen:new Map(),unsubs:[],lobbyOn:false,
     await new Promise(res=>setTimeout(res,create?400:2600));
     const others=r.peers().filter(p=>!(p.isMe&&p.sameTab));
     if(!create&&!others.length){await this.leave();throw new Error('empty')}
-    if(others.length>=4){await this.leave();throw new Error('full')}
+    if(others.length>=NET.MAXP){await this.leave();throw new Error('full')}
     if(!create){const h=others.find(p=>p.presence&&p.presence.md);NET.mode=NET.normMode(h&&h.presence.md)}
     NET.pickTeam(create?[]:others.map(p=>p.presence&&p.presence.tm));
     const used=new Set(others.map(p=>p.presence&&p.presence.sl));let slot=0;while(used.has(slot))slot++;
@@ -2113,7 +2113,7 @@ const RELAY={c:null,topic:null,info:null,last:new Map(),hbT:0,slot:0,rate:10,hiT
     this.pub({k:'hi',nm:NET.myName(),sl:-1,md:NET.mode,ask:1});
     await new Promise(r=>setTimeout(r,create?600:2600));
     if(!create){if(!this.last.size){this.leave();throw new Error('empty')}const md=(this.info&&this.info.m)||[...this.last.values()].map(v=>v.md).find(Boolean);NET.mode=NET.normMode(md)}
-    if(this.last.size>=4){this.leave();throw new Error('full')}
+    if(this.last.size>=NET.MAXP){this.leave();throw new Error('full')}
     const used=new Set([...this.last.values()].map(v=>v.sl));let slot=0;while(used.has(slot))slot++;this.slot=slot;NET.slot=slot;
     NET.pickTeam(create?[]:[...this.last.values()].map(v=>v.tm));
     this.hello();clearInterval(this.hbT);this.hbT=setInterval(()=>{this.hello();this.expire()},2000);
@@ -2215,7 +2215,7 @@ function wireUI(){
   addEventListener('wheel',e=>{if(state!=='play')return;P.throttle=clamp(P.throttle-Math.sign(e.deltaY)*.04,0,1);updateLever()},{passive:true});
   $('#callsign').value=store.get('callsign','')||'PILOT-'+Math.floor(Math.random()*90+10);
   $('#callsign').addEventListener('change',()=>{$('#callsign').value=NET.clean($('#callsign').value);store.set('callsign',$('#callsign').value)});
-  const syncN=()=>{document.querySelectorAll('[data-nmode]').forEach(b=>b.classList.toggle('on',b.dataset.nmode===NET.mode));$('#nmodeNote').textContent=NET.mode==='free'?'一緒に飛ぶ：武器なしで同じ空を飛ぶ。空母・基地からの離着陸や編隊飛行に。':NET.mode==='team'?`チーム戦：ALPHA（青）とBRAVO（赤）に分かれて戦う（2対2まで）。チーム合計で先に${NET.TWIN}機撃墜したほうが勝ち。ミサイル無制限。`:`対戦：プレイヤー同士で撃ち合う。先に${NET.WIN}機撃墜で勝利。`};
+  const syncN=()=>{document.querySelectorAll('[data-nmode]').forEach(b=>b.classList.toggle('on',b.dataset.nmode===NET.mode));$('#nmodeNote').textContent=NET.mode==='free'?'一緒に飛ぶ：武器なしで同じ空を飛ぶ。空母・基地からの離着陸や編隊飛行に。':NET.mode==='team'?`チーム戦：ALPHA（青）とBRAVO（赤）に分かれて戦う（4対4まで）。チーム合計で先に${NET.TWIN}機撃墜したほうが勝ち。ミサイル無制限。`:`対戦：プレイヤー同士で撃ち合う。先に${NET.WIN}機撃墜で勝利。`};
   document.querySelectorAll('[data-nmode]').forEach(b=>b.onclick=()=>{NET.mode=b.dataset.nmode;syncN()});syncN();
   $('#onlineBtn').onclick=()=>{$('#netPanel').classList.add('show');if(!NET.active){NET.showStart();NET.status('');NET.roomCap().then(r=>{if(r){ROOM.room=r;ROOM.watchLobby();$('#netRoomsWrap').hidden=false;NET.renderRooms(r.peers())}})}};
   NET.roomCap().then(r=>{if(r){ROOM.room=r;ROOM.watchLobby()}});
