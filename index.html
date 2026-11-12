@@ -249,7 +249,7 @@ body.mobile .opts{gap:6px}
   <div class="home-in">
    <div class="h-left">
     <div>
-      <div class="eyebrow">FLIGHT COMBAT // PROTOTYPE 14 — 3D</div>
+      <div class="eyebrow">FLIGHT COMBAT // PROTOTYPE 15 — 3D</div>
       <h1>SKY<span>WARD</span></h1>
     </div>
     <p class="lead">空母打撃群から出撃し、訓練や迎撃任務に挑むフライトアクション。機体を傾けて旋回し、速度を管理しながら敵機や艦船をロックオンして攻撃せよ。</p>
@@ -447,7 +447,7 @@ body.mobile .opts{gap:6px}
 
 <section class="panel" id="ctrlPanel"><div class="pbox">
   <div class="eyebrow">CONTROL SETTINGS</div><h2>操縦設定</h2>
-  <p>機体の反応が速すぎると感じたら感度を下げてください。初期値は70%で、100%が前の版と同じ感度です。設定は自動で保存され、飛行中でもすぐ反映されます。</p>
+  <p>機体の反応が速すぎると感じたら感度を下げてください。初期値はPCが70%、スマホが100%で、PCとスマホは別々に保存されます。設定は自動で保存され、飛行中でもすぐ反映されます。</p>
   <div class="opts" style="margin-top:12px"><span class="lbl">操縦モード</span><button class="chip" data-easy="1">かんたん</button><button class="chip" data-easy="0">マニュアル</button></div>
   <p class="note" id="easyNote">—</p>
   <div class="opts" style="margin-top:10px"><span class="lbl">画質</span><button class="chip" data-q2="high">高</button><button class="chip" data-q2="low">軽量</button><button class="chip" id="sndChip">サウンド ON</button><button class="chip mob-only" id="tiltChip">傾き操作 OFF</button><button class="chip mob-only" id="fsChip">全画面</button></div>
@@ -489,7 +489,7 @@ const store={get(k,d){try{const v=localStorage.getItem('skyward.'+k);return v==n
 const isTouch=matchMedia('(pointer: coarse)').matches;
 const MOBILE=isTouch||matchMedia('(hover: none)').matches;if(MOBILE)document.body.classList.add('mobile');
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const settings={fx7kit:!!store.get('fx7kit',false),mslA:clamp(store.get('mslA',2)|0,0,8),mslB:clamp(store.get('mslB',5)|0,0,8),mslSlot:0,easy:store.get('easy',MOBILE),sPitch:store.get('sPitch',70),sRoll:store.get('sRoll',70),sSmooth:store.get('sSmooth',50),sCurve:store.get('sCurve',50),start:store.get('start','carrier'),quality:store.get('quality',isTouch?'low':'high'),invert:store.get('invert',false),sound:store.get('sound',true),aircraft:store.get('aircraft',0)};
+const settings={fx7kit:!!store.get('fx7kit',false),mslA:clamp(store.get('mslA',2)|0,0,8),mslB:clamp(store.get('mslB',5)|0,0,8),mslSlot:0,easy:store.get('easy',MOBILE),sPitch:store.get(MOBILE?'sPitchM':'sPitch',MOBILE?100:70),sRoll:store.get(MOBILE?'sRollM':'sRoll',MOBILE?100:70),sSmooth:store.get(MOBILE?'sSmoothM':'sSmooth',MOBILE?35:50),sCurve:store.get(MOBILE?'sCurveM':'sCurve',MOBILE?20:50),start:store.get('start','carrier'),quality:store.get('quality',isTouch?'low':'high'),invert:store.get('invert',false),sound:store.get('sound',true),aircraft:store.get('aircraft',0)};
 const HIGH=()=>settings.quality==='high';
 
 /* ---------- renderer ---------- */
@@ -1318,10 +1318,10 @@ function flyAir(dt){
   const auth=clamp((spd-ac.stall*.55)/(ac.stall*1.1),.12,1)*(spd>480?clamp(1-(spd-480)/700,.6,1):1);
   const pmax=Math.min(ac.pitch,ac.glim*9.81/Math.max(spd,60));
   const kP=settings.sPitch/100,kR=settings.sRoll/100;
-  let inR=input.roll,inP=input.pitch;
+  let inR=input.roll,inP=input.pitch,ezYaw=0;
   if(settings.easy){const f0=new V3(0,0,-1).applyQuaternion(P.q),u0=new V3(0,1,0).applyQuaternion(P.q),rt=new V3().crossVectors(f0,UP);
-    if(rt.lengthSq()>1e-3){rt.normalize();const bank=Math.atan2(u0.dot(rt),u0.y),tb=inR*1.2;inR=clamp((tb-bank)*2.4,-1,1);if(u0.y>.1)inP=clamp(inP+Math.abs(Math.sin(bank))*.6*(1-Math.abs(inP)*.6),-1,1)}}
-  const tp=inP*pmax*Math.max(auth,.25)*kP,tr=-inR*ac.roll*auth*kR,ty=-input.yaw*ac.yaw*auth*kR;
+    if(rt.lengthSq()>1e-3){rt.normalize();const bank=Math.atan2(u0.dot(rt),u0.y),tb=inR*1.3;ezYaw=input.roll*.6*Math.max(0,Math.cos(bank));inR=clamp((tb-bank)*3.4,-1,1);if(u0.y>.1){const sb=Math.abs(Math.sin(bank));inP=clamp(inP+sb*(.5+.4*sb)*(1-Math.max(0,-inP)*.7),-1,1)}}}
+  const tp=inP*pmax*Math.max(auth,.25)*kP,tr=-inR*ac.roll*auth*kR,ty=-(input.yaw+ezYaw)*ac.yaw*auth*kR;
   P.ang.x=lerp(P.ang.x,tp,damp(5,dt));P.ang.z=lerp(P.ang.z,tr,damp(7,dt));P.ang.y=lerp(P.ang.y,ty,damp(4,dt));
   _q1.setFromEuler(new THREE.Euler(P.ang.x*dt,P.ang.y*dt,P.ang.z*dt,'YXZ'));P.q.multiply(_q1).normalize();
   const fwd=_v1.set(0,0,-1).applyQuaternion(P.q);
@@ -2198,12 +2198,12 @@ function wireUI(){
   $('#optInvert').onclick=()=>{settings.invert=!settings.invert;store.set('invert',settings.invert);refreshOpts()};
   $('#optSound').onclick=()=>{settings.sound=!settings.sound;store.set('sound',settings.sound);if(settings.sound){SND.init();SND.resume()}refreshOpts()};
   const SL=[['sPitch','vPitch',v=>v+'%'],['sRoll','vRoll',v=>v+'%'],['sSmooth','vSmooth',v=>v+'%'],['sCurve','vCurve',v=>v+'%']];
-  const DEF={sPitch:70,sRoll:70,sSmooth:50,sCurve:50};
+  const DEF=MOBILE?{sPitch:100,sRoll:100,sSmooth:35,sCurve:20}:{sPitch:70,sRoll:70,sSmooth:50,sCurve:50};const SKEY=k=>MOBILE?k+'M':k;
   const syncSl=()=>{for(const[k,lab,f]of SL){$('#'+k).value=settings[k];$('#'+lab).textContent=f(settings[k])}$('#optInvert2').textContent='ピッチ反転 '+(settings.invert?'ON':'OFF');$('#optInvert2').classList.toggle('on',settings.invert)};
-  for(const[k,lab,f]of SL)$('#'+k).addEventListener('input',e=>{settings[k]=+e.target.value;store.set(k,settings[k]);$('#'+lab).textContent=f(settings[k])});
+  for(const[k,lab,f]of SL)$('#'+k).addEventListener('input',e=>{settings[k]=+e.target.value;store.set(SKEY(k),settings[k]);$('#'+lab).textContent=f(settings[k])});
   const openCtrl=()=>{syncSl();$('#ctrlPanel').classList.add('show')};
   $('#optCtrl').onclick=openCtrl;$('#pauseCtrl').onclick=openCtrl;$('#ctrlClose').onclick=()=>$('#ctrlPanel').classList.remove('show');
-  $('#ctrlReset').onclick=()=>{for(const k in DEF){settings[k]=DEF[k];store.set(k,DEF[k])}syncSl()};
+  $('#ctrlReset').onclick=()=>{for(const k in DEF){settings[k]=DEF[k];store.set(SKEY(k),DEF[k])}syncSl()};
   $('#optInvert2').onclick=()=>{settings.invert=!settings.invert;store.set('invert',settings.invert);syncSl();refreshOpts()};
   $('#optKeys').onclick=()=>$('#keysPanel').classList.add('show');$('#keysClose').onclick=()=>$('#keysPanel').classList.remove('show');
   const pause=()=>{if(state==='play'){state='paused';$('#pausePanel').classList.add('show')}};const resume=()=>{if(state==='paused'){state='play';last=performance.now();$('#pausePanel').classList.remove('show')}};
@@ -2255,7 +2255,7 @@ function wireUI(){
   const tap=(id,fn)=>$(id).addEventListener('pointerdown',e=>{e.preventDefault();SND.resume();if(state==='play')fn()});
   tap('#mMsl',fireMissile);tap('#mWpn',switchMissile);tap('#mGear',toggleGear);tap('#mTgt',cycleTarget);tap('#mFlr',playerFlares);
   tap('#mCtx',()=>{const f=$('#mCtx')._fn;if(f){f();updateLever()}});
-  const fz=$('#flyZone'),base=$('#fzBase'),knob=$('#fzKnob');let fd=null,ox=0,oy=0;const RAD=62;
+  const fz=$('#flyZone'),base=$('#fzBase'),knob=$('#fzKnob');let fd=null,ox=0,oy=0;const RAD=50;
   fz.addEventListener('pointerdown',e=>{e.preventDefault();if(fd!==null)return;fd=e.pointerId;fz.setPointerCapture(fd);SND.resume();const r=fz.getBoundingClientRect();ox=e.clientX-r.left;oy=e.clientY-r.top;base.style.left=ox+'px';base.style.top=oy+'px';base.classList.add('on');$('#fzHint').hidden=true;knob.style.transform='';touch.x=touch.y=0});
   fz.addEventListener('pointermove',e=>{if(e.pointerId!==fd)return;const r=fz.getBoundingClientRect();let dx=e.clientX-r.left-ox,dy=e.clientY-r.top-oy;const l=Math.hypot(dx,dy)||1;if(l>RAD){dx*=RAD/l;dy*=RAD/l}knob.style.transform=`translate(${dx}px,${dy}px)`;touch.x=dx/RAD;touch.y=dy/RAD});
   const fzUp=e=>{if(e.pointerId!==fd)return;fd=null;touch.x=touch.y=0;knob.style.transform='';base.classList.remove('on');base.style.left='50%';base.style.top='62%'};
