@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>SKYWARD</title>
 <meta name="theme-color" content="#07131c">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -129,9 +129,9 @@ button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
   .stick-zone{width:130px;height:130px}
 }
 @media (max-width:760px){
-  .home{background:linear-gradient(180deg,rgba(4,13,20,.1),rgba(4,13,20,.9) 42%)}
-  .home-in{margin:38vh 0 0 0}
-  .home h1{font-size:56px}
+  body:not(.rot) .home{background:linear-gradient(180deg,rgba(4,13,20,.1),rgba(4,13,20,.9) 42%)}
+  body:not(.rot) .home-in{margin:38vh 0 0 0}
+  body:not(.rot) .home h1{font-size:56px}
 }
 @media (max-height:560px) and (min-width:761px){
   .home-in{gap:10px;width:min(430px,100%)}
@@ -221,7 +221,7 @@ body.mobile .mbtn small{font-size:10px}
 body.mobile .chip{min-height:40px;padding:8px 12px;font-size:14px}
 body.mobile .acard{padding:8px 12px}
 body.mobile .opts{gap:6px}
-@media (orientation:portrait){body.mobile .home-in{grid-template-columns:1fr}body.mobile .home{background:linear-gradient(180deg,rgba(4,13,20,.2),rgba(4,13,20,.92) 40%)}}
+@media (orientation:portrait){body.mobile:not(.rot) .home-in{grid-template-columns:1fr}body.mobile:not(.rot) .home{background:linear-gradient(180deg,rgba(4,13,20,.2),rgba(4,13,20,.92) 40%)}}
 .note{font-family:var(--f-body);font-size:11px;color:var(--muted);margin:4px 0 0;line-height:1.6}
 /* online */
 .field{display:grid;gap:5px;margin-top:12px}
@@ -239,6 +239,11 @@ body.mobile .opts{gap:6px}
 .scorebox .me{color:var(--cyan)}
 .mbtn.online{border-color:rgba(130,234,255,.55)}
 @media (prefers-reduced-motion:reduce){.mbtn,.home,.notice{transition:none}}
+/* portrait-held phone: the whole game is drawn turned 90deg so it is always landscape */
+body.rot{position:fixed;left:0;top:0;transform-origin:0 0;overflow:hidden}
+body.rot .home-in{gap:10px}
+body.rot .pbox{padding:16px}body.rot .pbox h2{font-size:26px;margin:2px 0 4px}body.rot .pbox p{font-size:12px;line-height:1.6}
+body.rot .res{margin-top:8px;gap:6px}body.rot .res div{padding:5px 8px}body.rot .res b{font-size:18px}body.rot .rank{font-size:44px}body.rot .pbtns{margin-top:12px}
 </style>
 
 <canvas id="gl"></canvas>
@@ -512,12 +517,50 @@ function applyQuality(){
   const sh=HIGH();if(renderer.shadowMap.enabled!==sh){renderer.shadowMap.enabled=sh;scene.traverse(o=>{if(o.material){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.needsUpdate=true)}})}
   resize();
 }
+let ROT=false;
+const IOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+function applyRot(){
+  const b=document.body,want=MOBILE&&innerHeight>innerWidth;
+  if(want){b.style.width=innerHeight+'px';b.style.height=innerWidth+'px';b.style.transform='translateX('+innerWidth+'px) rotate(90deg)'}
+  else if(ROT){b.style.width=b.style.height=b.style.transform=''}
+  if(want!==ROT){ROT=want;b.classList.toggle('rot',want)}
+  ROT_W=innerWidth;ROT_H=innerHeight;
+}
+let ROT_W=0,ROT_H=0;
+// pointer position / element box in the game's own (possibly rotated) coordinates
+function lpt(e){return ROT?{x:e.clientY,y:innerWidth-e.clientX}:{x:e.clientX,y:e.clientY}}
+function lrect(el){const r=el.getBoundingClientRect();return ROT?{left:r.top,top:innerWidth-r.right,width:r.height,height:r.width}:r}
+function fitScreen(){if(MOBILE&&(innerWidth!==ROT_W||innerHeight!==ROT_H))applyRot();const c=renderer.domElement;if(c.clientWidth&&c.clientHeight&&(c.clientWidth!==W||c.clientHeight!==H))resize()}
 function resize(){
-  W=innerWidth;H=innerHeight;renderer.setSize(W,H,false);composer.setSize(W,H);bloom.setSize(W*DPR/2,H*DPR/2);
+  const c=renderer.domElement;W=c.clientWidth||innerWidth;H=c.clientHeight||innerHeight;renderer.setSize(W,H,false);composer.setSize(W,H);bloom.setSize(W*DPR/2,H*DPR/2);
   camera.aspect=W/H;camera.updateProjectionMatrix();
   const hd=Math.min(devicePixelRatio||1,2);hud.width=W*hd;hud.height=H*hd;hx.setTransform(hd,0,0,hd,0,0);
 }
-addEventListener('resize',resize);
+addEventListener('resize',()=>{applyRot();resize()});
+addEventListener('orientationchange',()=>{for(const t of[60,250,600,1200])setTimeout(()=>{applyRot();resize()},t)});
+if(window.visualViewport)visualViewport.addEventListener('resize',()=>{applyRot();resize()});
+if(window.ResizeObserver)new ResizeObserver(()=>resize()).observe(renderer.domElement);
+// no pinch / double-tap zoom (iOS ignores user-scalable=no)
+for(const ev of['gesturestart','gesturechange','gestureend'])document.addEventListener(ev,e=>e.preventDefault(),{passive:false});
+document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
+document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
+// Android: on the first tap, go fullscreen and lock the screen to landscape (iPhone cannot; it uses the rotated view)
+function tryLandscape(){
+  if(!MOBILE||IOS||document.fullscreenElement||document.webkitFullscreenElement)return;
+  const d=document.documentElement,fe=document.fullscreenEnabled||document.webkitFullscreenEnabled;if(!fe)return;
+  let p;try{p=d.requestFullscreen?d.requestFullscreen({navigationUI:'hide'}):d.webkitRequestFullscreen()}catch(e){return}
+  Promise.resolve(p).then(()=>{try{screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape').catch(()=>{})}catch(e){}}).catch(()=>{});
+}
+addEventListener('pointerdown',()=>tryLandscape(),{capture:true});
+// finger-drag scrolling for menus (works the same in the rotated view; the page itself blocks native touch panning)
+function dragScroll(el){
+  let id=null,y0=0,st0=0,moved=false,lastY=0,lastT=0,vel=0,raf=0;
+  el.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'||id!==null)return;cancelAnimationFrame(raf);id=e.pointerId;y0=lastY=lpt(e).y;st0=el.scrollTop;moved=false;vel=0;lastT=performance.now()});
+  el.addEventListener('pointermove',e=>{if(e.pointerId!==id)return;const y=lpt(e).y;if(!moved&&Math.abs(y-y0)>8)moved=true;if(moved){el.scrollTop=st0-(y-y0);const t=performance.now();vel=(y-lastY)/Math.max(1,t-lastT);lastY=y;lastT=t}});
+  const up=e=>{if(e.pointerId!==id)return;id=null;if(moved){let v=vel*16;const go=()=>{if(Math.abs(v)<.5)return;el.scrollTop-=v;v*=.93;raf=requestAnimationFrame(go)};go()}};
+  el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
+  el.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault();moved=false}},true);
+}
 
 /* ---------- sky, light, fog ---------- */
 const sunDir=new V3().setFromSphericalCoords(1,THREE.MathUtils.degToRad(90-24),THREE.MathUtils.degToRad(58));
@@ -1920,7 +1963,7 @@ function updatePanels(){if(!touchUI&&MOBILE)touchUI={gun:$('#mGunN'),msl:$('#mMs
     u.gear.classList.toggle('warn',!G&&!P.gear&&P.alive&&near<7000&&P.speed<140&&P.pos.y<900);
     let ctx=null;if(G&&P.alive){if(G.cat&&!G.cat.launched)ctx=P.throttle<.8?['▲ 推力をMILにして射出',()=>{P.throttle=.82}]:null;else if(!mission.objDone&&P.speed<P.ac.stall)ctx=P.throttle<.95?['▲ 離陸推力（100%）',()=>{P.throttle=1}]:null}
     u.ctx.hidden=!ctx;if(ctx){u.ctx.textContent=ctx[0];u.ctx._fn=ctx[1]}
-    const portrait=innerHeight>innerWidth;$('#rotate').classList.toggle('show',portrait);if(portrait&&state==='play'){state='paused';$('#pausePanel').classList.add('show')}}
+    const portrait=!ROT&&!MOBILE&&innerHeight>innerWidth;$('#rotate').classList.toggle('show',portrait);if(portrait&&state==='play'){state='paused';$('#pausePanel').classList.add('show')}}
 }
 
 function landingAid(f,mob){
@@ -2162,6 +2205,7 @@ function frame(now){
   try{frameBody(now)}catch(e){reportError(e)}
 }
 function frameBody(now){
+  fitScreen();
   const dt=Math.min(.05,(now-last)/1000);last=now;
   if(state==='play'||(state==='paused'&&mission.mp))step(dt);
   if(state!=='paused'){smoke.update(dt);fire.update(dt)}
@@ -2209,7 +2253,7 @@ function wireUI(){
   const pause=()=>{if(state==='play'){state='paused';$('#pausePanel').classList.add('show')}};const resume=()=>{if(state==='paused'){state='play';last=performance.now();$('#pausePanel').classList.remove('show')}};
   $('#endBtn').onclick=()=>{if(mission.objDone)showResult(true)};
   document.querySelectorAll('[data-start]').forEach(b=>{b.classList.toggle('on',b.dataset.start===settings.start);b.onclick=()=>{settings.start=b.dataset.start;store.set('start',settings.start);document.querySelectorAll('[data-start]').forEach(x=>x.classList.toggle('on',x===b))}});
-  const track=$('#lvTrack');let lvDrag=null;const lvSet=e=>{const r=track.getBoundingClientRect();let t=clamp(1-(e.clientY-r.top)/r.height,0,1);if(t>.79&&t<.86)t=.82;if(t<.03)t=0;P.throttle=t;updateLever()};
+  const track=$('#lvTrack');let lvDrag=null;const lvSet=e=>{const r=lrect(track);let t=clamp(1-(lpt(e).y-r.top)/r.height,0,1);if(t>.79&&t<.86)t=.82;if(t<.03)t=0;P.throttle=t;updateLever()};
   track.addEventListener('pointerdown',e=>{e.preventDefault();lvDrag=e.pointerId;track.setPointerCapture(lvDrag);SND.resume();lvSet(e)});track.addEventListener('pointermove',e=>{if(lvDrag===e.pointerId)lvSet(e)});
   for(const ev of['pointerup','pointercancel'])track.addEventListener(ev,()=>lvDrag=null);
   addEventListener('wheel',e=>{if(state!=='play')return;P.throttle=clamp(P.throttle-Math.sign(e.deltaY)*.04,0,1);updateLever()},{passive:true});
@@ -2256,8 +2300,8 @@ function wireUI(){
   tap('#mMsl',fireMissile);tap('#mWpn',switchMissile);tap('#mGear',toggleGear);tap('#mTgt',cycleTarget);tap('#mFlr',playerFlares);
   tap('#mCtx',()=>{const f=$('#mCtx')._fn;if(f){f();updateLever()}});
   const fz=$('#flyZone'),base=$('#fzBase'),knob=$('#fzKnob');let fd=null,ox=0,oy=0;const RAD=50;
-  fz.addEventListener('pointerdown',e=>{e.preventDefault();if(fd!==null)return;fd=e.pointerId;fz.setPointerCapture(fd);SND.resume();const r=fz.getBoundingClientRect();ox=e.clientX-r.left;oy=e.clientY-r.top;base.style.left=ox+'px';base.style.top=oy+'px';base.classList.add('on');$('#fzHint').hidden=true;knob.style.transform='';touch.x=touch.y=0});
-  fz.addEventListener('pointermove',e=>{if(e.pointerId!==fd)return;const r=fz.getBoundingClientRect();let dx=e.clientX-r.left-ox,dy=e.clientY-r.top-oy;const l=Math.hypot(dx,dy)||1;if(l>RAD){dx*=RAD/l;dy*=RAD/l}knob.style.transform=`translate(${dx}px,${dy}px)`;touch.x=dx/RAD;touch.y=dy/RAD});
+  fz.addEventListener('pointerdown',e=>{e.preventDefault();if(fd!==null)return;fd=e.pointerId;fz.setPointerCapture(fd);SND.resume();const r=lrect(fz),q=lpt(e);ox=q.x-r.left;oy=q.y-r.top;base.style.left=ox+'px';base.style.top=oy+'px';base.classList.add('on');$('#fzHint').hidden=true;knob.style.transform='';touch.x=touch.y=0});
+  fz.addEventListener('pointermove',e=>{if(e.pointerId!==fd)return;const r=lrect(fz),q=lpt(e);let dx=q.x-r.left-ox,dy=q.y-r.top-oy;const l=Math.hypot(dx,dy)||1;if(l>RAD){dx*=RAD/l;dy*=RAD/l}knob.style.transform=`translate(${dx}px,${dy}px)`;touch.x=dx/RAD;touch.y=dy/RAD});
   const fzUp=e=>{if(e.pointerId!==fd)return;fd=null;touch.x=touch.y=0;knob.style.transform='';base.classList.remove('on');base.style.left='50%';base.style.top='62%'};
   fz.addEventListener('pointerup',fzUp);fz.addEventListener('pointercancel',fzUp);
   const setTilt=on=>{tiltOn=on;$('#tiltChip').textContent='傾き操作 '+(on?'ON':'OFF');$('#tiltChip').classList.toggle('on',on)};
@@ -2276,7 +2320,7 @@ function wireUI(){
 }
 
 /* ---------- boot ---------- */
-applyQuality();
+applyRot();document.querySelectorAll('.home,.panel').forEach(dragScroll);applyQuality();
 buildWorld();
 AIRCRAFT.forEach(a=>models.push(buildAircraft(a.id)));
 rvTemplate=buildAircraft('RV31');droneTemplate=buildAircraft('DRONE');
